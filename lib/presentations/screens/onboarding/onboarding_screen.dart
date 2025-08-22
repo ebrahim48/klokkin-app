@@ -1,13 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:go_router/go_router.dart';
-import 'package:klokkin_app/presentations/widgets/custom_button.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
-import '../../../core/config/app_routes/app_routes.dart';
 import '../../../core/constants/app_colors.dart';
-import '../../../global/custom_assets/assets.gen.dart';
 import '../../widgets/custom_text.dart';
+import '../../widgets/custom_button.dart';
 
 class OnboardingScreen extends StatefulWidget {
   const OnboardingScreen({super.key});
@@ -18,133 +15,158 @@ class OnboardingScreen extends StatefulWidget {
 
 class _OnboardingScreenState extends State<OnboardingScreen> {
 
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.bgColor,
       body: SafeArea(
-        child: ClipRRect(
-          borderRadius: BorderRadius.circular(30.r),
-          child: Stack(
-            children: [
-              /// =============================> Background Image with PageView ========================================>
-              PageView.builder(
-                controller: _pageController,
-                itemCount: images.length,
-                onPageChanged: (index) => indicatorIndex.value = index,
-                itemBuilder: (context, index) {
-                  return images[index].image(
-                    fit: BoxFit.cover,
-                    width: double.infinity,
-                    height: double.infinity,
-                  );
-                },
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            /// ============ Title ============
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  CustomText(
+                    text: "Welcome",
+                    fontsize: 40.sp,
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.primaryColorC79235,
+                  ),
+                  SizedBox(height: 8.h),
+                  CustomText(
+                    textAlign: TextAlign.start,
+                    maxline: 2,
+                    text: "Discover, Create & Share Amazing Stories.",
+                    fontsize: 20.sp,
+                    fontWeight: FontWeight.w400,
+                    color: AppColors.secondary836531,
+                  ),
+                ],
               ),
+            ),
 
-              /// ==================================>  Bottom overlay content =======================================>
-              Positioned(
-                bottom: 0,
-                left: 0,
-                right: 0,
-                child: Container(
-                  padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 40.h),
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topCenter,
-                      end: Alignment.bottomCenter,
-                      colors: [
-                        Colors.transparent,
-                        Colors.black.withOpacity(0.6),
-                        Colors.black.withOpacity(0.9),
-                      ],
+            /// ============ Images + Lines ============
+            Expanded(
+              child: Stack(
+                children: [
+                  /// Left Image
+
+                  Positioned(
+                    left: 1.w,
+                    top: 0,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.only(
+                        topRight: Radius.circular(4.r),
+                        bottomRight: Radius.circular(4.r),
+                      ),
+                      child: Image.asset(
+                        images[0],
+                        width: 248.w,
+                        height: 160.h,
+                        fit: BoxFit.cover,
+                      ),
                     ),
                   ),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
 
-                      /// =======================================> Text ========================================>
-                      Obx(() => CustomText(
-                        text: titles[indicatorIndex.value],
-                        textAlign: TextAlign.start,
-                        fontsize: 30.sp,
-                        maxline: 2,
-                        fontWeight: FontWeight.w400,
-                        color: AppColors.textColorFFFFFF,
-                      )),
-                      SizedBox(height: 12.h),
-                      Obx(() => CustomText(
-                        text: subtitles[indicatorIndex.value],
-                        textAlign: TextAlign.start,
-                        fontsize: 16.sp,
-                        color: AppColors.textColorFFFFFF,
-                        maxline: 3,
-                      )),
-                      SizedBox(height: 24.h),
-                      /// ======================================> Indicator =======================================>
-                      SmoothPageIndicator(
-                        controller: _pageController,
-                        count: images.length,
-                        effect: ExpandingDotsEffect(
-                          dotWidth: 13.w,
-                          dotHeight: 9.h,
-                          spacing: 8.w,
-                          activeDotColor: AppColors.primaryColorC79235,
-                          dotColor: AppColors.textColorFFFFFF,
-                        ),
+                  /// Right Image
+
+                  Positioned(
+                    right: 1.w,
+                    top: 172.h,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.only(
+                        bottomLeft: Radius.circular(4.r),
+                        topLeft: Radius.circular(4.r),
                       ),
-                      SizedBox(height: 24.h),
-                      /// ======================================> Icon ==========================================>
-                      Align(
-                        alignment: Alignment.centerRight,
-                        child: GestureDetector(
-                          onTap: () {
-                            if (indicatorIndex.value < images.length - 1) {
-                              _pageController.nextPage(
-                                duration: const Duration(milliseconds: 300),
-                                curve: Curves.easeInOut,
-                              );
-                            } else {
-                              context.pushNamed(AppRoutes.signUpScreen);
-
-                            }
-                          },
-
-                        ),
+                      child: Image.asset(
+                        images[1],
+                        width: 248.w,
+                        height: 160.h,
+                        fit: BoxFit.cover,
                       ),
-                      CustomButton(
-                          title: 'Let’s get started',
-                          onpress: () {
-
-                          },)
-                    ],
+                    ),
                   ),
-                ),
+
+                  /// ====== Vertical Line  ======
+                  Positioned(
+                    top: 0,
+                    left: MediaQuery.of(context).size.width / 1 - 139.w,
+                    child: Container(
+                      width: 1,
+                      height: 167.h,
+                      color: AppColors.primaryColorC79235,
+                    ),
+                  ),
+
+                  /// ====== Horizontal Line  ======
+                  Positioned(
+                    top: 166.h,
+                    left: MediaQuery.of(context).size.width / 2 - 57.w,
+                    right: MediaQuery.of(context).size.width / 2 - 58.w,
+                    child: Container(
+                      width: 82.w,
+                      height: 1,
+                      color: AppColors.primaryColorC79235,
+                    ),
+                  ),
+
+                  /// ====== Vertical Line 3  ======
+                  Positioned(
+                    top: 167.h,
+                      left: MediaQuery.of(context).size.width / 2 - 57.w,
+                    child: Container(
+                        width: 1,
+                        height: 165.h,
+                      color: AppColors.primaryColorC79235)),
+                ],
               ),
-            ],
-          ),
+            ),
+
+            /// ============ Bottom Section ============
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
+              child: Column(
+                children: [
+                  CustomButton(
+                    title: "Let’s get started",
+                    onpress: () {
+                      // context.pushNamed(AppRoutes.signUpScreen);
+                    },
+                  ),
+                  SizedBox(height: 120.h),
+                  SmoothPageIndicator(
+                    controller: _pageController,
+                    count: images.length,
+                    effect: ExpandingDotsEffect(
+                      dotWidth: 16.w,
+                      dotHeight: 8.h,
+                      spacing: 6.w,
+                      activeDotColor: AppColors.primaryColorC79235,
+                      dotColor: AppColors.textColorFFFFFF,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
 
-
   final PageController _pageController = PageController();
   var indicatorIndex = 0.obs;
 
-  final List<AssetGenImage> images = [
-    // Assets.images.welcome1,
-    // Assets.images.welcome2,
+  final List<String> images = [
+    "assets/images/welcome1.png",
+    "assets/images/welcome2.png",
+    "assets/images/welcome2.png",
   ];
 
-  final List<String> titles = [
-    "Shop more for less and reduce food waste",
-    "Donate and feed those in need",
-  ];
 
-  final List<String> subtitles = [
-    "Save and transform food waste into food opportunity",
-    "Connect with NGOs and help ensure good food goes to those who need it.",
-  ];
 
 }

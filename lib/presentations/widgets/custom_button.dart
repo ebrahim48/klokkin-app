@@ -37,12 +37,12 @@ class CustomButton extends StatelessWidget {
       onTap: loading?(){} : onpress,
       child: Container(
         width:width?.w ?? double.infinity,
-        height: height ?? 50.h,
+        height: height ?? 48.h,
         padding:  EdgeInsets.symmetric(horizontal: 10.w, vertical: 5.h),
         decoration: BoxDecoration(
           borderRadius:BorderRadius.circular(borderRadius ?? 10.r),
-          border: Border.all(color: AppColors.secondary836531),
-          color: color ?? AppColors.buttonColorE8A533,
+          // border: Border.all(color: AppColors.secondary836531),
+          color: color ?? AppColors.primaryColorC79235,
           // gradient: const LinearGradient(
           //   begin: Alignment.topCenter,
           //   end: Alignment.bottomCenter,
@@ -65,8 +65,8 @@ class CustomButton extends StatelessWidget {
             Center(
               child: CustomText(
                 text: title,
-                fontsize: fontSize ?? 24.h,
-                color: titlecolor ?? Colors.white,
+                fontsize: fontSize ?? 20.h,
+                color: titlecolor ?? AppColors.textColor000000,
                 fontWeight: fontWeight ?? FontWeight.w600,
               ),
             ),
