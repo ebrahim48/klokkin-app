@@ -117,7 +117,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
                   return null;
                 },
 
-                  cursorColor: Colors.black,
+                  cursorColor: AppColors.curserColorA48141,
                   obscureText: widget.isPassword ? obscureText : false,
                   style: TextStyle(color: widget.hintextColor ?? Colors.black, fontSize: widget.hintextSize ?? 12.h),
                   decoration: InputDecoration(
@@ -125,7 +125,7 @@ class _CustomTextFieldState extends State<CustomTextField> {
             contentPadding: EdgeInsets.symmetric(
                 horizontal: widget.contentPaddingHorizontal ?? 20.w,
                 vertical: widget.contentPaddingVertical ?? 10.h),
-            fillColor: const Color(0xffFAFAFA),
+            fillColor: AppColors.bgColor,
             filled: true,
             prefixIcon: Padding(
               padding:  EdgeInsets.symmetric(horizontal: 12.w),
@@ -160,25 +160,25 @@ class _CustomTextFieldState extends State<CustomTextField> {
 
   OutlineInputBorder focusedBorder() {
     return OutlineInputBorder(
-      borderRadius: BorderRadius.circular( widget.borderRadio?.r ?? 12.r),
+      borderRadius: BorderRadius.circular( widget.borderRadio?.r ?? 20.r),
       borderSide:BorderSide(
-          color: widget.borderColor ??AppColors.borderColor66512B
+          color: widget.borderColor ??AppColors.borderColor4D3814
       ),
     );
   }
 
   OutlineInputBorder enabledBorder() {
     return OutlineInputBorder(
-      borderRadius: BorderRadius.circular(widget.borderRadio?.r ?? 12.r),
+      borderRadius: BorderRadius.circular(widget.borderRadio?.r ?? 20.r),
       borderSide:BorderSide(
-          color: widget.borderColor ?? AppColors.borderColor66512B
+          color: widget.borderColor ?? AppColors.borderColor4D3814
       ),
     );
   }
 
   OutlineInputBorder errorBorder() {
     return OutlineInputBorder(
-      borderRadius: BorderRadius.circular(widget.borderRadio?.r ?? 12.r),
+      borderRadius: BorderRadius.circular(widget.borderRadio?.r ?? 20.r),
       borderSide: const BorderSide(
           color: Colors.red,width: 0.5
       ),
