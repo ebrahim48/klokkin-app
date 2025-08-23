@@ -1,6 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../../presentations/screens/auth/forget/forget_password_screen.dart';
+import '../../../presentations/screens/auth/signIn/sign_in_screen.dart';
+import '../../../presentations/screens/auth/signup/sign_up_screen.dart';
 import '../../../presentations/screens/onboarding/onboarding_screen.dart';
 import '../../../presentations/screens/splash/splash_screen.dart';
 
@@ -80,32 +83,32 @@ class AppRoutes {
       pageBuilder: (context, state) =>
           _customTransitionPage( OnboardingScreen(), state),
     ),
-    // /// =============================================================> Auth  =================================================>
-    //
-    // ///<<<=============>>> Sign Up SCREEN <<<===============>>>
-    // GoRoute(
-    //   path: signUpScreen,
-    //   name: signUpScreen,
-    //   pageBuilder: (context, state) =>
-    //       _customTransitionPage( SignUpScreen(), state),
-    // ),
-    // ///<<<=============>>> Log In <<<===============>>>
-    // GoRoute(
-    //   path: logInScreen,
-    //   name: logInScreen,
-    //   pageBuilder: (context, state) =>
-    //       _customTransitionPage( LoginScreen(), state),
-    // ),
-    //
-    // ///<<<=============>>> Forget Password Screen  <<<===============>>>
-    // GoRoute(
-    //   path: forgetPasswordScreen,
-    //   name: forgetPasswordScreen,
-    //   pageBuilder: (context, state) =>
-    //       _customTransitionPage( ForgetPasswordScreen(), state),
-    // ),
-    //
-    //
+    /// =============================================================> Auth  =================================================>
+
+    ///<<<=============>>> Sign Up SCREEN <<<===============>>>
+    GoRoute(
+      path: signUpScreen,
+      name: signUpScreen,
+      pageBuilder: (context, state) =>
+          _customTransitionPage( SignUpScreen(), state),
+    ),
+    ///<<<=============>>> Log In <<<===============>>>
+    GoRoute(
+      path: logInScreen,
+      name: logInScreen,
+      pageBuilder: (context, state) =>
+          _customTransitionPage( LoginScreen(), state),
+    ),
+
+    ///<<<=============>>> Forget Password Screen  <<<===============>>>
+    GoRoute(
+      path: forgetPasswordScreen,
+      name: forgetPasswordScreen,
+      pageBuilder: (context, state) =>
+          _customTransitionPage( ForgetPasswordScreen(), state),
+    ),
+
+
     // ///<<<=============>>> Verify Screen  <<<===============>>>
     // GoRoute(
     //   path: verifyScreen,

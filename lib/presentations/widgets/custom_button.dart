@@ -42,7 +42,7 @@ class CustomButton extends StatelessWidget {
         decoration: BoxDecoration(
           borderRadius:BorderRadius.circular(borderRadius ?? 10.r),
           // border: Border.all(color: AppColors.secondary836531),
-          color: color ?? AppColors.primaryColorC79235,
+          color: color ?? AppColors.buttonColorE8A533,
           // gradient: const LinearGradient(
           //   begin: Alignment.topCenter,
           //   end: Alignment.bottomCenter,
@@ -66,7 +66,7 @@ class CustomButton extends StatelessWidget {
               child: CustomText(
                 text: title,
                 fontsize: fontSize ?? 20.h,
-                color: titlecolor ?? AppColors.textColor000000,
+                color: titlecolor ?? AppColors.textColorFFFFFF,
                 fontWeight: fontWeight ?? FontWeight.w600,
               ),
             ),
