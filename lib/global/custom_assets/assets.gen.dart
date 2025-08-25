@@ -18,6 +18,10 @@ import 'package:vector_graphics/vector_graphics.dart' as _vg;
 class $AssetsIconsGen {
   const $AssetsIconsGen();
 
+  /// File path: assets/icons/PlusSquare.svg
+  SvgGenImage get plusSquare =>
+      const SvgGenImage('assets/icons/PlusSquare.svg');
+
   /// File path: assets/icons/email.svg
   SvgGenImage get email => const SvgGenImage('assets/icons/email.svg');
 
@@ -26,6 +30,9 @@ class $AssetsIconsGen {
 
   /// File path: assets/icons/facebook.svg
   SvgGenImage get facebook => const SvgGenImage('assets/icons/facebook.svg');
+
+  /// File path: assets/icons/filter.svg
+  SvgGenImage get filter => const SvgGenImage('assets/icons/filter.svg');
 
   /// File path: assets/icons/google.svg
   SvgGenImage get google => const SvgGenImage('assets/icons/google.svg');
@@ -37,18 +44,33 @@ class $AssetsIconsGen {
   SvgGenImage get nameProfile =>
       const SvgGenImage('assets/icons/nameProfile.svg');
 
+  /// File path: assets/icons/notification.svg
+  SvgGenImage get notification =>
+      const SvgGenImage('assets/icons/notification.svg');
+
   /// File path: assets/icons/phone.svg
   SvgGenImage get phone => const SvgGenImage('assets/icons/phone.svg');
 
+  /// File path: assets/icons/profile.svg
+  SvgGenImage get profile => const SvgGenImage('assets/icons/profile.svg');
+
+  /// File path: assets/icons/search.svg
+  SvgGenImage get search => const SvgGenImage('assets/icons/search.svg');
+
   /// List of all assets
   List<SvgGenImage> get values => [
+    plusSquare,
     email,
     eyeClosed,
     facebook,
+    filter,
     google,
     lock,
     nameProfile,
+    notification,
     phone,
+    profile,
+    search,
   ];
 }
 

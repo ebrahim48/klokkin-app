@@ -40,8 +40,9 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       title: title != null && title != ''
           ? CustomText(
             text: title.toString(),
-            fontsize: 24.h,
-            color: AppColors.textColorFFFFFF,
+            fontsize: 20.h,
+            color: AppColors.textColor987433,
+        fontWeight: FontWeight.w500,
           )
           : titleWidget,
        actions: actions,

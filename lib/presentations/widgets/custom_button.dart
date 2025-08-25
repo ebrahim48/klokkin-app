@@ -16,6 +16,7 @@ class CustomButton extends StatelessWidget {
   final FontWeight? fontWeight;
   final bool loading;
   final bool loaderIgnore;
+  final Color? borderColor;
 
 
   CustomButton({
@@ -28,6 +29,7 @@ class CustomButton extends StatelessWidget {
     this.fontSize,
     this.titlecolor,
     this.loading=false,
+    this.borderColor,
     this.loaderIgnore = false, this.fontWeight, this.borderRadius,
   });
 
@@ -43,6 +45,8 @@ class CustomButton extends StatelessWidget {
           borderRadius:BorderRadius.circular(borderRadius ?? 10.r),
           // border: Border.all(color: AppColors.secondary836531),
           color: color ?? AppColors.buttonColorE8A533,
+          border: Border.all(color: borderColor ?? Colors.transparent),
+
           // gradient: const LinearGradient(
           //   begin: Alignment.topCenter,
           //   end: Alignment.bottomCenter,
