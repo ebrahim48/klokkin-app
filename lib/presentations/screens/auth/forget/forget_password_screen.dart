@@ -73,6 +73,10 @@ class ForgetPasswordScreen extends StatelessWidget {
 
               CustomButton(title: "Send",
                   onpress: () {
+                    context.pushNamed(AppRoutes.verifyScreen, extra: {
+                      "title" : "Verification",
+
+                    });
                 // Get.toNamed(AppRoutes.optScreen, arguments: {"screenType" : "Sign up"});
               }),
               SizedBox(height: 22.h),

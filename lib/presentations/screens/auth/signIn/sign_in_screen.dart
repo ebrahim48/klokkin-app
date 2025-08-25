@@ -32,9 +32,6 @@ class LoginScreen extends StatelessWidget {
                   hintText: "Email",
                   prefixIcon: Assets.icons.email.svg(),
                   isEmail: true),
-
-
-
               CustomTextField(
                   hintextColor: AppColors.textColor8A8A8A,
                   controller: passWordCtrl,
@@ -61,6 +58,7 @@ class LoginScreen extends StatelessWidget {
               /// ============================================ Button ====================================>
 
               CustomButton(title: "Sign in", onpress: () {
+                context.pushNamed(AppRoutes.homeScreen);
                 // Get.toNamed(AppRoutes.optScreen, arguments: {"screenType" : "Sign up"});
               }),
               SizedBox(height: 22.h),
@@ -184,7 +182,7 @@ class LoginScreen extends StatelessWidget {
                             text: ' Terms of ',
                             recognizer: TapGestureRecognizer()
                               ..onTap = () {
-                                context.pushNamed(AppRoutes.signUpScreen);
+                                context.pushNamed(AppRoutes.termsServicesScreen);
                               },
                           ),
                         ],
@@ -243,7 +241,7 @@ class LoginScreen extends StatelessWidget {
                             text: ' Privacy Policy ',
                             recognizer: TapGestureRecognizer()
                               ..onTap = () {
-                                context.pushNamed(AppRoutes.signUpScreen);
+                                context.pushNamed(AppRoutes.privacyPolicyScreen);
                               },
                           ),
 

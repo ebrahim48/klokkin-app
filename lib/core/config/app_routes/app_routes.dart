@@ -1,9 +1,15 @@
 import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
+import 'package:klokkin_app/presentations/screens/auth/privacy/privacy.dart';
+import 'package:klokkin_app/presentations/screens/auth/terms/terms.dart';
+import 'package:klokkin_app/presentations/screens/home/home_screen.dart';
 
 import '../../../presentations/screens/auth/forget/forget_password_screen.dart';
+import '../../../presentations/screens/auth/reset/reset_pass_screen.dart';
 import '../../../presentations/screens/auth/signIn/sign_in_screen.dart';
 import '../../../presentations/screens/auth/signup/sign_up_screen.dart';
+import '../../../presentations/screens/auth/verification/verification_screen.dart';
+import '../../../presentations/screens/home/createStory/start_create_story.dart';
 import '../../../presentations/screens/onboarding/onboarding_screen.dart';
 import '../../../presentations/screens/splash/splash_screen.dart';
 
@@ -20,10 +26,13 @@ class AppRoutes {
   static const String forgetPasswordScreen = "/forgetPasswordScreen";
   static const String verifyScreen = "/verifyScreen";
   static const String resetPasswordScreen = "/resetPasswordScreen";
+  static const String termsServicesScreen = "/termsServicesScreen";
+  static const String privacyPolicyScreen = "/privacyPolicyScreen";
 
-  /// ============================> Customer ================================>
+  /// ============================> Home ================================>
 
-  static const String customerHomeScreen = "/customerHomeScreen";
+  static const String homeScreen = "/homeScreen";
+  static const String startCreateStoryScreen = "/startCreateStoryScreen";
 
 
 
@@ -109,31 +118,57 @@ class AppRoutes {
     ),
 
 
-    // ///<<<=============>>> Verify Screen  <<<===============>>>
-    // GoRoute(
-    //   path: verifyScreen,
-    //   name: verifyScreen,
-    //   pageBuilder: (context, state) =>
-    //       _customTransitionPage( VerifyScreen(), state),
-    // ),
-    //
-    //
-    // ///<<<=============>>> Reset Password Screen  <<<===============>>>
-    // GoRoute(
-    //   path: resetPasswordScreen,
-    //   name: resetPasswordScreen,
-    //   pageBuilder: (context, state) =>
-    //       _customTransitionPage( ResetPasswordScreen(), state),
-    // ),
-    //
-    // /// =============================================================> Customer =================================================>
-    // ///<<<=============>>> Customer Home Screen  <<<===============>>>
-    // GoRoute(
-    //   path: customerHomeScreen,
-    //   name: customerHomeScreen,
-    //   pageBuilder: (context, state) =>
-    //       _customTransitionPage( CustomerHomeScreen(), state),
-    // ),
+    ///<<<=============>>> Verify Screen  <<<===============>>>
+    GoRoute(
+      path: verifyScreen,
+      name: verifyScreen,
+      pageBuilder: (context, state) =>
+          _customTransitionPage( VerifyScreen(), state),
+    ),
+
+
+    ///<<<=============>>> Reset Password Screen  <<<===============>>>
+    GoRoute(
+      path: resetPasswordScreen,
+      name: resetPasswordScreen,
+      pageBuilder: (context, state) =>
+          _customTransitionPage( ResetPasswordScreen(), state),
+    ),
+
+
+    ///<<<=============>>> Terms Services Screen  <<<===============>>>
+    GoRoute(
+      path: termsServicesScreen,
+      name: termsServicesScreen,
+      pageBuilder: (context, state) =>
+          _customTransitionPage( TermsServicesScreen(), state),
+    ),
+    ///<<<=============>>> Privacy Policy Screen  <<<===============>>>
+    GoRoute(
+      path: privacyPolicyScreen,
+      name: privacyPolicyScreen,
+      pageBuilder: (context, state) =>
+          _customTransitionPage( PrivacyPolicyScreen(), state),
+    ),
+
+    /// =============================================================> Home =================================================>
+
+
+    ///<<<=============>>>  Home Screen  <<<===============>>>
+    GoRoute(
+      path: homeScreen,
+      name: homeScreen,
+      pageBuilder: (context, state) =>
+          _customTransitionPage( HomeScreen(), state),
+    ),
+
+    ///<<<=============>>>  Start Create Story Screen <<<===============>>>
+    GoRoute(
+      path: startCreateStoryScreen,
+      name: startCreateStoryScreen,
+      pageBuilder: (context, state) =>
+          _customTransitionPage(StartCreateStoryScreen(), state),
+    ),
 
 
 
