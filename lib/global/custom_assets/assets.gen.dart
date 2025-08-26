@@ -22,6 +22,10 @@ class $AssetsIconsGen {
   SvgGenImage get plusSquare =>
       const SvgGenImage('assets/icons/PlusSquare.svg');
 
+  /// File path: assets/icons/caretRight.svg
+  SvgGenImage get caretRight =>
+      const SvgGenImage('assets/icons/caretRight.svg');
+
   /// File path: assets/icons/email.svg
   SvgGenImage get email => const SvgGenImage('assets/icons/email.svg');
 
@@ -36,6 +40,12 @@ class $AssetsIconsGen {
 
   /// File path: assets/icons/google.svg
   SvgGenImage get google => const SvgGenImage('assets/icons/google.svg');
+
+  /// File path: assets/icons/home.svg
+  SvgGenImage get home => const SvgGenImage('assets/icons/home.svg');
+
+  /// File path: assets/icons/library.svg
+  SvgGenImage get library => const SvgGenImage('assets/icons/library.svg');
 
   /// File path: assets/icons/lock.svg
   SvgGenImage get lock => const SvgGenImage('assets/icons/lock.svg');
@@ -54,23 +64,35 @@ class $AssetsIconsGen {
   /// File path: assets/icons/profile.svg
   SvgGenImage get profile => const SvgGenImage('assets/icons/profile.svg');
 
+  /// File path: assets/icons/profileIcon.svg
+  SvgGenImage get profileIcon =>
+      const SvgGenImage('assets/icons/profileIcon.svg');
+
   /// File path: assets/icons/search.svg
   SvgGenImage get search => const SvgGenImage('assets/icons/search.svg');
+
+  /// File path: assets/icons/story.svg
+  SvgGenImage get story => const SvgGenImage('assets/icons/story.svg');
 
   /// List of all assets
   List<SvgGenImage> get values => [
     plusSquare,
+    caretRight,
     email,
     eyeClosed,
     facebook,
     filter,
     google,
+    home,
+    library,
     lock,
     nameProfile,
     notification,
     phone,
     profile,
+    profileIcon,
     search,
+    story,
   ];
 }
 
@@ -79,6 +101,9 @@ class $AssetsImagesGen {
 
   /// File path: assets/images/EyeClosed.svg
   SvgGenImage get eyeClosed => const SvgGenImage('assets/images/EyeClosed.svg');
+
+  /// File path: assets/images/create.png
+  AssetGenImage get create => const AssetGenImage('assets/images/create.png');
 
   /// File path: assets/images/createAccountImage1.png
   AssetGenImage get createAccountImage1 =>
@@ -113,6 +138,7 @@ class $AssetsImagesGen {
   /// List of all assets
   List<dynamic> get values => [
     eyeClosed,
+    create,
     createAccountImage1,
     createAccountImage2,
     createAccountImage3,

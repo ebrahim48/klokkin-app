@@ -1,17 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
 import 'package:klokkin_app/presentations/widgets/custom_app_bar.dart';
 import 'package:klokkin_app/presentations/widgets/custom_text.dart';
+import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 import '../../../../core/config/app_routes/app_routes.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../widgets/custom_button.dart';
+import '../../../widgets/story_card_widget.dart';
 
 
-class StartCreateStoryScreen extends StatelessWidget {
+class StartCreateStoryScreen extends StatefulWidget {
   StartCreateStoryScreen({super.key});
 
+  @override
+  State<StartCreateStoryScreen> createState() => _StartCreateStoryScreenState();
+}
 
+class _StartCreateStoryScreenState extends State<StartCreateStoryScreen> {
   @override
   Widget build(BuildContext context) {
     Map routeData = GoRouterState.of(context).extra as Map;
@@ -29,8 +36,8 @@ class StartCreateStoryScreen extends StatelessWidget {
 
               CustomButton(title: "Create My Story",
                   onpress: () {
-                    context.pushNamed(AppRoutes.verifyScreen, extra: {
-                      "title" : "Verification",
+                    context.pushNamed(AppRoutes.nextCreateStoryScreen, extra: {
+                      "title" : "Create a story",
 
                     });
                     // Get.toNamed(AppRoutes.optScreen, arguments: {"screenType" : "Sign up"});
@@ -39,7 +46,7 @@ class StartCreateStoryScreen extends StatelessWidget {
               CustomButton(
                 title: 'Record Now',
                 onpress: () {
-                  context.pushNamed(AppRoutes.signUpScreen);
+
 
                 },
                 color: AppColors.textColorFFFFFF,
@@ -81,21 +88,16 @@ class StartCreateStoryScreen extends StatelessWidget {
               /// =============================> Page Indicator =============================>
               Align(
                 alignment: Alignment.center,
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: List.generate(3, (index) {
-                    return Container(
-                      margin: EdgeInsets.symmetric(horizontal: 4.w),
-                      width: index == 1 ? 20.w : 8.w,
-                      height: 4.h,
-                      decoration: BoxDecoration(
-                        color: index == 1
-                            ? AppColors.buttonColorE8A533
-                            : Colors.grey,
-                        borderRadius: BorderRadius.circular(4.r),
-                      ),
-                    );
-                  }),
+                child: SmoothPageIndicator(
+                  controller: _pageController,
+                  count: stories.length,
+                  effect: ExpandingDotsEffect(
+                    dotWidth: 10.w,
+                    dotHeight: 6.h,
+                    spacing: 6.w,
+                    activeDotColor: AppColors.primaryColorC79235,
+                    dotColor: AppColors.textColorFFFFFF,
+                  ),
                 ),
               ),
 
@@ -107,6 +109,10 @@ class StartCreateStoryScreen extends StatelessWidget {
       ),
     );
   }
+
+  final PageController _pageController = PageController();
+
+  var indicatorIndex = 0.obs;
 
   final List<Map<String, String>> stories = [
     {
@@ -126,108 +132,11 @@ class StartCreateStoryScreen extends StatelessWidget {
       "desc": "This space fuels creativity and sparks innovation for every team.",
     },
   ];
-
 }
 
 
 
 
-class StoryCard extends StatelessWidget {
-  final String image;
-  final String title;
-  final String desc;
 
-  const StoryCard({
-    super.key,
-    required this.image,
-    required this.title,
-    required this.desc,
-  });
 
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 356.w,
-      height: 242.h,
-      decoration: BoxDecoration(
-        color: const Color(0xFF2D2D2D),
-        borderRadius: BorderRadius.circular(12.r),
-      ),
-      child: Stack(
-        children: [
-          /// ================= Image Positioned =================
-          Positioned(
-            top: 12.h,
-            left: 38.w,
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(8.r),
-              child: Image.asset(
-                image,
-                width: 160.w,
-                height: 120.h,
-                fit: BoxFit.cover,
-              ),
-            ),
-          ),
 
-          /// ================= Text + Button =================
-          Positioned(
-            top: 150.h,
-            left: 0,
-            right: 0,
-            child: Column(
-              children: [
-                Text(
-                  title,
-                  style: TextStyle(
-                    fontSize: 15.sp,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.white,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                SizedBox(height: 6.h),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16.w),
-                  child: Text(
-                    desc,
-                    style: TextStyle(
-                      fontSize: 13.sp,
-                      color: Colors.white70,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-                SizedBox(height: 10.h),
-                OutlinedButton(
-                  onPressed: () {},
-                  style: OutlinedButton.styleFrom(
-                    side: BorderSide(
-                      color: AppColors.buttonColorE8A533,
-                      width: 1.2,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20.r),
-                    ),
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 22.w,
-                      vertical: 6.h,
-                    ),
-                  ),
-                  child: Text(
-                    "START",
-                    style: TextStyle(
-                      fontSize: 13.sp,
-                      fontWeight: FontWeight.w500,
-                      color: AppColors.buttonColorE8A533,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
