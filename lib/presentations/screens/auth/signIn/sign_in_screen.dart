@@ -58,7 +58,7 @@ class LoginScreen extends StatelessWidget {
               /// ============================================ Button ====================================>
 
               CustomButton(title: "Sign in", onpress: () {
-                context.pushNamed(AppRoutes.homeScreen);
+                context.pushNamed(AppRoutes.bottomNavbarScreen);
                 // Get.toNamed(AppRoutes.optScreen, arguments: {"screenType" : "Sign up"});
               }),
               SizedBox(height: 22.h),

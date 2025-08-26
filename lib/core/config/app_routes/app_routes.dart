@@ -2,6 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:go_router/go_router.dart';
 import 'package:klokkin_app/presentations/screens/auth/privacy/privacy.dart';
 import 'package:klokkin_app/presentations/screens/auth/terms/terms.dart';
+import 'package:klokkin_app/presentations/screens/bottom_navbar/bottom_navbar_screen.dart';
+import 'package:klokkin_app/presentations/screens/home/createStory/next_create_story.dart';
 import 'package:klokkin_app/presentations/screens/home/home_screen.dart';
 
 import '../../../presentations/screens/auth/forget/forget_password_screen.dart';
@@ -33,6 +35,8 @@ class AppRoutes {
 
   static const String homeScreen = "/homeScreen";
   static const String startCreateStoryScreen = "/startCreateStoryScreen";
+  static const String nextCreateStoryScreen = "/nextCreateStoryScreen";
+  static const String bottomNavbarScreen = "/bottomNavbarScreen";
 
 
 
@@ -168,6 +172,24 @@ class AppRoutes {
       name: startCreateStoryScreen,
       pageBuilder: (context, state) =>
           _customTransitionPage(StartCreateStoryScreen(), state),
+    ),
+
+
+    ///<<<=============>>>  Next Create Story Screen <<<===============>>>
+    GoRoute(
+      path: nextCreateStoryScreen,
+      name: nextCreateStoryScreen,
+      pageBuilder: (context, state) =>
+          _customTransitionPage(NextCreateStoryScreen(), state),
+    ),
+
+
+    ///<<<=============>>> Bottom Navbar Screen <<<===============>>>
+    GoRoute(
+      path: bottomNavbarScreen,
+      name: bottomNavbarScreen,
+      pageBuilder: (context, state) =>
+          _customTransitionPage(BottomNavBar(), state),
     ),
 
 
