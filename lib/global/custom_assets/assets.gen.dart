@@ -26,6 +26,10 @@ class $AssetsIconsGen {
   SvgGenImage get caretRight =>
       const SvgGenImage('assets/icons/caretRight.svg');
 
+  /// File path: assets/icons/downloadSimple.svg
+  SvgGenImage get downloadSimple =>
+      const SvgGenImage('assets/icons/downloadSimple.svg');
+
   /// File path: assets/icons/email.svg
   SvgGenImage get email => const SvgGenImage('assets/icons/email.svg');
 
@@ -71,6 +75,9 @@ class $AssetsIconsGen {
   /// File path: assets/icons/search.svg
   SvgGenImage get search => const SvgGenImage('assets/icons/search.svg');
 
+  /// File path: assets/icons/share.svg
+  SvgGenImage get share => const SvgGenImage('assets/icons/share.svg');
+
   /// File path: assets/icons/story.svg
   SvgGenImage get story => const SvgGenImage('assets/icons/story.svg');
 
@@ -78,6 +85,7 @@ class $AssetsIconsGen {
   List<SvgGenImage> get values => [
     plusSquare,
     caretRight,
+    downloadSimple,
     email,
     eyeClosed,
     facebook,
@@ -92,6 +100,7 @@ class $AssetsIconsGen {
     profile,
     profileIcon,
     search,
+    share,
     story,
   ];
 }
@@ -117,6 +126,9 @@ class $AssetsImagesGen {
   AssetGenImage get createAccountImage3 =>
       const AssetGenImage('assets/images/createAccountImage3.png');
 
+  /// File path: assets/images/every.png
+  AssetGenImage get every => const AssetGenImage('assets/images/every.png');
+
   /// File path: assets/images/logo.png
   AssetGenImage get logo => const AssetGenImage('assets/images/logo.png');
 
@@ -126,6 +138,14 @@ class $AssetsImagesGen {
   /// File path: assets/images/splashImage.png
   AssetGenImage get splashImage =>
       const AssetGenImage('assets/images/splashImage.png');
+
+  /// File path: assets/images/unsplash.png
+  AssetGenImage get unsplash =>
+      const AssetGenImage('assets/images/unsplash.png');
+
+  /// File path: assets/images/unsplashWork.png
+  AssetGenImage get unsplashWork =>
+      const AssetGenImage('assets/images/unsplashWork.png');
 
   /// File path: assets/images/welcome1.png
   AssetGenImage get welcome1 =>
@@ -142,9 +162,12 @@ class $AssetsImagesGen {
     createAccountImage1,
     createAccountImage2,
     createAccountImage3,
+    every,
     logo,
     splash,
     splashImage,
+    unsplash,
+    unsplashWork,
     welcome1,
     welcome2,
   ];

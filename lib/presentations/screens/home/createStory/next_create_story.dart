@@ -6,6 +6,8 @@ import 'package:klokkin_app/core/constants/app_colors.dart';
 import 'package:klokkin_app/presentations/widgets/custom_app_bar.dart';
 import 'package:klokkin_app/presentations/widgets/custom_text.dart';
 
+import '../../../../core/config/app_routes/app_routes.dart';
+
 
 class NextCreateStoryScreen extends StatefulWidget {
   NextCreateStoryScreen({super.key});
@@ -21,7 +23,7 @@ class _NextCreateStoryScreenState extends State<NextCreateStoryScreen> {
     return Scaffold(
       appBar: CustomAppBar(title: "${routeData["title"]}"),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+        padding:  EdgeInsets.all(16.r),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -118,10 +120,10 @@ class _NextCreateStoryScreenState extends State<NextCreateStoryScreen> {
                alignment: Alignment.center,
               child: OutlinedButton(
                 onPressed: () {
-                  // context.pushNamed(AppRoutes.nextCreateStoryScreen, extra: {
-                  //   "title" : "Create a story",
-                  //
-                  // });
+                  context.pushNamed(
+                      AppRoutes.uploadCreateStoryScreen,
+                      extra: {"title" : "Create a story"
+                      });
 
                 },
                 style: OutlinedButton.styleFrom(

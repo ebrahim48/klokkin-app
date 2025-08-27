@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:klokkin_app/presentations/screens/auth/privacy/privacy.dart';
 import 'package:klokkin_app/presentations/screens/auth/terms/terms.dart';
 import 'package:klokkin_app/presentations/screens/bottom_navbar/bottom_navbar_screen.dart';
+import 'package:klokkin_app/presentations/screens/everystory/every_story_screen.dart';
 import 'package:klokkin_app/presentations/screens/home/createStory/next_create_story.dart';
 import 'package:klokkin_app/presentations/screens/home/home_screen.dart';
 
@@ -12,6 +13,7 @@ import '../../../presentations/screens/auth/signIn/sign_in_screen.dart';
 import '../../../presentations/screens/auth/signup/sign_up_screen.dart';
 import '../../../presentations/screens/auth/verification/verification_screen.dart';
 import '../../../presentations/screens/home/createStory/start_create_story.dart';
+import '../../../presentations/screens/home/createStory/upload_create_story.dart';
 import '../../../presentations/screens/onboarding/onboarding_screen.dart';
 import '../../../presentations/screens/splash/splash_screen.dart';
 
@@ -37,6 +39,8 @@ class AppRoutes {
   static const String startCreateStoryScreen = "/startCreateStoryScreen";
   static const String nextCreateStoryScreen = "/nextCreateStoryScreen";
   static const String bottomNavbarScreen = "/bottomNavbarScreen";
+  static const String everyStoryScreen = "/everyStoryScreen";
+  static const String uploadCreateStoryScreen = "/uploadCreateStoryScreen";
 
 
 
@@ -190,6 +194,24 @@ class AppRoutes {
       name: bottomNavbarScreen,
       pageBuilder: (context, state) =>
           _customTransitionPage(BottomNavBar(), state),
+    ),
+
+
+    ///<<<=============>>>Every Story Screen  <<<===============>>>
+    GoRoute(
+      path: everyStoryScreen,
+      name: everyStoryScreen,
+      pageBuilder: (context, state) =>
+          _customTransitionPage(EveryStoryScreen(), state),
+    ),
+
+    ///<<<=============>>> Upload Create Story Screen  <<<===============>>>
+
+    GoRoute(
+      path: uploadCreateStoryScreen,
+      name: uploadCreateStoryScreen,
+      pageBuilder: (context, state) =>
+          _customTransitionPage(UploadCreateStoryScreen(), state),
     ),
 
 
