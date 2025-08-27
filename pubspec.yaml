@@ -51,7 +51,8 @@ dependencies:
   toastification:
   quickalert: ^1.1.0
   country_pickers: ^3.0.1
-
+  video_player: ^2.10.0
+  share_plus: ^10.0.0
 
   device_preview:
 
