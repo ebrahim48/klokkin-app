@@ -21,6 +21,7 @@ class AppColors{
   static const Color textColorF5F9FE = Color(0xffF5F9FE);
   static const Color textColorCFCFCF = Color(0xffCFCFCF);
   static const Color borderColor4D3814 = Color(0xff4D3814);
+  static const Color textColor835D1A = Color(0xff835D1A);
   static const Color curserColorA48141 = Color(0xffA48141);
   static const Color brownColor = Color(0xff815B41);
   static const Color textColor4B4B4B = Color(0xff4B4B4B);

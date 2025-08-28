@@ -46,7 +46,8 @@ class _StartCreateStoryScreenState extends State<StartCreateStoryScreen> {
               CustomButton(
                 title: 'Record Now',
                 onpress: () {
-
+                  context.pushNamed(AppRoutes.recordStoryScreen,
+                  );
 
                 },
                 color: AppColors.textColorFFFFFF,

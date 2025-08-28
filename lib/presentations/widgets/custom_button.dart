@@ -66,12 +66,14 @@ class CustomButton extends StatelessWidget {
            loaderIgnore ? const SizedBox() : SizedBox(width: 30.w),
 
 
-            Center(
-              child: CustomText(
-                text: title,
-                fontsize: fontSize ?? 20.h,
-                color: titlecolor ?? AppColors.textColorFFFFFF,
-                fontWeight: fontWeight ?? FontWeight.w600,
+            Expanded(
+              child: Center(
+                child: CustomText(
+                  text: title,
+                  fontsize: fontSize ?? 20.h,
+                  color: titlecolor ?? AppColors.textColorFFFFFF,
+                  fontWeight: fontWeight ?? FontWeight.w600,
+                ),
               ),
             ),
 

@@ -5,6 +5,7 @@ import 'package:klokkin_app/presentations/screens/auth/terms/terms.dart';
 import 'package:klokkin_app/presentations/screens/bottom_navbar/bottom_navbar_screen.dart';
 import 'package:klokkin_app/presentations/screens/everystory/every_story_screen.dart';
 import 'package:klokkin_app/presentations/screens/home/createStory/next_create_story.dart';
+import 'package:klokkin_app/presentations/screens/home/createStory/record_screen.dart';
 import 'package:klokkin_app/presentations/screens/home/home_screen.dart';
 
 import '../../../presentations/screens/auth/forget/forget_password_screen.dart';
@@ -14,8 +15,10 @@ import '../../../presentations/screens/auth/signup/sign_up_screen.dart';
 import '../../../presentations/screens/auth/verification/verification_screen.dart';
 import '../../../presentations/screens/home/createStory/start_create_story.dart';
 import '../../../presentations/screens/home/createStory/upload_create_story.dart';
+import '../../../presentations/screens/home/createStory/video_create_story_screen.dart';
 import '../../../presentations/screens/onboarding/onboarding_screen.dart';
 import '../../../presentations/screens/splash/splash_screen.dart';
+import '../../../presentations/screens/story/story_screen.dart';
 
 
 class AppRoutes {
@@ -41,6 +44,9 @@ class AppRoutes {
   static const String bottomNavbarScreen = "/bottomNavbarScreen";
   static const String everyStoryScreen = "/everyStoryScreen";
   static const String uploadCreateStoryScreen = "/uploadCreateStoryScreen";
+  static const String recordStoryScreen = "/recordStoryScreen";
+  static const String videoCreateStoryScreen = "/videoCreateStoryScreen";
+  static const String storyScreen = "/storyScreen";
 
 
 
@@ -213,6 +219,35 @@ class AppRoutes {
       pageBuilder: (context, state) =>
           _customTransitionPage(UploadCreateStoryScreen(), state),
     ),
+
+    //<<<=============>>> Record Story Screen  <<<===============>>>
+
+    GoRoute(
+      path: recordStoryScreen,
+      name: recordStoryScreen,
+      pageBuilder: (context, state) =>
+          _customTransitionPage(RecordStoryScreen(), state),
+    ),
+
+
+    //<<<=============>>> Video Story Screen  <<<===============>>>
+    GoRoute(
+      path: videoCreateStoryScreen,
+      name: videoCreateStoryScreen,
+      pageBuilder: (context, state) =>
+          _customTransitionPage(VideoCreateStoryScreen(), state),
+    ),
+
+
+    //<<<=============>>>  Story Screen  <<<===============>>>
+
+    GoRoute(
+      path: storyScreen,
+      name: storyScreen,
+      pageBuilder: (context, state) =>
+          _customTransitionPage(StoryScreen(), state),
+    ),
+
 
 
 
