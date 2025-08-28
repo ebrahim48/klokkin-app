@@ -188,7 +188,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         Positioned(
                           top: 280.h,
                           left: 0,
-                          right: 18,
+                          right: 16,
                           child: Container(
                             height: 1,
                             color: AppColors.primaryColorC79235,
@@ -218,7 +218,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                                 color: AppColors.secondary836531,
                                 textAlign: TextAlign.center,
                               ),
-                              SizedBox(height: 100.h),
+                              SizedBox(height: 65.h),
                               Padding(
                                 padding:  EdgeInsets.only(left: 100.w),
                                 child: CustomButton(
@@ -303,7 +303,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         Positioned(
                           top: 230.h,
                           left: 60,
-                          right: 265,
+                          right: 231,
                           child: Container(
                             height: 1,
                             color: AppColors.primaryColorC79235,
@@ -311,7 +311,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                         ),
                         /// Vertical Line 3
                         Positioned(
-                          top: 167.h + 68,
+                          top: 166.h + 60,
                           left: MediaQuery.of(context).size.width / 2 - 57.w,
                           child: Container(
                               width: 1,
@@ -342,9 +342,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                                 color: AppColors.secondary836531,
                                 textAlign: TextAlign.center,
                               ),
-                              SizedBox(height: 120.h),
+                              SizedBox(height: 75.h),
                               Padding(
-                                padding:  EdgeInsets.only(left: 100.w),
+                                padding: EdgeInsets.only(left: 90.w,),
                                 child: CustomButton(
                                   title: page["button"]!,
                                   onpress: () {

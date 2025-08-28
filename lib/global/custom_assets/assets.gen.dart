@@ -18,6 +18,10 @@ import 'package:vector_graphics/vector_graphics.dart' as _vg;
 class $AssetsIconsGen {
   const $AssetsIconsGen();
 
+  /// File path: assets/icons/PlusCircle.svg
+  SvgGenImage get plusCircle =>
+      const SvgGenImage('assets/icons/PlusCircle.svg');
+
   /// File path: assets/icons/PlusSquare.svg
   SvgGenImage get plusSquare =>
       const SvgGenImage('assets/icons/PlusSquare.svg');
@@ -26,9 +30,29 @@ class $AssetsIconsGen {
   SvgGenImage get caretRight =>
       const SvgGenImage('assets/icons/caretRight.svg');
 
+  /// File path: assets/icons/category.svg
+  SvgGenImage get category => const SvgGenImage('assets/icons/category.svg');
+
+  /// File path: assets/icons/checkCircle.svg
+  SvgGenImage get checkCircle =>
+      const SvgGenImage('assets/icons/checkCircle.svg');
+
+  /// File path: assets/icons/createvideo.svg
+  SvgGenImage get createvideo =>
+      const SvgGenImage('assets/icons/createvideo.svg');
+
+  /// File path: assets/icons/cross.svg
+  SvgGenImage get cross => const SvgGenImage('assets/icons/cross.svg');
+
+  /// File path: assets/icons/delete.svg
+  SvgGenImage get delete => const SvgGenImage('assets/icons/delete.svg');
+
   /// File path: assets/icons/downloadSimple.svg
   SvgGenImage get downloadSimple =>
       const SvgGenImage('assets/icons/downloadSimple.svg');
+
+  /// File path: assets/icons/edit.svg
+  SvgGenImage get edit => const SvgGenImage('assets/icons/edit.svg');
 
   /// File path: assets/icons/email.svg
   SvgGenImage get email => const SvgGenImage('assets/icons/email.svg');
@@ -72,8 +96,14 @@ class $AssetsIconsGen {
   SvgGenImage get profileIcon =>
       const SvgGenImage('assets/icons/profileIcon.svg');
 
+  /// File path: assets/icons/resume.svg
+  SvgGenImage get resume => const SvgGenImage('assets/icons/resume.svg');
+
   /// File path: assets/icons/search.svg
   SvgGenImage get search => const SvgGenImage('assets/icons/search.svg');
+
+  /// File path: assets/icons/settings.svg
+  SvgGenImage get settings => const SvgGenImage('assets/icons/settings.svg');
 
   /// File path: assets/icons/share.svg
   SvgGenImage get share => const SvgGenImage('assets/icons/share.svg');
@@ -81,11 +111,30 @@ class $AssetsIconsGen {
   /// File path: assets/icons/story.svg
   SvgGenImage get story => const SvgGenImage('assets/icons/story.svg');
 
+  /// File path: assets/icons/storyIcon.svg
+  SvgGenImage get storyIcon => const SvgGenImage('assets/icons/storyIcon.svg');
+
+  /// File path: assets/icons/upload.svg
+  SvgGenImage get upload => const SvgGenImage('assets/icons/upload.svg');
+
+  /// File path: assets/icons/videoicon.svg
+  SvgGenImage get videoicon => const SvgGenImage('assets/icons/videoicon.svg');
+
+  /// File path: assets/icons/wave.svg
+  SvgGenImage get wave => const SvgGenImage('assets/icons/wave.svg');
+
   /// List of all assets
   List<SvgGenImage> get values => [
+    plusCircle,
     plusSquare,
     caretRight,
+    category,
+    checkCircle,
+    createvideo,
+    cross,
+    delete,
     downloadSimple,
+    edit,
     email,
     eyeClosed,
     facebook,
@@ -99,9 +148,15 @@ class $AssetsIconsGen {
     phone,
     profile,
     profileIcon,
+    resume,
     search,
+    settings,
     share,
     story,
+    storyIcon,
+    upload,
+    videoicon,
+    wave,
   ];
 }
 
@@ -139,6 +194,9 @@ class $AssetsImagesGen {
   AssetGenImage get splashImage =>
       const AssetGenImage('assets/images/splashImage.png');
 
+  /// File path: assets/images/story.png
+  AssetGenImage get story => const AssetGenImage('assets/images/story.png');
+
   /// File path: assets/images/unsplash.png
   AssetGenImage get unsplash =>
       const AssetGenImage('assets/images/unsplash.png');
@@ -146,6 +204,10 @@ class $AssetsImagesGen {
   /// File path: assets/images/unsplashWork.png
   AssetGenImage get unsplashWork =>
       const AssetGenImage('assets/images/unsplashWork.png');
+
+  /// File path: assets/images/videocreate.png
+  AssetGenImage get videocreate =>
+      const AssetGenImage('assets/images/videocreate.png');
 
   /// File path: assets/images/welcome1.png
   AssetGenImage get welcome1 =>
@@ -166,8 +228,10 @@ class $AssetsImagesGen {
     logo,
     splash,
     splashImage,
+    story,
     unsplash,
     unsplashWork,
+    videocreate,
     welcome1,
     welcome2,
   ];
