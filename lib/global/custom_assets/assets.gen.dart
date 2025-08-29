@@ -26,6 +26,9 @@ class $AssetsIconsGen {
   SvgGenImage get plusSquare =>
       const SvgGenImage('assets/icons/PlusSquare.svg');
 
+  /// File path: assets/icons/caption.svg
+  SvgGenImage get caption => const SvgGenImage('assets/icons/caption.svg');
+
   /// File path: assets/icons/caretRight.svg
   SvgGenImage get caretRight =>
       const SvgGenImage('assets/icons/caretRight.svg');
@@ -69,6 +72,12 @@ class $AssetsIconsGen {
   /// File path: assets/icons/google.svg
   SvgGenImage get google => const SvgGenImage('assets/icons/google.svg');
 
+  /// File path: assets/icons/greater.svg
+  SvgGenImage get greater => const SvgGenImage('assets/icons/greater.svg');
+
+  /// File path: assets/icons/help.svg
+  SvgGenImage get help => const SvgGenImage('assets/icons/help.svg');
+
   /// File path: assets/icons/home.svg
   SvgGenImage get home => const SvgGenImage('assets/icons/home.svg');
 
@@ -77,6 +86,9 @@ class $AssetsIconsGen {
 
   /// File path: assets/icons/lock.svg
   SvgGenImage get lock => const SvgGenImage('assets/icons/lock.svg');
+
+  /// File path: assets/icons/lockKey.svg
+  SvgGenImage get lockKey => const SvgGenImage('assets/icons/lockKey.svg');
 
   /// File path: assets/icons/nameProfile.svg
   SvgGenImage get nameProfile =>
@@ -88,6 +100,10 @@ class $AssetsIconsGen {
 
   /// File path: assets/icons/phone.svg
   SvgGenImage get phone => const SvgGenImage('assets/icons/phone.svg');
+
+  /// File path: assets/icons/playCircle.svg
+  SvgGenImage get playCircle =>
+      const SvgGenImage('assets/icons/playCircle.svg');
 
   /// File path: assets/icons/profile.svg
   SvgGenImage get profile => const SvgGenImage('assets/icons/profile.svg');
@@ -120,6 +136,9 @@ class $AssetsIconsGen {
   /// File path: assets/icons/videoicon.svg
   SvgGenImage get videoicon => const SvgGenImage('assets/icons/videoicon.svg');
 
+  /// File path: assets/icons/volume.svg
+  SvgGenImage get volume => const SvgGenImage('assets/icons/volume.svg');
+
   /// File path: assets/icons/wave.svg
   SvgGenImage get wave => const SvgGenImage('assets/icons/wave.svg');
 
@@ -127,6 +146,7 @@ class $AssetsIconsGen {
   List<SvgGenImage> get values => [
     plusCircle,
     plusSquare,
+    caption,
     caretRight,
     category,
     checkCircle,
@@ -140,12 +160,16 @@ class $AssetsIconsGen {
     facebook,
     filter,
     google,
+    greater,
+    help,
     home,
     library,
     lock,
+    lockKey,
     nameProfile,
     notification,
     phone,
+    playCircle,
     profile,
     profileIcon,
     resume,
@@ -156,6 +180,7 @@ class $AssetsIconsGen {
     storyIcon,
     upload,
     videoicon,
+    volume,
     wave,
   ];
 }
@@ -165,6 +190,17 @@ class $AssetsImagesGen {
 
   /// File path: assets/images/EyeClosed.svg
   SvgGenImage get eyeClosed => const SvgGenImage('assets/images/EyeClosed.svg');
+
+  /// File path: assets/images/audio.png
+  AssetGenImage get audio => const AssetGenImage('assets/images/audio.png');
+
+  /// File path: assets/images/audiostory.png
+  AssetGenImage get audiostory =>
+      const AssetGenImage('assets/images/audiostory.png');
+
+  /// File path: assets/images/category.png
+  AssetGenImage get category =>
+      const AssetGenImage('assets/images/category.png');
 
   /// File path: assets/images/create.png
   AssetGenImage get create => const AssetGenImage('assets/images/create.png');
@@ -194,6 +230,9 @@ class $AssetsImagesGen {
   AssetGenImage get splashImage =>
       const AssetGenImage('assets/images/splashImage.png');
 
+  /// File path: assets/images/stories.png
+  AssetGenImage get stories => const AssetGenImage('assets/images/stories.png');
+
   /// File path: assets/images/story.png
   AssetGenImage get story => const AssetGenImage('assets/images/story.png');
 
@@ -220,6 +259,9 @@ class $AssetsImagesGen {
   /// List of all assets
   List<dynamic> get values => [
     eyeClosed,
+    audio,
+    audiostory,
+    category,
     create,
     createAccountImage1,
     createAccountImage2,
@@ -228,6 +270,7 @@ class $AssetsImagesGen {
     logo,
     splash,
     splashImage,
+    stories,
     story,
     unsplash,
     unsplashWork,
