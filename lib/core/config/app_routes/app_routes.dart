@@ -18,6 +18,8 @@ import '../../../presentations/screens/home/createStory/upload_create_story.dart
 import '../../../presentations/screens/home/createStory/video_create_story_screen.dart';
 import '../../../presentations/screens/onboarding/onboarding_screen.dart';
 import '../../../presentations/screens/splash/splash_screen.dart';
+import '../../../presentations/screens/story/story_audio_screen.dart';
+import '../../../presentations/screens/story/story_image_screen.dart';
 import '../../../presentations/screens/story/story_screen.dart';
 
 
@@ -47,6 +49,8 @@ class AppRoutes {
   static const String recordStoryScreen = "/recordStoryScreen";
   static const String videoCreateStoryScreen = "/videoCreateStoryScreen";
   static const String storyScreen = "/storyScreen";
+  static const String storyAudioScreen = "/storyAudioScreen";
+  static const String storyImageScreen = "/storyImageScreen";
 
 
 
@@ -88,7 +92,6 @@ class AppRoutes {
           // }else{
           //   AppRoutes.goRouter.replaceNamed(AppRoutes.onboardingScreen);
           // }
-
           AppRoutes.goRouter.replaceNamed(AppRoutes.onBoardingScreen);
 
         }
@@ -104,7 +107,7 @@ class AppRoutes {
       path: onBoardingScreen,
       name: onBoardingScreen,
       pageBuilder: (context, state) =>
-          _customTransitionPage( OnboardingScreen(), state),
+          _customTransitionPage(OnboardingScreen(), state),
     ),
     /// =============================================================> Auth  =================================================>
 
@@ -246,6 +249,22 @@ class AppRoutes {
       name: storyScreen,
       pageBuilder: (context, state) =>
           _customTransitionPage(StoryScreen(), state),
+    ),
+
+
+    GoRoute(
+      path: storyAudioScreen,
+      name: storyAudioScreen,
+      pageBuilder: (context, state) =>
+          _customTransitionPage(StoryAudioScreen(), state),
+    ),
+
+
+    GoRoute(
+      path: storyImageScreen,
+      name: storyImageScreen,
+      pageBuilder: (context, state) =>
+          _customTransitionPage(StoryImageScreen(), state),
     ),
 
 
