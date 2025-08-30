@@ -41,11 +41,16 @@ class _StoryScreenState extends State<StoryScreen> {
               SizedBox(height: 7.h),
               Align(
                 alignment: Alignment.center,
-                child: CustomText(
-                  text: 'Story Spark Studio',
-                  color: AppColors.textColorFFFFFF,
-                  fontsize: 20.sp,
-                  fontWeight: FontWeight.w500,
+                child: GestureDetector(
+                  onTap: () {
+                    context.pushNamed(AppRoutes.storyVideoScreen);
+                  },
+                  child: CustomText(
+                    text: 'Story Spark Studio',
+                    color: AppColors.textColorFFFFFF,
+                    fontsize: 20.sp,
+                    fontWeight: FontWeight.w500,
+                  ),
                 ),
               ),
               SizedBox(height: 16.h),
@@ -92,6 +97,7 @@ class _StoryScreenState extends State<StoryScreen> {
                       imagePath: "assets/images/category.png",
                       onTap: () {
                         context.pushNamed(AppRoutes.storyImageScreen);
+
                       },
                     );
                   },

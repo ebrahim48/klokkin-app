@@ -3,9 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:klokkin_app/core/constants/app_colors.dart';
 import 'package:klokkin_app/presentations/widgets/custom_app_bar.dart';
-
 import '../../../core/config/app_routes/app_routes.dart';
-import '../../widgets/audio_book_card.dart';
 import '../../widgets/image_story_list_widget.dart';
 import '../../widgets/image_story_widget.dart';
 
@@ -54,6 +52,7 @@ class _StoryImageScreenState extends State<StoryImageScreen> {
                       timestamp: "4h ago",
                       readingTime: "21m read",
                       onTap: () {
+                        context.pushNamed(AppRoutes.storyImageDetailsScreen);
                         // Example navigation
                         // context.pushNamed(AppRoutes.storyDetails, extra: {...});
                       },
