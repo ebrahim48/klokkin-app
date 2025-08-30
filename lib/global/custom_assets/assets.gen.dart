@@ -18,6 +18,13 @@ import 'package:vector_graphics/vector_graphics.dart' as _vg;
 class $AssetsIconsGen {
   const $AssetsIconsGen();
 
+  /// File path: assets/icons/BookmarkSimple.svg
+  SvgGenImage get bookmarkSimple =>
+      const SvgGenImage('assets/icons/BookmarkSimple.svg');
+
+  /// File path: assets/icons/Play.svg
+  SvgGenImage get play => const SvgGenImage('assets/icons/Play.svg');
+
   /// File path: assets/icons/PlusCircle.svg
   SvgGenImage get plusCircle =>
       const SvgGenImage('assets/icons/PlusCircle.svg');
@@ -50,12 +57,22 @@ class $AssetsIconsGen {
   /// File path: assets/icons/delete.svg
   SvgGenImage get delete => const SvgGenImage('assets/icons/delete.svg');
 
+  /// File path: assets/icons/deleteimage.svg
+  SvgGenImage get deleteimage =>
+      const SvgGenImage('assets/icons/deleteimage.svg');
+
+  /// File path: assets/icons/dot.svg
+  SvgGenImage get dot => const SvgGenImage('assets/icons/dot.svg');
+
   /// File path: assets/icons/downloadSimple.svg
   SvgGenImage get downloadSimple =>
       const SvgGenImage('assets/icons/downloadSimple.svg');
 
   /// File path: assets/icons/edit.svg
   SvgGenImage get edit => const SvgGenImage('assets/icons/edit.svg');
+
+  /// File path: assets/icons/editImage.svg
+  SvgGenImage get editImage => const SvgGenImage('assets/icons/editImage.svg');
 
   /// File path: assets/icons/email.svg
   SvgGenImage get email => const SvgGenImage('assets/icons/email.svg');
@@ -124,6 +141,9 @@ class $AssetsIconsGen {
   /// File path: assets/icons/share.svg
   SvgGenImage get share => const SvgGenImage('assets/icons/share.svg');
 
+  /// File path: assets/icons/slider.svg
+  SvgGenImage get slider => const SvgGenImage('assets/icons/slider.svg');
+
   /// File path: assets/icons/story.svg
   SvgGenImage get story => const SvgGenImage('assets/icons/story.svg');
 
@@ -144,6 +164,8 @@ class $AssetsIconsGen {
 
   /// List of all assets
   List<SvgGenImage> get values => [
+    bookmarkSimple,
+    play,
     plusCircle,
     plusSquare,
     caption,
@@ -153,8 +175,11 @@ class $AssetsIconsGen {
     createvideo,
     cross,
     delete,
+    deleteimage,
+    dot,
     downloadSimple,
     edit,
+    editImage,
     email,
     eyeClosed,
     facebook,
@@ -176,6 +201,7 @@ class $AssetsIconsGen {
     search,
     settings,
     share,
+    slider,
     story,
     storyIcon,
     upload,
@@ -220,6 +246,18 @@ class $AssetsImagesGen {
   /// File path: assets/images/every.png
   AssetGenImage get every => const AssetGenImage('assets/images/every.png');
 
+  /// File path: assets/images/imageStory.png
+  AssetGenImage get imageStory =>
+      const AssetGenImage('assets/images/imageStory.png');
+
+  /// File path: assets/images/imagelist.png
+  AssetGenImage get imagelist =>
+      const AssetGenImage('assets/images/imagelist.png');
+
+  /// File path: assets/images/industry.png
+  AssetGenImage get industry =>
+      const AssetGenImage('assets/images/industry.png');
+
   /// File path: assets/images/logo.png
   AssetGenImage get logo => const AssetGenImage('assets/images/logo.png');
 
@@ -244,6 +282,14 @@ class $AssetsImagesGen {
   AssetGenImage get unsplashWork =>
       const AssetGenImage('assets/images/unsplashWork.png');
 
+  /// File path: assets/images/usplash1.png
+  AssetGenImage get usplash1 =>
+      const AssetGenImage('assets/images/usplash1.png');
+
+  /// File path: assets/images/videoStory.png
+  AssetGenImage get videoStory =>
+      const AssetGenImage('assets/images/videoStory.png');
+
   /// File path: assets/images/videocreate.png
   AssetGenImage get videocreate =>
       const AssetGenImage('assets/images/videocreate.png');
@@ -267,6 +313,9 @@ class $AssetsImagesGen {
     createAccountImage2,
     createAccountImage3,
     every,
+    imageStory,
+    imagelist,
+    industry,
     logo,
     splash,
     splashImage,
@@ -274,6 +323,8 @@ class $AssetsImagesGen {
     story,
     unsplash,
     unsplashWork,
+    usplash1,
+    videoStory,
     videocreate,
     welcome1,
     welcome2,

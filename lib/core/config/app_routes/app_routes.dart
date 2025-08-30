@@ -7,6 +7,9 @@ import 'package:klokkin_app/presentations/screens/everystory/every_story_screen.
 import 'package:klokkin_app/presentations/screens/home/createStory/next_create_story.dart';
 import 'package:klokkin_app/presentations/screens/home/createStory/record_screen.dart';
 import 'package:klokkin_app/presentations/screens/home/home_screen.dart';
+import 'package:klokkin_app/presentations/screens/library/library_screen.dart';
+import 'package:klokkin_app/presentations/screens/profile/feedback_screen.dart';
+import 'package:klokkin_app/presentations/screens/profile/system_settings.dart';
 
 import '../../../presentations/screens/auth/forget/forget_password_screen.dart';
 import '../../../presentations/screens/auth/reset/reset_pass_screen.dart';
@@ -16,11 +19,19 @@ import '../../../presentations/screens/auth/verification/verification_screen.dar
 import '../../../presentations/screens/home/createStory/start_create_story.dart';
 import '../../../presentations/screens/home/createStory/upload_create_story.dart';
 import '../../../presentations/screens/home/createStory/video_create_story_screen.dart';
+import '../../../presentations/screens/library/bookmark_screen.dart';
+import '../../../presentations/screens/library/download_screen.dart';
 import '../../../presentations/screens/onboarding/onboarding_screen.dart';
+import '../../../presentations/screens/profile/permission_screen.dart';
+import '../../../presentations/screens/profile/personal_screen.dart';
+import '../../../presentations/screens/profile/profile_screen.dart';
 import '../../../presentations/screens/splash/splash_screen.dart';
 import '../../../presentations/screens/story/story_audio_screen.dart';
+import '../../../presentations/screens/story/story_image_details_screen.dart';
 import '../../../presentations/screens/story/story_image_screen.dart';
 import '../../../presentations/screens/story/story_screen.dart';
+import '../../../presentations/screens/story/story_video_details_screen.dart';
+import '../../../presentations/screens/story/story_video_screen.dart';
 
 
 class AppRoutes {
@@ -51,6 +62,17 @@ class AppRoutes {
   static const String storyScreen = "/storyScreen";
   static const String storyAudioScreen = "/storyAudioScreen";
   static const String storyImageScreen = "/storyImageScreen";
+  static const String storyImageDetailsScreen = "/storyImageDetailsScreen";
+  static const String storyVideoScreen = "/storyVideoScreen";
+  static const String storyVideoDetailsScreen = "/storyVideoDetailsScreen";
+  static const String libraryScreen = "/libraryScreen";
+  static const String bookmarkScreen = "/bookmarkScreen";
+  static const String downloadScreen = "/downloadScreen";
+  static const String profileScreen = "/profileScreen";
+  static const String personalScreen = "/personalScreen";
+  static const String systemSettingScreen = "/systemSettingScreen";
+  static const String feedbackScreen = "/feedbackScreen";
+  static const String permissionScreen = "/permissionScreen";
 
 
 
@@ -168,6 +190,7 @@ class AppRoutes {
           _customTransitionPage( PrivacyPolicyScreen(), state),
     ),
 
+
     /// =============================================================> Home =================================================>
 
 
@@ -251,7 +274,7 @@ class AppRoutes {
           _customTransitionPage(StoryScreen(), state),
     ),
 
-
+    //<<<=============>>>  Story Audio Screen  <<<===============>>>
     GoRoute(
       path: storyAudioScreen,
       name: storyAudioScreen,
@@ -259,15 +282,103 @@ class AppRoutes {
           _customTransitionPage(StoryAudioScreen(), state),
     ),
 
-
+  //<<<=============>>>  Story Image Screen  <<<===============>>>
     GoRoute(
       path: storyImageScreen,
       name: storyImageScreen,
       pageBuilder: (context, state) =>
           _customTransitionPage(StoryImageScreen(), state),
     ),
+    //<<<=============>>>  Story Image Screen  <<<===============>>>
+
+    GoRoute(
+      path: storyImageDetailsScreen,
+      name: storyImageDetailsScreen,
+      pageBuilder: (context, state) =>
+          _customTransitionPage(StoryImageDetailsScreen(), state),
+    ),
+    //<<<=============>>>  Story Video Screen  <<<===============>>>
+    GoRoute(
+      path: storyVideoScreen,
+      name: storyVideoScreen,
+      pageBuilder: (context, state) =>
+          _customTransitionPage(StoryVideoScreen(), state),
+    ),
+
+    //<<<=============>>>  Story Video Details Screen  <<<===============>>>
+    GoRoute(
+      path: storyVideoDetailsScreen,
+      name: storyVideoDetailsScreen,
+      pageBuilder: (context, state) =>
+          _customTransitionPage(StoryVideoDetailsScreen(), state),
+    ),
 
 
+    //<<<=============>>>  Library Screen  <<<===============>>>
+    GoRoute(
+      path: libraryScreen,
+      name: libraryScreen,
+      pageBuilder: (context, state) =>
+          _customTransitionPage(LibraryScreen(), state),
+    ),
+
+ //<<<=============>>>  Bookm arkScreen Screen  <<<===============>>>
+    GoRoute(
+      path: bookmarkScreen,
+      name: bookmarkScreen,
+      pageBuilder: (context, state) =>
+          _customTransitionPage(BookmarkScreen(), state),
+    ),
+
+
+
+ //<<<=============>>>  Download  Screen  <<<===============>>>
+    GoRoute(
+      path: downloadScreen,
+      name: downloadScreen,
+      pageBuilder: (context, state) =>
+          _customTransitionPage(DownloadScreen(), state),
+    ),
+
+    //<<<=============>>>  Profile  Screen  <<<===============>>>
+    GoRoute(
+      path: profileScreen,
+      name: profileScreen,
+      pageBuilder: (context, state) =>
+          _customTransitionPage(ProfileScreen(), state),
+    ),
+
+
+    //<<<=============>>>  Personal  Screen  <<<===============>>>
+    GoRoute(
+      path: personalScreen,
+      name: personalScreen,
+      pageBuilder: (context, state) =>
+          _customTransitionPage(PersonalScreen(), state),
+    ),
+
+    //<<<=============>>>  Personal  Screen  <<<===============>>>
+    GoRoute(
+      path: systemSettingScreen,
+      name: systemSettingScreen,
+      pageBuilder: (context, state) =>
+          _customTransitionPage(SystemSettingScreen(), state),
+    ),
+
+
+    //<<<=============>>>  Personal  Screen  <<<===============>>>
+    GoRoute(
+      path: feedbackScreen,
+      name: feedbackScreen,
+      pageBuilder: (context, state) =>
+          _customTransitionPage(FeedbackScreen(), state),
+    ),
+    GoRoute(
+      path: permissionScreen,
+      name: permissionScreen,
+      pageBuilder: (context, state) =>
+          _customTransitionPage(PermissionScreen(), state),
+    ),
 
 
   ]);

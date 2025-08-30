@@ -3,6 +3,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:go_router/go_router.dart';
 import 'package:klokkin_app/core/config/app_routes/app_routes.dart';
 import 'package:klokkin_app/presentations/screens/home/home_screen.dart';
+import 'package:klokkin_app/presentations/screens/library/library_screen.dart';
+import 'package:klokkin_app/presentations/screens/profile/profile_screen.dart';
 import 'package:klokkin_app/presentations/screens/story/story_screen.dart';
 import 'package:klokkin_app/presentations/widgets/custom_text.dart';
 import '../../../../core/constants/app_colors.dart';
@@ -19,8 +21,8 @@ class _BottomNavBarState extends State<BottomNavBar> {
   final List<Widget> screens = [
     const HomeScreen(),
     StoryScreen() ,// Story
-    const Placeholder(), // Library
-    const Placeholder(), // Profile
+    LibraryScreen(), // Library
+   ProfileScreen(), // Profile
   ];
 
   int currentIndex = 0;
