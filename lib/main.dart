@@ -36,7 +36,7 @@ class MyApp extends StatelessWidget {
         builder: (context, child) {
           return MaterialApp.router(
             debugShowCheckedModeBanner: false,
-            title: 'Before Waste App',
+            title: 'Klokkin App',
             theme: Themes().lightTheme,
             darkTheme: Themes().lightTheme,
             builder: DevicePreview.appBuilder, // <== Required for layout simulation
