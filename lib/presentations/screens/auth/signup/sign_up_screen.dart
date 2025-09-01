@@ -168,6 +168,7 @@ class SignUpScreen extends StatelessWidget {
               /// ============================================ Button ====================================>
 
               CustomButton(title: "Sign up", onpress: () {
+                context.pushNamed(AppRoutes.logInScreen);
                 // Get.toNamed(AppRoutes.optScreen, arguments: {"screenType" : "Sign up"});
               }),
 
