@@ -105,6 +105,9 @@ class SignUpScreen extends StatelessWidget {
                     fontsize: 14.sp,
                   ))),
 
+
+              SizedBox(height: 20.h),
+
               /// ====================================> Check Box ========================>
 
               Row(

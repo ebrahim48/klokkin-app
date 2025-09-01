@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:go_router/go_router.dart';
+import 'package:klokkin_app/core/config/app_routes/app_routes.dart';
 import 'package:klokkin_app/core/constants/app_colors.dart';
 import 'package:klokkin_app/presentations/widgets/custom_button.dart';
 import 'package:klokkin_app/presentations/widgets/custom_text.dart';
@@ -164,13 +166,81 @@ class _SystemSettingScreenState extends State<SystemSettingScreen> {
 
               SizedBox(height: 400.h,),
 
-              CustomButton(title: 'Logout', onpress: () {
+              CustomButton(title: 'Logout',
+                onpress: () {
+                  _showSignOutDialog();
 
               },)
             ],
           ),
         ),
       ),
+    );
+  }
+
+  void _showSignOutDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false, // Prevent dismissing by tapping outside
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12.r),
+          ),
+          title: Row(
+            children: [
+              CustomText(
+                text: 'Are you sure to ',
+                color: AppColors.textColorFFFFFF,
+                fontsize: 16.sp,
+                fontWeight: FontWeight.w500,
+              ),
+              CustomText(
+                text: ' sign out?',
+                color: AppColors.primaryColorC79235,
+                fontsize: 16.sp,
+                fontWeight: FontWeight.w500,
+              ),
+            ],
+          ),
+          actions: <Widget>[
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                // Confirm Button
+                TextButton(
+                  onPressed: () {
+                   context.pushNamed(AppRoutes.signUpScreen);
+
+                  },
+                  child: CustomText(
+                    text: 'Confirm',
+                    color: AppColors.primaryColorC79235,
+                    fontsize: 16.sp,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                SizedBox(width: 20.w),
+                // Cancel Button
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: CustomText(
+                    text: 'Cancel',
+                    color: AppColors.textColor8C8C8C,
+                    fontsize: 16.sp,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
+          ],
+          backgroundColor: AppColors.textColor323539,
+          contentPadding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
+          actionsPadding: EdgeInsets.only(bottom: 16.h),
+        );
+      },
     );
   }
 }

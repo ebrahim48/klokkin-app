@@ -36,8 +36,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 },
                 itemBuilder: (context, index) {
                   final page = pages[index];
-
-
+                  /// ===========================> First PAGE ===================================>
                   if (index == 0) {
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -165,7 +164,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       ],
                     );
                   }
-                  /// =========================== SECOND PAGE ===============================
+                  /// ===========================> SECOND PAGE ===================================>
                   else if(index == 1) {
                     return Stack(
                       children: [
@@ -238,8 +237,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
 
                         /// Vertical Line
                         Positioned(
-                          height: 415,
-                          top: 280.h,
+                          height: 351.h,
+                          top: 287.w,
                           right: MediaQuery.of(context).size.width / 2 -
                               180.w,
                           child: Container(
@@ -251,7 +250,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       ],
                     );
                   }
-                  /// =========== THIRD PAGE (CREATE ACCOUNT) ===========
+                  /// ===========================> THIRD PAGE (CREATE ACCOUNT) ==========================>
                   else {
                     return Stack(
                       children: [
