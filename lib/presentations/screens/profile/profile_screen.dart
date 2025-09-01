@@ -97,10 +97,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       context.pushNamed(AppRoutes.feedbackScreen);
                     }),
                     menuItem(Icons.info_outline, "About", () {
-                      // Get.to(() => const AboutScreen());
+                      context.pushNamed(AppRoutes.aboutScreen);
                     }),
                     menuItem(Icons.help_outline, "Questions and help", () {
-                      // Get.to(() => const HelpScreen());
+                      context.pushNamed(AppRoutes.questionHelpScreen);
                     }),
                   ],
                 ),

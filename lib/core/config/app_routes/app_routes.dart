@@ -8,6 +8,7 @@ import 'package:klokkin_app/presentations/screens/home/createStory/next_create_s
 import 'package:klokkin_app/presentations/screens/home/createStory/record_screen.dart';
 import 'package:klokkin_app/presentations/screens/home/home_screen.dart';
 import 'package:klokkin_app/presentations/screens/library/library_screen.dart';
+import 'package:klokkin_app/presentations/screens/profile/about_screen.dart';
 import 'package:klokkin_app/presentations/screens/profile/feedback_screen.dart';
 import 'package:klokkin_app/presentations/screens/profile/system_settings.dart';
 
@@ -25,6 +26,7 @@ import '../../../presentations/screens/onboarding/onboarding_screen.dart';
 import '../../../presentations/screens/profile/permission_screen.dart';
 import '../../../presentations/screens/profile/personal_screen.dart';
 import '../../../presentations/screens/profile/profile_screen.dart';
+import '../../../presentations/screens/profile/question_help_screen.dart';
 import '../../../presentations/screens/splash/splash_screen.dart';
 import '../../../presentations/screens/story/story_audio_screen.dart';
 import '../../../presentations/screens/story/story_image_details_screen.dart';
@@ -73,6 +75,8 @@ class AppRoutes {
   static const String systemSettingScreen = "/systemSettingScreen";
   static const String feedbackScreen = "/feedbackScreen";
   static const String permissionScreen = "/permissionScreen";
+  static const String aboutScreen = "/aboutScreen";
+  static const String questionHelpScreen = "/questionHelpScreen";
 
 
 
@@ -373,11 +377,26 @@ class AppRoutes {
       pageBuilder: (context, state) =>
           _customTransitionPage(FeedbackScreen(), state),
     ),
+    //<<<=============>>>  Permission  Screen  <<<===============>>>
     GoRoute(
       path: permissionScreen,
       name: permissionScreen,
       pageBuilder: (context, state) =>
           _customTransitionPage(PermissionScreen(), state),
+    ),
+    //<<<=============>>>  About  Screen  <<<===============>>>
+    GoRoute(
+      path: aboutScreen,
+      name: aboutScreen,
+      pageBuilder: (context, state) =>
+          _customTransitionPage(AboutScreen(), state),
+    ),
+    //<<<=============>>>  Question Help Screen  <<<===============>>>
+    GoRoute(
+      path: questionHelpScreen,
+      name: questionHelpScreen,
+      pageBuilder: (context, state) =>
+          _customTransitionPage(QuestionHelpScreen(), state),
     ),
 
 
