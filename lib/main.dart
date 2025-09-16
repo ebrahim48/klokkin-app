@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:toastification/toastification.dart';
 import 'core/config/app_routes/app_routes.dart';
 import 'core/config/app_themes/app_themes.dart';
 import 'core/helpers/dependancy_injaction.dart';
@@ -31,27 +32,29 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ScreenUtilInit(
-        designSize: const Size(393, 852),
-        builder: (context, child) {
-          return MaterialApp.router(
-            debugShowCheckedModeBanner: false,
-            title: 'Klokkin App',
-            theme: Themes().lightTheme,
-            darkTheme: Themes().lightTheme,
-            builder: DevicePreview.appBuilder, // <== Required for layout simulation
-            useInheritedMediaQuery: true,      // <== Required for responsive behavior
-            locale: DevicePreview.locale(context), // <== Optional: test different locales
-            // darkTheme: ThemeData.dark(),
-            themeMode: Get.find<ThemeController>().themeMode.value,
-            routeInformationParser: AppRoutes.goRouter.routeInformationParser,
-            routeInformationProvider:
-            AppRoutes.goRouter.routeInformationProvider,
-            routerDelegate: AppRoutes.goRouter.routerDelegate,
-            // builder: (context, child) {
-            //   return Scaffold(body: NoInterNetScreen(child: child!));
-            // },
-          );
-        });
+    return ToastificationWrapper(
+      child: ScreenUtilInit(
+          designSize: const Size(393, 852),
+          builder: (context, child) {
+            return MaterialApp.router(
+              debugShowCheckedModeBanner: false,
+              title: 'Klokkin App',
+              theme: Themes().lightTheme,
+              darkTheme: Themes().lightTheme,
+              builder: DevicePreview.appBuilder, // <== Required for layout simulation
+              useInheritedMediaQuery: true,      // <== Required for responsive behavior
+              locale: DevicePreview.locale(context), // <== Optional: test different locales
+              // darkTheme: ThemeData.dark(),
+              themeMode: Get.find<ThemeController>().themeMode.value,
+              routeInformationParser: AppRoutes.goRouter.routeInformationParser,
+              routeInformationProvider:
+              AppRoutes.goRouter.routeInformationProvider,
+              routerDelegate: AppRoutes.goRouter.routerDelegate,
+              // builder: (context, child) {
+              //   return Scaffold(body: NoInterNetScreen(child: child!));
+              // },
+            );
+          }),
+    );
   }
 }

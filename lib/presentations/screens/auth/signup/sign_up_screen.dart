@@ -1,19 +1,30 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
 import '../../../../../global/custom_assets/assets.gen.dart';
 import '../../../../core/config/app_routes/app_routes.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../controller/auth_controller.dart';
 import '../../../widgets/custom_app_bar.dart';
 import '../../../widgets/custom_button.dart';
 import '../../../widgets/custom_text.dart';
 import '../../../widgets/custom_text_field.dart';
 
 
-class SignUpScreen extends StatelessWidget {
+class SignUpScreen extends StatefulWidget {
   SignUpScreen({super.key});
+
+  @override
+  State<SignUpScreen> createState() => _SignUpScreenState();
+}
+
+class _SignUpScreenState extends State<SignUpScreen> {
+
+  AuthController authController = Get.put(AuthController());
+  final GlobalKey<FormState> fromKey = GlobalKey<FormState>();
 
 
   @override
@@ -46,16 +57,32 @@ class SignUpScreen extends StatelessWidget {
               /// <<< ============><>>> sign up text flied  << < ==============>>>
               CustomTextField(
                   hintextColor: AppColors.textColor8A8A8A,
-                  controller: nameCtrl,
+                  controller: fNameCtrl,
                   hintText: "Full name",
                   prefixIcon: Assets.icons.nameProfile.svg()),
 
 
               CustomTextField(
+                keyboardType: TextInputType.phone,
                   hintextColor: AppColors.textColor8A8A8A,
                   controller: phoneCtrl,
                   hintText: "Phone Number",
-                  prefixIcon: Assets.icons.phone.svg()),
+                  prefixIcon: Assets.icons.phone.svg(),
+                inputFormatters: [
+                  FilteringTextInputFormatter.digitsOnly,
+                  LengthLimitingTextInputFormatter(11),
+                ],
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Please enter phone number';
+                  } else if (value.length < 11) {
+                    return 'Phone number must be 11 digits';
+                  } else if (value.length > 11) {
+                    return 'Phone number cannot exceed 11 digits';
+                  }
+                  return null;
+                },
+              ),
 
 
 
@@ -167,10 +194,26 @@ class SignUpScreen extends StatelessWidget {
 
               /// ============================================ Button ====================================>
 
-              CustomButton(title: "Sign up", onpress: () {
-                context.pushNamed(AppRoutes.logInScreen);
-                // Get.toNamed(AppRoutes.optScreen, arguments: {"screenType" : "Sign up"});
-              }),
+              Obx(()=>
+                 CustomButton(
+                   loading: authController.signUpLoading.value,
+                    title: "Sign up",
+                    onpress: () {
+                      if(fromKey.currentState?.validate()?? true){
+                        authController.handleSignUp(
+                            fname: fNameCtrl.text,
+                            email: emailCtrl.text,
+                            phone: phoneCtrl.text,
+                            password: passWordCtrl.text.trim(),
+                            confirmpassword: confirmPassWordCtrl.text.trim(),
+                            context: context,
+                            screenType: "signup",
+
+
+
+                        );
+                      }
+                }),),
 
               SizedBox(height: 16.h),
 
@@ -222,9 +265,10 @@ class SignUpScreen extends StatelessWidget {
     );
   }
 
-
   RxBool isMatched = false.obs;
+
   RxBool isObscureConfirmPassword = true.obs;
+
   toggleIsObscureConfirmPassword() {
     isObscureConfirmPassword.value = !isObscureConfirmPassword.value;
   }
@@ -234,12 +278,14 @@ class SignUpScreen extends StatelessWidget {
   }
 
   final TextEditingController emailCtrl = TextEditingController();
-  final TextEditingController nameCtrl = TextEditingController();
+
+  final TextEditingController fNameCtrl = TextEditingController();
+
   final TextEditingController phoneCtrl = TextEditingController();
+
   final TextEditingController passWordCtrl = TextEditingController();
+
   final TextEditingController confirmPassWordCtrl = TextEditingController();
+
   RxBool isChecked = false.obs;
-
-
-
 }
