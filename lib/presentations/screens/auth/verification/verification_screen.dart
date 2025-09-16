@@ -1,25 +1,31 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:get/get_rx/src/rx_types/rx_types.dart';
-import 'package:go_router/go_router.dart';
+import 'package:get/get.dart';
 import 'package:klokkin_app/presentations/screens/auth/verification/widget/custom_pin_code_textfield.dart';
-import '../../../../core/config/app_routes/app_routes.dart';
 import '../../../../core/constants/app_colors.dart';
-import '../../../widgets/custom_app_bar.dart';
+import '../../../controller/auth_controller.dart';
 import '../../../widgets/custom_button.dart';
 import '../../../widgets/custom_text.dart';
 
 
 class VerifyScreen extends StatelessWidget {
-  VerifyScreen({super.key});
+  final String screenType;
+  final String email;
+  final String token;
+
+  VerifyScreen({super.key,required this.screenType, required this.email,required this.token});
+
+  AuthController authController = Get.put(AuthController());
 
 
   @override
   Widget build(BuildContext context) {
-    Map routeData = GoRouterState.of(context).extra as Map;
+
     return Scaffold(
-      appBar: CustomAppBar(title: "${routeData["title"]}"),
+      appBar: AppBar(
+        title: CustomText(text: "Verification"),
+      ),
       body: SingleChildScrollView(
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 20.w),
@@ -33,7 +39,7 @@ class VerifyScreen extends StatelessWidget {
                   fontWeight: FontWeight.w400,
                   bottom: 31.h),
 
-              /// <<< ============><>>> OTP field  << < ==============>>>
+              /// <<< ============><>>>  field  << < ==============>>>
 
               Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -77,14 +83,23 @@ class VerifyScreen extends StatelessWidget {
               SizedBox(height: 365.h),
               /// ============================================ Button ====================================>
 
-              CustomButton(title: "Verify", onpress: () {
-                context.pushNamed(AppRoutes.resetPasswordScreen, extra: {
-                  "title" : "New Password",
+              Obx(()=>
+               CustomButton(
+                   loading: authController.verfyLoading.value,
+                   title: "Verify",
+                    onpress: () {
+                      if(screenType == "signup"){
+                        authController.verfyEmail(
+                            otpTEController.text,
+                            email,
+                            token,
+                            screenType: "signup",
+                            context: context,
+                            type: "Sign Up");
+                      }
 
-                });
-                // Get.toNamed(AppRoutes.optScreen, arguments: {"screenType" : "Sign up"});
-                // context.pushNamed(AppRoutes.resetPasswordScreen);
-              }),
+
+                }),),
               SizedBox(height: 24.h),
             ],
           ),

@@ -142,14 +142,14 @@ class AppRoutes {
       path: signUpScreen,
       name: signUpScreen,
       pageBuilder: (context, state) =>
-          _customTransitionPage( SignUpScreen(), state),
+          _customTransitionPage(SignUpScreen(), state),
     ),
     ///<<<=============>>> Log In <<<===============>>>
     GoRoute(
       path: logInScreen,
       name: logInScreen,
       pageBuilder: (context, state) =>
-          _customTransitionPage( LoginScreen(), state),
+          _customTransitionPage(LoginScreen(), state),
     ),
 
     ///<<<=============>>> Forget Password Screen  <<<===============>>>
@@ -157,17 +157,26 @@ class AppRoutes {
       path: forgetPasswordScreen,
       name: forgetPasswordScreen,
       pageBuilder: (context, state) =>
-          _customTransitionPage( ForgetPasswordScreen(), state),
+          _customTransitionPage(ForgetPasswordScreen(), state),
     ),
 
 
     ///<<<=============>>> Verify Screen  <<<===============>>>
+
     GoRoute(
       path: verifyScreen,
       name: verifyScreen,
-      pageBuilder: (context, state) =>
-          _customTransitionPage( VerifyScreen(), state),
+      builder: (context, state) {
+        final extra = state.extra as Map<String, dynamic>;
+        final screenType = extra['screenType']?.toString() ?? '';
+        final email = extra['email']?.toString() ?? '';
+        final token = extra['token']?.toString() ?? '';
+        return VerifyScreen(screenType: screenType, email: email,token: token,);
+      },
     ),
+
+
+
 
 
     ///<<<=============>>> Reset Password Screen  <<<===============>>>
