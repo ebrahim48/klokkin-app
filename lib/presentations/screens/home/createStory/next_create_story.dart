@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:go_router/go_router.dart';
+import 'package:klokkin_app/controllers/home_controller.dart';
 import 'package:klokkin_app/core/constants/app_colors.dart';
 import 'package:klokkin_app/presentations/widgets/custom_app_bar.dart';
 import 'package:klokkin_app/presentations/widgets/custom_text.dart';
@@ -17,6 +20,15 @@ class NextCreateStoryScreen extends StatefulWidget {
 }
 
 class _NextCreateStoryScreenState extends State<NextCreateStoryScreen> {
+
+
+  HomeController homeController = Get.put(HomeController());
+
+  void initState() {
+    super.initState();
+    homeController.getAllTags();
+  }
+
   @override
   Widget build(BuildContext context) {
     Map routeData = GoRouterState.of(context).extra as Map;
@@ -56,14 +68,14 @@ class _NextCreateStoryScreenState extends State<NextCreateStoryScreen> {
              SizedBox(height: 20.h),
 
             /// ======================================== Select Tag ===================================>
-            CustomText(
+             CustomText(
               text: "Select Tag",
               fontsize: 20.sp,
               fontWeight: FontWeight.w500,
               color: AppColors.textColorFFFFFF,
             ),
              SizedBox(height: 10.h),
-          Container(
+             Container(
             width: 370.w,
             decoration: BoxDecoration(
               color: const Color(0xFF323539),
@@ -173,8 +185,8 @@ class _NextCreateStoryScreenState extends State<NextCreateStoryScreen> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          CustomText(text:
-            text,
+          CustomText(
+            text: text,
             color: AppColors.textColorC2C2C2,
 
           ),
@@ -231,14 +243,6 @@ class _NextCreateStoryScreenState extends State<NextCreateStoryScreen> {
   final TextEditingController titleCtrl = TextEditingController();
   final TextEditingController scriptCtrl = TextEditingController();
 
-  String? selectedName;
-  String? selectedCompany;
-  String? selectedIndustry;
-  String? selectedJobRole;
-  String? selectedYear;
-
-  final List<String> tags = ["#innovation", "#innovation", "#innovation"];
-  final TextEditingController tagCtrl = TextEditingController();
 
 }
 

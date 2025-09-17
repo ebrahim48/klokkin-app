@@ -1,25 +1,49 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:go_router/go_router.dart';
-import 'package:klokkin_app/presentations/widgets/custom_app_bar.dart';
 import 'package:klokkin_app/presentations/widgets/custom_text.dart';
 import '../../../../../global/custom_assets/assets.gen.dart';
 import '../../../../core/config/app_routes/app_routes.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../controller/auth_controller.dart';
 import '../../../widgets/custom_button.dart';
 import '../../../widgets/custom_text_field.dart';
 
 
-class ForgetPasswordScreen extends StatelessWidget {
-  ForgetPasswordScreen({super.key});
+class ForgetPasswordScreen extends StatefulWidget {
+  ForgetPasswordScreen({super.key,required this.email});
+
+  final String email;
+  @override
+  State<ForgetPasswordScreen> createState() => _ForgetPasswordScreenState();
+
+
+}
+
+class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
+
+
+  @override
+  void initState() {
+    print("====================${widget.email}");
+    setState(() {
+      emailCtrl.text = widget.email;
+    });
+    super.initState();
+  }
 
 
   @override
   Widget build(BuildContext context) {
-    Map routeData = GoRouterState.of(context).extra as Map;
+
+
     return Scaffold(
-      appBar: CustomAppBar(title: "${routeData["title"]}"),
+      appBar: AppBar(
+        title: CustomText(text: "Forget password"),
+      ),
       body: SingleChildScrollView(
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 20.w),
@@ -45,7 +69,7 @@ class ForgetPasswordScreen extends StatelessWidget {
 
               GestureDetector(
                 onTap: () {
-
+                  context.pushNamed(AppRoutes.logInScreen);
                 },
                 child: Row(
                   children: [
@@ -71,14 +95,20 @@ class ForgetPasswordScreen extends StatelessWidget {
 
               /// ============================================ Button ====================================>
 
-              CustomButton(title: "Send",
-                  onpress: () {
-                    context.pushNamed(AppRoutes.verifyScreen, extra: {
-                      "title" : "Verification",
+              Obx(()=>
+               CustomButton(
+                   loading: authController.forgotLoading.value,
+                    title: "Send",
+                    onpress: () {
+                      if(_logKey.currentState?.validate()??true){
+                        authController.handleForgot(
+                            emailCtrl.text,
+                            "forgot",
+                            context: context);
+                      }
 
-                    });
-                // Get.toNamed(AppRoutes.optScreen, arguments: {"screenType" : "Sign up"});
-              }),
+                }),
+              ),
               SizedBox(height: 22.h),
               /// ===================================> Divider =============================>
               Row(
@@ -188,12 +218,9 @@ class ForgetPasswordScreen extends StatelessWidget {
     );
   }
 
-
-
   final TextEditingController emailCtrl = TextEditingController();
-  final TextEditingController passWordCtrl = TextEditingController();
 
+  AuthController authController = Get.find<AuthController>();
 
-
-
+  final GlobalKey<FormState> _logKey = GlobalKey<FormState>();
 }

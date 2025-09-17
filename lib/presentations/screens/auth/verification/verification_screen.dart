@@ -4,6 +4,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:klokkin_app/presentations/screens/auth/verification/widget/custom_pin_code_textfield.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/helpers/toast_message_helper.dart';
 import '../../../controller/auth_controller.dart';
 import '../../../widgets/custom_button.dart';
 import '../../../widgets/custom_text.dart';
@@ -22,10 +23,10 @@ class VerifyScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
-    return Scaffold(
-      appBar: AppBar(
-        title: CustomText(text: "Verification"),
-      ),
+    return Scaffold(appBar: AppBar(
+      title: CustomText(text: "Verification"),
+    ),
+
       body: SingleChildScrollView(
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 20.w),
@@ -57,23 +58,25 @@ class VerifyScreen extends StatelessWidget {
                       ),
                       Align(
                         alignment: Alignment.center,
-                        child: GestureDetector(
-                          onTap: isCountingDown.value
-                              ? null
-                              : () {
-                            startCountdown();
-                          },
-                          child: CustomText(
-                            fontWeight: FontWeight.w600,
-                            text: isCountingDown.value
-                                ? '${'Resend in'} ${countdown.value}s'
-                                : ' Resend',
-                            color: isCountingDown.value
-                                ? AppColors.secondary836531
-                                : AppColors.primaryColorC79235,
-                            fontsize: 14.sp,
-                          ),
-                        ),
+                        child: Obx(() =>
+                            GestureDetector(
+
+                              onTap: authController.isCountingDown.value
+                                  ? null
+                                  : () {
+                                authController.startCountdown();
+                                authController.reSendOtp(email);
+                              },
+                              child: CustomText(
+                                text: authController.isCountingDown.value
+                                    ? 'Resend in ${authController.countdown.value}s'
+                                    : 'Resend code',
+                                color: authController.isCountingDown.value
+                                    ? Colors.red
+                                    : AppColors.primaryColorC79235,
+                                fontsize: 12.sp,
+                              ),
+                            )),
                       ),
                     ],
                   ),
@@ -83,23 +86,27 @@ class VerifyScreen extends StatelessWidget {
               SizedBox(height: 365.h),
               /// ============================================ Button ====================================>
 
-              Obx(()=>
-               CustomButton(
-                   loading: authController.verfyLoading.value,
-                   title: "Verify",
+              Obx(() =>
+                  CustomButton(
+                    loading: authController.verfyLoading.value,
+                    title: "Verify",
                     onpress: () {
-                      if(screenType == "signup"){
-                        authController.verfyEmail(
-                            otpTEController.text,
-                            email,
-                            token,
-                            screenType: "signup",
-                            context: context,
-                            type: "Sign Up");
+                      if (otpTEController.text.isEmpty) {
+                        ToastMessageHelper.showToastMessage("Please enter OTP");
+                        return;
                       }
 
-
-                }),),
+                      authController.verfyEmail(
+                        otpTEController.text,
+                        email,
+                        token,
+                        screenType: screenType,
+                        type: screenType == "signup" ? "Sign Up" : "Forgot",
+                        context: context,
+                      );
+                    },
+                  ),
+              ),
               SizedBox(height: 24.h),
             ],
           ),
@@ -112,20 +119,6 @@ class VerifyScreen extends StatelessWidget {
 
   final TextEditingController otpTEController = TextEditingController();
 
-  final RxInt countdown = 60.obs;
-  final RxBool isCountingDown = false.obs;
 
-  void startCountdown() {
-    isCountingDown.value = true;
-    countdown.value = 60;
-    Timer.periodic(const Duration(seconds: 1), (timer) {
-      if (countdown.value > 0) {
-        countdown.value--;
-      } else {
-        timer.cancel();
-        isCountingDown.value = false;
-      }
-    });
-  }
 
 }
