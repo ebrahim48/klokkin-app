@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -87,24 +88,36 @@ class AuthController extends GetxController {
 
       if (response.statusCode == 200 || response.statusCode == 201) {
         verfyLoading(false);
-        if(screenType== 'forgot'){
-          debugPrint("==========bearer token save done : ${response.body["data"]["attributes"]["result"]['accessToken']}");
-          await PrefsHelper.setString(AppConstants.bearerToken, response.body["data"]["attributes"]["result"]['accessToken']);
+        final accessToken = response.body["data"]["attributes"]["result"]["accessToken"];
+        await PrefsHelper.setString(AppConstants.bearerToken, accessToken);
 
-        }else{
-          debugPrint("==========bearer token save done : ${response.body["data"]["attributes"]["result"]['accessToken']}");
-          await PrefsHelper.setString(AppConstants.bearerToken, response.body["data"]["attributes"]["result"]['accessToken']);
-        }
+        // if(screenType== 'forgot'){
+        //   debugPrint("==========bearer token save done : ${response.body["data"]["attributes"]["result"]['accessToken']}");
+        //   await PrefsHelper.setString(AppConstants.bearerToken, response.body["data"]["attributes"]["result"]['accessToken']);
+        //
+        // }else{
+        //   debugPrint("==========bearer token save done : ${response.body["data"]["attributes"]["result"]['accessToken']}");
+        //   await PrefsHelper.setString(AppConstants.bearerToken, response.body["data"]["attributes"]["result"]['accessToken']);
+        // }
 
 
-        if (type == 'Sign Up') {
-          print('================================ screenType received yjuikhujikgyhujvghg: $screenType');
-          if(screenType== 'signup'){
-            context.go(AppRoutes.logInScreen);
-          }
-        }else{
+        if (type == 'Sign Up' && screenType == 'signup') {
+          context.go(AppRoutes.logInScreen);
+        } else if (type == 'Forgot' && screenType == 'forgot') {
           context.go(AppRoutes.resetPasswordScreen);
         }
+
+        // if (type == 'Sign Up') {
+        //   print('================================ screenType received yjuikhujikgyhujvghg: $screenType');
+        //   if(screenType== 'signup'){
+        //     context.go(AppRoutes.logInScreen);
+        //   }
+        // }else{
+        //   context.go(AppRoutes.resetPasswordScreen);
+        // }
+
+
+
         verfyLoading(false);
         ToastMessageHelper.showToastMessage("${response.body["message"]}");
       } else{
@@ -121,25 +134,6 @@ class AuthController extends GetxController {
 
 
 
-    // final RxInt countdown = 60.obs;
-    // final RxBool isCountingDown = false.obs;
-    //
-    //
-    // void startCountdown() {
-    //   isCountingDown.value = true;
-    //   countdown.value = 60;
-    //   update();
-    //   Timer.periodic(const Duration(seconds: 1), (timer) {
-    //     if (countdown.value > 0) {
-    //       countdown.value--;
-    //       update();
-    //     } else {
-    //       timer.cancel();
-    //       isCountingDown.value = false;
-    //       update();
-    //     }
-    //   });
-    // }
 
   ///============================================= Log in ===============================================<>
   RxBool logInLoading = false.obs;
@@ -179,7 +173,7 @@ class AuthController extends GetxController {
       await PrefsHelper.setBool(AppConstants.isLogged, true);
 
       /// Navigate to Home
-      context.go(AppRoutes.homeScreen);
+      context.go(AppRoutes.bottomNavbarScreen);
 
       ToastMessageHelper.showToastMessage("You are logged in");
     } else {
@@ -219,102 +213,138 @@ class AuthController extends GetxController {
 
 
 ///===========================================> Forgot Password ====================================================<>
-    // RxBool forgotLoading = false.obs;
-    // handleForgot(String email, screenType, {required BuildContext context}) async {
-    //   forgotLoading(true);
-    //   var body = {"email": email};
-    //   var response = await ApiClient.postData(
-    //     ApiConstants.forgotPasswordEndPoint,
-    //     jsonEncode(body),
-    //   );
-    //
-    //   if (response.statusCode == 200 || response.statusCode == 201) {
-    //     final token = response.body["data"]["resetPasswordToken"] ?? response.body["data"]["verificationToken"];
-    //     if (token != null) {
-    //       await PrefsHelper.setString(AppConstants.bearerToken, token);
-    //     } else {
-    //       debugPrint("❌ Token missing in forgot response.");
-    //     }
-    //
-    //     if (screenType == "forgot") {
-    //       context.pushNamed(AppRoutes.otpScreen, extra: {
-    //         "screenType": "forgot",
-    //         "email": email,
-    //       });
-    //     }
-    //
-    //     forgotLoading(false);
-    //   } else {
-    //     forgotLoading(false);
-    //     ToastMessageHelper.showToastMessage(response.body["message"]);
-    //   }
-    // }
+    RxBool forgotLoading = false.obs;
+    handleForgot(String email, screenType, {required BuildContext context}) async {
+      forgotLoading(true);
+      var body = {"email": email};
+      var response = await ApiClient.postData(
+        ApiConstants.forgotPasswordEndPoint,
+        jsonEncode(body),
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final token = response.body["data"]["attributes"]["resetPasswordToken"] ?? response.body["data"]["attributes"]["verificationToken"];
+        if (token != null) {
+          await PrefsHelper.setString(AppConstants.bearerToken, token);
+        } else {
+          debugPrint("❌ Token missing in forgot response.");
+        }
+
+        if (screenType == "forgot") {
+          context.pushNamed(AppRoutes.verifyScreen, extra: {
+            "screenType": "forgot",
+            "email": email,
+            "token":token,
+          });
+        }
+
+        forgotLoading(false);
+      } else {
+        forgotLoading(false);
+        ToastMessageHelper.showToastMessage(response.body["message"]);
+      }
+    }
 
 
     ///===============Set Password================<>
 
-    // RxBool setPasswordLoading = false.obs;
-    //
-    // setPassword(String password,confirmPassword,{required BuildContext context}) async {
-    //   setPasswordLoading(true);
-    //   var body = {
-    //     "password": password.toString().trim(),
-    //     "confirmPassword": confirmPassword.toString().trim()
-    //   };
-    //
-    //   var response = await ApiClient.postData(
-    //       ApiConstants.resetPasswordEndPoint, jsonEncode(body));
-    //
-    //   if (response.statusCode == 200 || response.statusCode == 201) {
-    //     context.pushNamed(AppRoutes.logInScreen);
-    //     ToastMessageHelper.showToastMessage('${response.body["message"]}');
-    //     print("======>>> successful");
-    //     setPasswordLoading(false);
-    //   } else if(response.statusCode == 1){
-    //     setPasswordLoading(false);
-    //     ToastMessageHelper.showToastMessage("Server error! \n Please try later");
-    //   } else {
-    //     setPasswordLoading(false);
-    //     ToastMessageHelper.showToastMessage('${response.body["message"]}',title: 'attention');
-    //   }
-    // }
+    RxBool setPasswordLoading = false.obs;
+
+    setPassword(String password,confirmPassword,{required BuildContext context}) async {
+      setPasswordLoading(true);
+      var body = {
+        "password": password.toString().trim(),
+        "confirmPassword": confirmPassword.toString().trim()
+      };
+
+      var response = await ApiClient.postData(
+          ApiConstants.resetPasswordEndPoint, jsonEncode(body));
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        context.pushNamed(AppRoutes.logInScreen);
+        ToastMessageHelper.showToastMessage('${response.body["message"]}');
+        print("======>>> successful");
+        setPasswordLoading(false);
+      } else if(response.statusCode == 1){
+        setPasswordLoading(false);
+        ToastMessageHelper.showToastMessage("Server error! \n Please try later");
+      } else {
+        setPasswordLoading(false);
+        ToastMessageHelper.showToastMessage('${response.body["message"]}',title: 'attention');
+      }
+    }
 
 
     ///===============Resend================<>
 
-    // RxBool resendLoading = false.obs;
-    //
-    // reSendOtp() async {
-    //   resendLoading(true);
-    //   String token = await PrefsHelper.getString(AppConstants.bearerToken);
-    //   var headers = {
-    //     'Content-Type': 'application/json',
-    //     'Authorization': 'Bearer $token',
-    //   };
-    //   var body = {};
-    //   var response = await ApiClient.postData(
-    //     ApiConstants.resendOtpEndPoint,
-    //     jsonEncode(body),
-    //     headers: headers,
-    //   );
-    //
-    //   if (response.statusCode == 200 || response.statusCode == 201) {
-    //     final newToken = response.body["data"]["resetPasswordToken"] ?? response.body["data"]["verificationToken"];
-    //     if (newToken != null) {
-    //       await PrefsHelper.setString(AppConstants.bearerToken, newToken);
-    //     } else {
-    //       debugPrint("❌ Token missing in resendOtp response.");
-    //     }
-    //
-    //     ToastMessageHelper.showToastMessage('You have got an one time code to your email');
-    //     print("======>>> successful");
-    //     resendLoading(false);
-    //   } else {
-    //     ToastMessageHelper.showToastMessage("${response.body["message"]}");
-    //     resendLoading(false);
-    //   }
-    // }
-    //
+    RxBool resendLoading = false.obs;
+
+
+
+  reSendOtp(String email) async {
+    resendLoading(true);
+
+    String token = await PrefsHelper.getString(AppConstants.bearerToken);
+
+    var headers = {
+      'Content-Type': 'application/json',
+      'Authorization': token,
+    };
+
+    var body = {
+      "email": email,
+    };
+
+    var response = await ApiClient.postData(
+      ApiConstants.resendOtpEndPoint,
+      jsonEncode(body),
+      headers: headers,
+    );
+
+    resendLoading(false);
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      final attributes = response.body["data"]["attributes"];
+
+      final newToken =
+          attributes["resetPasswordToken"] ?? attributes["verificationToken"];
+
+      if (newToken != null) {
+        await PrefsHelper.setString(AppConstants.bearerToken, newToken);
+        debugPrint("✅ New token saved: $newToken");
+      } else {
+        debugPrint("❌ Token missing in resendOtp response.");
+      }
+
+      ToastMessageHelper.showToastMessage("✅ OTP sent successfully to your email.");
+    } else {
+      ToastMessageHelper.showToastMessage(
+        response.body["message"] ?? "❌ Failed to resend OTP",
+        title: "Error",
+      );
+    }
+  }
+
+
+  final RxInt countdown = 60.obs;
+  final RxBool isCountingDown = false.obs;
+
+
+  void startCountdown() {
+    isCountingDown.value = true;
+    countdown.value = 60;
+    update();
+    Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (countdown.value > 0) {
+        countdown.value--;
+        update();
+      } else {
+        timer.cancel();
+        isCountingDown.value = false;
+        update();
+      }
+    });
+  }
 
 
     ///===============Change Password================<>

@@ -66,10 +66,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
         ],
-        // bottom: PreferredSize(preferredSize: const Size.fromHeight(1), child: Container(
-        //   height: 0.5,
-        //   color: AppColors.textColor8B8B8B,
-        // )),
+
       ),
       body: SafeArea(
         child: SingleChildScrollView(

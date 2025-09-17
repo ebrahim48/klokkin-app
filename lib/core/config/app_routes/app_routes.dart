@@ -156,8 +156,12 @@ class AppRoutes {
     GoRoute(
       path: forgetPasswordScreen,
       name: forgetPasswordScreen,
-      pageBuilder: (context, state) =>
-          _customTransitionPage(ForgetPasswordScreen(), state),
+      builder: (context, state) {
+        String email = state.extra as String;
+        return ForgetPasswordScreen(email: email);
+      },
+      // pageBuilder: (context, state) =>
+      //     _customTransitionPage(ForgetPasswordScreen(), state),
     ),
 
 

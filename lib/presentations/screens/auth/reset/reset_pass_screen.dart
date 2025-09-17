@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_rx/src/rx_types/rx_types.dart';
 import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
 import 'package:go_router/go_router.dart';
@@ -8,6 +10,7 @@ import 'package:klokkin_app/presentations/widgets/custom_text.dart';
 import '../../../../../global/custom_assets/assets.gen.dart';
 import '../../../../core/config/app_routes/app_routes.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../controller/auth_controller.dart';
 import '../../../widgets/custom_button.dart';
 import '../../../widgets/custom_text_field.dart';
 
@@ -18,9 +21,10 @@ class ResetPasswordScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Map routeData = GoRouterState.of(context).extra as Map;
     return Scaffold(
-      appBar: CustomAppBar(title: "${routeData["title"]}"),
+      appBar: AppBar(
+        title: CustomText(text: "New Password"),
+      ),
       body: SingleChildScrollView(
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 20.w),
@@ -82,12 +86,19 @@ class ResetPasswordScreen extends StatelessWidget {
                   ))),
 
               SizedBox(height: 340.h),
-              CustomButton(
-                title: 'Sign up',
-                onpress: () {
-                  context.pushNamed(AppRoutes.signUpScreen);
+              Obx(()=>
+                  CustomButton(
+                      loading: authController.setPasswordLoading.value,
+                      title: "Confirm",
+                      onpress: (){
+                        if(formKey.currentState?.validate()??true){
+                          authController.setPassword(
+                              passWordCtrl.text,
+                              confirmPassWordCtrl.text,
+                              context: context);
 
-                },),
+                        }
+                      }),),
 
 
               SizedBox(height: 50.h)
@@ -112,6 +123,7 @@ class ResetPasswordScreen extends StatelessWidget {
   final TextEditingController passWordCtrl = TextEditingController();
   final TextEditingController confirmPassWordCtrl = TextEditingController();
 
-
+  final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+  AuthController authController = Get.find<AuthController>();
 
 }
