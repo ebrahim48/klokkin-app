@@ -17,12 +17,15 @@ class UploadCreateStoryScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final UploadCreateStoryController controller =
-    Get.put(UploadCreateStoryController());
-    final Map routeData = GoRouterState.of(context).extra as Map;
 
+
+    final UploadCreateStoryController controller = Get.put(UploadCreateStoryController());
+    final Map routeData = GoRouterState.of(context).extra as Map;
+    final String title = routeData["title"];
+    final String script = routeData["script"];
+    final List<String> tags = List<String>.from(routeData["tags"]);
     return Scaffold(
-      appBar: CustomAppBar(title: "${routeData["title"]}"),
+      appBar: CustomAppBar(title: "${routeData["pageTitle"]}"),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(16.r),
         child: Column(
@@ -40,7 +43,6 @@ class UploadCreateStoryScreen extends StatelessWidget {
             ),
             SizedBox(height: 12.h),
 
-            /// If no images uploaded yet
             Obx(() => controller.images.isEmpty
                 ? Container(
               width: 390.w,
@@ -89,7 +91,7 @@ class UploadCreateStoryScreen extends StatelessWidget {
               ),
             )
                 :
-            /// Show Grid of uploaded images
+            ///========================================> Show Grid of uploaded images ================================>
             Container(
               width: 360.w,
               height: 245.h,
@@ -224,7 +226,18 @@ class UploadCreateStoryScreen extends StatelessWidget {
             Align(
               alignment: Alignment.center,
               child: OutlinedButton(
-                onPressed: () {},
+                onPressed: () {
+                  context.pushNamed(
+                      AppRoutes.createPostStoryScreen,
+                    extra: {
+                      "title": title,
+                      "script": script,
+                      "tags": tags,
+                      "images": controller.images,
+                    }
+
+                  );
+                },
                 style: OutlinedButton.styleFrom(
                   backgroundColor: AppColors.buttonColorE8A533,
                   side: BorderSide(

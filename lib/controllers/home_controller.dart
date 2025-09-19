@@ -3,10 +3,12 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
+import 'package:klokkin_app/core/config/app_routes/app_routes.dart';
 import '../../../services/api_client.dart';
 import '../../../services/api_constants.dart';
 import '../core/helpers/toast_message_helper.dart';
 import '../models/all_tags_model.dart';
+import '../models/latest_form_model.dart';
 
 class HomeController extends GetxController {
 
@@ -61,13 +63,10 @@ class HomeController extends GetxController {
 
 
 
-// ================================> Upload Story  ==============================>
+/// ================================> Upload Story  ==============================>
 
 
   RxBool uploadStoryLoading = false.obs;
-
-  RxList<String> selectedTags = <String>[].obs;
-
 
   uploadStory(
       { required List<File> images,
@@ -95,18 +94,33 @@ class HomeController extends GetxController {
         multipartBody: multipartBody);
     if (response.statusCode == 200 || response.statusCode == 201) {
       ToastMessageHelper.showToastMessage("${response.body["message"]}",title: "Success");
-      context.pop();
-      context.pop();
+      context.pushNamed(AppRoutes.bottomNavbarScreen);
       update();
       uploadStoryLoading(false);
     }
-    ToastMessageHelper.showToastMessage("${response.body["message"]}",title: "fail");
     uploadStoryLoading(false);
   }
 
 
 
+// ================================> Latest form   ==============================>
 
+
+  RxBool getLatestFormLoading = false.obs;
+  RxList<LatestFormModel> latestForm = <LatestFormModel>[].obs;
+  getLatestForm()async{
+    getLatestFormLoading(true);
+    var response = await ApiClient.getData(ApiConstants.getLatestFormEndPoint);
+    if(response.statusCode == 200){
+      latestForm.value = List<LatestFormModel>.from(response.body["data"]["attributes"]["data"].
+      map((x)=> LatestFormModel.fromJson(x)));
+
+
+      getLatestFormLoading(false);
+    }else{
+      getLatestFormLoading(false);
+    }
+  }
 
 
 

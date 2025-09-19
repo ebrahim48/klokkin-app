@@ -38,8 +38,15 @@ class UploadCreateStoryController extends GetxController {
     images.removeAt(index);
   }
 
-  void editImage(int index) {
-    // TODO: implement editing (crop / replace)
-    print("Edit image: ${images[index].path}");
+  Future<void> editImage(int index) async {
+    final XFile? newImage = await _picker.pickImage(source: ImageSource.gallery);
+    if (newImage != null) {
+      images[index] = File(newImage.path);
+      images.refresh();
+      print("✅ Image replaced at index $index: ${newImage.path}");
+    }
   }
+
+
+
 }

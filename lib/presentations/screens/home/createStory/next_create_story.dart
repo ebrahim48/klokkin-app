@@ -23,7 +23,7 @@ class _NextCreateStoryScreenState extends State<NextCreateStoryScreen> {
 
   RxSet<int> expandedIndices = <int>{}.obs;
   HomeController homeController = Get.put(HomeController());
-
+  RxSet<String> selectedTags = <String>{}.obs;
   void initState() {
     super.initState();
     homeController.getAllTags();
@@ -47,7 +47,7 @@ class _NextCreateStoryScreenState extends State<NextCreateStoryScreen> {
                color: AppColors.textColorFFFFFF,
              ),
              SizedBox(height: 12.h),
-            TextField(
+             TextField(
               controller: titleCtrl,
               decoration: _inputDecoration("Enter a name"),
             ),
@@ -124,15 +124,10 @@ class _NextCreateStoryScreenState extends State<NextCreateStoryScreen> {
                                   vertical: 4.h
                               ),
                               children: [
-                                ...tagGroup.tag!
-                                    .map((t) => _chip("#$t"))
-                                    .toList(),
-                                GestureDetector(
-                                  onTap: () {
-                                    _showAddTagDialog(index);
-                                  },
-                                  child: _chip("Add New", isAddNew: true),
-                                ),
+                                ...tagGroup.tag!.map((t) => _chip("#$t")).toList(),
+                                _chip("Add New", isAddNew: true, onAddNew: () {
+                                  _showAddTagDialog(index);
+                                }),
                               ],
                             ),
                           )
@@ -154,7 +149,13 @@ class _NextCreateStoryScreenState extends State<NextCreateStoryScreen> {
                     onPressed: () {
                       context.pushNamed(
                         AppRoutes.uploadCreateStoryScreen,
-                        extra: {"title": "Create a story"},
+                        extra: {
+                          "pageTitle": "Create a story",
+                          "title": titleCtrl.text.trim(),
+                          "script": scriptCtrl.text.trim(),
+                          "tags": selectedTags.toList(),
+
+                        },
                       );
                     },
                     style: OutlinedButton.styleFrom(
@@ -183,7 +184,6 @@ class _NextCreateStoryScreenState extends State<NextCreateStoryScreen> {
     );
   }
 
-
   InputDecoration _inputDecoration(String hint) {
     return InputDecoration(
       hintText: hint,
@@ -197,8 +197,6 @@ class _NextCreateStoryScreenState extends State<NextCreateStoryScreen> {
       ),
     );
   }
-
-
   Widget _buildRowItem(String text, {required int index}) {
     return Container(
       padding: EdgeInsets.symmetric(vertical: 6.h, horizontal: 10.w),
@@ -240,46 +238,74 @@ class _NextCreateStoryScreenState extends State<NextCreateStoryScreen> {
   }
 
 
+  Widget _chip(String label, {bool isAddNew = false, VoidCallback? onAddNew}) {
+    return Obx(() {
+      bool isSelected = selectedTags.contains(label);
 
-
-
-  Widget _chip(String label, {bool isAddNew = false}) {
-    return Container(
-      margin: EdgeInsets.only(right: 8.w),
-      padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 4.h),
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(20.r),
-        border: Border.all(
-            color: isAddNew
-                ? AppColors.buttonColorE8A533
-                : AppColors.textColorFFFFFF
-        ),
-        color: isAddNew
-            ? AppColors.buttonColorE8A533.withOpacity(0.1)
-            : Colors.transparent,
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          if (isAddNew)
-            Icon(
-                Icons.add,
-                size: 14.r,
-                color: AppColors.buttonColorE8A533
+      return GestureDetector(
+        onTap: () {
+          if (isAddNew) {
+            if (onAddNew != null) onAddNew();
+          } else {
+            if (isSelected) {
+              selectedTags.remove(label);
+            } else {
+              selectedTags.add(label);
+              print("👉 Selected: $label");
+            }
+          }
+        },
+        child: Container(
+          margin: EdgeInsets.only(right: 8.w),
+          padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 4.h),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(20.r),
+            border: Border.all(
+              color: isAddNew
+                  ? AppColors.buttonColorE8A533
+                  : (isSelected
+                  ? AppColors.buttonColorE8A533
+                  : AppColors.textColorFFFFFF),
             ),
-          if (isAddNew) SizedBox(width: 4.w),
-          CustomText(
-            text: label,
             color: isAddNew
-                ? AppColors.buttonColorE8A533
-                : AppColors.textColorFFFFFF,
-            fontsize: 12.sp,
-            fontWeight: FontWeight.w300,
+                ? AppColors.buttonColorE8A533.withOpacity(0.1)
+                : (isSelected
+                ? AppColors.buttonColorE8A533.withOpacity(0.2)
+                : Colors.transparent),
           ),
-        ],
-      ),
-    );
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              if (isAddNew)
+                Icon(
+                  Icons.add,
+                  size: 14.r,
+                  color: AppColors.buttonColorE8A533,
+                ),
+              if (isAddNew) SizedBox(width: 4.w),
+              CustomText(
+                text: label,
+                color: isAddNew
+                    ? AppColors.buttonColorE8A533
+                    : (isSelected
+                    ? AppColors.buttonColorE8A533
+                    : AppColors.textColorFFFFFF),
+                fontsize: 12.sp,
+                fontWeight: FontWeight.w300,
+              ),
+            ],
+          ),
+        ),
+      );
+    });
   }
+
+
+
+
+
+
+
 
 
   final TextEditingController titleCtrl = TextEditingController();

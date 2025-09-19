@@ -40,7 +40,6 @@ class _StartCreateStoryScreenState extends State<StartCreateStoryScreen> {
                       "title" : "Create a story",
 
                     });
-                    // Get.toNamed(AppRoutes.optScreen, arguments: {"screenType" : "Sign up"});
                   }),
               SizedBox(height: 22.h),
               CustomButton(

@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:go_router/go_router.dart';
 import 'package:klokkin_app/core/config/app_routes/app_routes.dart';
 import 'package:klokkin_app/presentations/widgets/custom_text.dart';
+import '../../../controllers/home_controller.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../global/custom_assets/assets.gen.dart';
+import '../../widgets/custom_loader.dart';
 import '../../widgets/custom_profile_image.dart';
 import '../../widgets/latest_card_widget.dart';
 import '../../widgets/work_card_widget.dart';
@@ -22,6 +26,12 @@ class _HomeScreenState extends State<HomeScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final TextEditingController _searchController = TextEditingController();
 
+  HomeController homeController = Get.put(HomeController());
+
+  void initState() {
+    super.initState();
+    homeController.getLatestForm();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -233,26 +243,39 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
               SizedBox(height: 11.h),
-              SizedBox(
-                height: 180.h,
-                child: ListView.separated(
-                  scrollDirection: Axis.horizontal,
-                  padding: EdgeInsets.symmetric(horizontal: 20.w),
-                  itemCount: 6,
-                  separatorBuilder: (context, index) => SizedBox(width: 12.w),
-                  itemBuilder: (context, index) {
-                    return LatestCard(
-                      title: "Factory Life",
-                      caption: "Forging the Future in the Glow of the past",
-                      imagePath: "assets/images/unsplash.png",
-                      onTap: () {
-                        // Example navigation
-                        // context.pushNamed(AppRoutes.storyDetails, extra: {...});
-                      },
-                    );
-                  },
-                ),
-              ),
+              Obx((){
+                if (homeController.getLatestFormLoading.value) {
+                  return const Center(child: CustomLoader());
+                }
+
+                if (homeController.latestForm.isEmpty) {
+                  return CustomText(
+                    text: "Latest Form available",
+                    color: AppColors.textColorC2C2C2,
+                  );
+                }
+                return SizedBox(
+                  height: 180.h,
+                  child: ListView.separated(
+                    scrollDirection: Axis.horizontal,
+                    padding: EdgeInsets.symmetric(horizontal: 20.w),
+                    itemCount: homeController.latestForm.length,
+                    separatorBuilder: (context, index) => SizedBox(width: 12.w),
+                    itemBuilder: (context, index) {
+                      final latest = homeController.latestForm[index];
+                      return LatestCard(
+                        title: latest.user?.fname ?? 'N/A',
+                        caption:latest.caption ?? 'N/A',
+                        imagePath: "assets/images/unsplash.png",
+                        onTap: () {
+                          // Example navigation
+                          // context.pushNamed(AppRoutes.storyDetails, extra: {...});
+                        },
+                      );
+                    },
+                  ),
+                );
+              }),
           
               /// =====================================> Working Scroll =====================================>
               SizedBox(height: 21.h),
