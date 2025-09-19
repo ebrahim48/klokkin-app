@@ -21,5 +21,6 @@ class ApiConstants{
   static const String getAllTagsEndPoint = "/tag/tags";
   static String updateTagEndPoint(String id) => "/tag/tags/$id";
   static const String uploadEndPoint = "/story/story";
+  static const String getLatestFormEndPoint = "/story/story";
 
 }

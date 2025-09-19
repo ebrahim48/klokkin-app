@@ -4,6 +4,7 @@ import 'package:klokkin_app/presentations/screens/auth/privacy/privacy.dart';
 import 'package:klokkin_app/presentations/screens/auth/terms/terms.dart';
 import 'package:klokkin_app/presentations/screens/bottom_navbar/bottom_navbar_screen.dart';
 import 'package:klokkin_app/presentations/screens/everystory/every_story_screen.dart';
+import 'package:klokkin_app/presentations/screens/home/createStory/create_post_story.dart';
 import 'package:klokkin_app/presentations/screens/home/createStory/next_create_story.dart';
 import 'package:klokkin_app/presentations/screens/home/createStory/record_screen.dart';
 import 'package:klokkin_app/presentations/screens/home/home_screen.dart';
@@ -62,6 +63,7 @@ class AppRoutes {
   static const String recordStoryScreen = "/recordStoryScreen";
   static const String videoCreateStoryScreen = "/videoCreateStoryScreen";
   static const String storyScreen = "/storyScreen";
+  static const String createPostStoryScreen = "/createPostStoryScreen";
   static const String storyAudioScreen = "/storyAudioScreen";
   static const String storyImageScreen = "/storyImageScreen";
   static const String storyImageDetailsScreen = "/storyImageDetailsScreen";
@@ -410,6 +412,14 @@ class AppRoutes {
       name: questionHelpScreen,
       pageBuilder: (context, state) =>
           _customTransitionPage(QuestionHelpScreen(), state),
+    ),
+
+    //<<<=============>>>  Create PostStory Screen  <<<===============>>>
+    GoRoute(
+      path: createPostStoryScreen,
+      name: createPostStoryScreen,
+      pageBuilder: (context, state) =>
+          _customTransitionPage(CreatePostStoryScreen(), state),
     ),
 
 
