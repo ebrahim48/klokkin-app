@@ -49,9 +49,7 @@ class RecordStoryScreen extends StatelessWidget {
                    ),
                   ],
                   ),);}),
-
             SizedBox(height: 40.h),
-
             /// ================== Conditional View ==================
             Obx(() {
               if (controller.selectedType.value == RecordType.audio) {
