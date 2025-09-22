@@ -350,7 +350,8 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                                     context.pushNamed(AppRoutes.signUpScreen);
 
                                   },
-                                  width: 240.w,
+
+                                  width: 270.w,
                                 ),
                               ),
                             ],

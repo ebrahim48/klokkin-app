@@ -35,6 +35,8 @@ import '../../../presentations/screens/story/story_image_screen.dart';
 import '../../../presentations/screens/story/story_screen.dart';
 import '../../../presentations/screens/story/story_video_details_screen.dart';
 import '../../../presentations/screens/story/story_video_screen.dart';
+import '../../app_constants/app_constants.dart';
+import '../../helpers/prefs_helper.dart';
 
 
 class AppRoutes {
@@ -92,34 +94,23 @@ class AppRoutes {
       builder: (context, state) => const SplashScreen(),
       redirect: (context, state) {
         Future.delayed(const Duration(seconds: 3), () async {
-          // var role = await PrefsHelper.getString(AppConstants.role);
-          // var token = await PrefsHelper.getString(AppConstants.bearerToken);
-          // var userId = await PrefsHelper.getString(AppConstants.userId);
-          // var fcmToken = await PrefsHelper.getString(AppConstants.fcmToken);
-          // bool isLogged = await PrefsHelper.getBool(AppConstants.isLogged);
-          //
-          //
-          //
-          // print("======================================$isLogged  \n token: $token \n userId : $userId \n fcm token : $fcmToken");
-          //
-          // SocketServices sockService = SocketServices();
-          //
-          // sockService.init(userId: userId, fcmToken: fcmToken.toString());
-          // FirebaseNotificationService.listenMessage();
-          //
-          // if(token != "" && isLogged){
-          //
-          //   /// ===============Role Check =============>>>
-          //   if(role.toLowerCase() == "customer"){
-          //     AppRoutes.goRouter.replaceNamed(AppRoutes.customerBottomNavBar);
-          //   }else if(role.toLowerCase() == "mechanic"){
-          //     AppRoutes.goRouter.replaceNamed(AppRoutes.mechanicBottomNavBar);
-          //   }else{
-          //     AppRoutes.goRouter.replaceNamed(AppRoutes.towTruckBottomNavBar);
-          //   }
-          // }else{
-          //   AppRoutes.goRouter.replaceNamed(AppRoutes.onboardingScreen);
-          // }
+          var role = await PrefsHelper.getString(AppConstants.role);
+          var token = await PrefsHelper.getString(AppConstants.bearerToken);
+          bool isLogged = await PrefsHelper.getBool(AppConstants.isLogged);
+
+
+
+          print("======================================$isLogged  \n token: $token");
+
+
+
+          if(token != "" && isLogged){
+
+            /// ===============Role Check =============>>>
+            if(role.toLowerCase() == "user"){
+              AppRoutes.goRouter.replaceNamed(AppRoutes.bottomNavbarScreen);
+            }
+          }
           AppRoutes.goRouter.replaceNamed(AppRoutes.onBoardingScreen);
 
         }
