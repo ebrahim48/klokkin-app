@@ -1,9 +1,11 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
 import 'package:klokkin_app/core/config/app_routes/app_routes.dart';
+import 'package:klokkin_app/models/my_story_model.dart';
 import '../../../services/api_client.dart';
 import '../../../services/api_constants.dart';
 import '../core/helpers/toast_message_helper.dart';
@@ -103,7 +105,7 @@ class HomeController extends GetxController {
 
 
 
-// ================================> Latest form   ==============================>
+/// ================================> Latest form   ==============================>
 
 
   RxBool getLatestFormLoading = false.obs;
@@ -124,6 +126,43 @@ class HomeController extends GetxController {
 
 
 
+  /// ================================> My Stories   ==============================>
+
+  RxInt page = 1.obs;
+  var totalPages = (-1);
+  var currentPage = (-1);
+  var total = (-1);
+  void loadMore() {
+    print("==========================================total page ${totalPages} page No: ${page.value} == total result ${total}");
+    if (totalPages > page.value) {
+      page.value += 1;
+      print("**********************print here");
+      update();
+    }
+    print("**********************print here**************");
+  }
+  RxBool getMyStoryLoading = false.obs;
+  RxList<MyStoryModel> myStory = <MyStoryModel>[].obs;
+  getMyStory()async{
+    if(page.value == 1){
+      loading(true);
+    }
+    getMyStoryLoading(true);
+    var response = await ApiClient.getData(ApiConstants.getMyStoryEndPoint("${page.value}"));
+    if(response.statusCode == 200){
+
+      // totalPages = jsonDecode(response.body['pagination']['totalPages'].toString()) ?? 0;
+      // currentPage = jsonDecode(response.body['pagination']['currentPage'].toString()) ?? 0;
+      // total = jsonDecode(response.body['pagination']['total'].toString()) ?? 0;
+
+      myStory.value = List<MyStoryModel>.from(response.body["data"]["attributes"]["data"].
+      map((x)=> MyStoryModel.fromJson(x)));
+
+      getMyStoryLoading(false);
+    }else{
+      getMyStoryLoading(false);
+    }
+  }
 
 
 

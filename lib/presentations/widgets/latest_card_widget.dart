@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import '../../core/constants/app_colors.dart';
 import 'custom_text.dart';
+import 'custom_network_image.dart';
 
 class LatestCard extends StatelessWidget {
   final String title;
@@ -38,9 +39,9 @@ class LatestCard extends StatelessWidget {
                 child: Stack(
                   children: [
                     Positioned.fill(
-                      child: Image.asset(
-                        imagePath,
-                        fit: BoxFit.cover,
+                      child: CustomNetworkImage(
+                        imageUrl: imagePath,
+                        borderRadius: BorderRadius.zero,
                       ),
                     ),
                     Positioned(
@@ -51,16 +52,19 @@ class LatestCard extends StatelessWidget {
                         height: 24.h,
                         padding: EdgeInsets.symmetric(horizontal: 6.w),
                         decoration: BoxDecoration(
-                          color:AppColors.textColorFFFFFF.withOpacity(0.1),
+                          color: AppColors.textColorFFFFFF.withOpacity(0.1),
                         ),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            CustomText(
-                              text: title,
-                              color: AppColors.textColorFFFFFF,
-                              fontsize: 12.sp,
-                              fontWeight: FontWeight.w500,
+                            Expanded(
+                              child: CustomText(
+                                textAlign: TextAlign.start,
+                                text: title,
+                                color: AppColors.textColorFFFFFF,
+                                fontsize: 12.sp,
+                                fontWeight: FontWeight.w500,
+                              ),
                             ),
                             SvgPicture.asset(
                               "assets/icons/downloadSimple.svg",
@@ -70,13 +74,13 @@ class LatestCard extends StatelessWidget {
                             ),
                           ],
                         ),
-
                       ),
                     ),
                   ],
                 ),
               ),
-              SizedBox(height: 10.h),
+              SizedBox(height: 6.h),
+
               // Bottom caption
               Container(
                 width: double.infinity,
@@ -85,7 +89,6 @@ class LatestCard extends StatelessWidget {
                 child: CustomText(
                   text: caption,
                   fontsize: 12.sp,
-                  maxline: 2,
                   fontWeight: FontWeight.w400,
                   color: AppColors.textColor000000,
                 ),
