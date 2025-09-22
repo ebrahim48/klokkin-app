@@ -23,5 +23,6 @@ class ApiConstants{
   static const String uploadEndPoint = "/story/story";
   static const String getLatestFormEndPoint = "/story/story";
   static  String getMyStoryEndPoint(String page) =>  "/story/stories?page=$page";
+  static  String getStoryLibraryEndPoint = "/story/libraryData";
 
 }

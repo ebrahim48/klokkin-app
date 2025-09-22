@@ -10,6 +10,7 @@ import '../../../core/constants/app_colors.dart';
 import '../../../global/custom_assets/assets.gen.dart';
 import '../../widgets/audio_book_card.dart';
 import '../../widgets/category_widget.dart';
+import '../../widgets/custom_loader.dart';
 
 
 
@@ -24,7 +25,10 @@ class _StoryScreenState extends State<StoryScreen> {
   final AudioBookController controller = Get.put(AudioBookController());
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
-
+  void initState() {
+    super.initState();
+    controller.getLibraryStoryData();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -83,26 +87,68 @@ class _StoryScreenState extends State<StoryScreen> {
               /// =====================================> Categories Scroll =====================================>
 
               SizedBox(height: 11.h),
-              SizedBox(
-                height: 120.h,
-                child: ListView.separated(
-                  scrollDirection: Axis.horizontal,
-                  padding: EdgeInsets.symmetric(horizontal: 20.w),
-                  itemCount: 12,
-                  separatorBuilder: (context, index) => SizedBox(width: 12.w),
-                  itemBuilder: (context, index) {
-                    return CategoryCard(
-                      title: index.isEven ? "Image Story World" : "Audio Story",
-                      subtitle: "100 Stories",
-                      imagePath: "assets/images/category.png",
-                      onTap: () {
-                        context.pushNamed(AppRoutes.storyImageScreen);
+              Obx((){
+                if (controller.getLibraryStoryLoading.value) {
+                  return const Center(child: CustomLoader());
+                }
 
-                      },
-                    );
-                  },
-                ),
-              ),
+                if (controller.libraryStoryData.isEmpty) {
+                  return CustomText(
+                    text: "Library Story Data Unavailable",
+                     textAlign: TextAlign.center,
+                    color: AppColors.textColorC2C2C2,
+                  );
+                }
+                return SizedBox(
+                  height: 120.h,
+                  child: ListView.separated(
+                    scrollDirection: Axis.horizontal,
+                    padding: EdgeInsets.symmetric(horizontal: 20.w),
+                    itemCount: controller.libraryStoryData.length,
+                    separatorBuilder: (context, index) => SizedBox(width: 12.w),
+                    itemBuilder: (context, index) {
+                      final library = controller.libraryStoryData[index];
+
+                      final subtitleText = () {
+                        switch (library.type) {
+                          case "audio":
+                            return "${controller.audioMeta.value?.total ?? 0} Stories";
+                          case "video":
+                            return "${controller.videoMeta.value?.total ?? 0} Stories";
+                          case "image":
+                            return "${controller.imageMeta.value?.total ?? 0} Stories";
+                          default:
+                            return "0 Stories";
+                        }
+                      }();
+
+                      final imagePath = () {
+                        switch (library.type) {
+                          case "audio":
+                            return "assets/images/audioimage.png";
+                          case "video":
+                            return "assets/images/videoimage.png";
+                          case "image":
+                            return "assets/images/imageworld.png";
+                          default:
+                            return "assets/images/default.png";
+                        }
+                      }();
+
+                      return CategoryCard(
+                        title: library.type ?? 'N/A',
+                        subtitle: subtitleText,
+                        imagePath: imagePath,
+                        onTap: () {
+                          context.pushNamed(AppRoutes.storyImageScreen);
+                        },
+                      );
+                    },
+                  ),
+                );
+
+
+              }),
               SizedBox(height: 27.h),
               Padding(
                 padding:  EdgeInsets.symmetric(horizontal: 20.w),
