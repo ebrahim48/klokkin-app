@@ -64,42 +64,33 @@ class _StartCreateStoryScreenState extends State<StartCreateStoryScreen> {
                   color:  AppColors.buttonColorE8A533,
                 ),
               ),
-              SizedBox(height: 115.h),  /// ===================================> START CARDS ====================================>
+              SizedBox(height: 124.h),
+              CustomText(
+                text: 'To create story, you must complete three key steps that will guide you from start to finish.',
+                fontsize: 16.sp,
+                fontWeight: FontWeight.w400,
+                color:  AppColors.textColorFFFFFF,
+                maxline: 2,
+              ),
+              SizedBox(height: 32.h),  /// ===================================> START CARDS ====================================>
               SizedBox(
-                height: 300.h,
-                child: PageView.builder(
-                  controller: PageController(viewportFraction: 0.85),
-                  itemCount: stories.length,
+                height: 200.h,
+                child: ListView.separated(
+                  scrollDirection: Axis.horizontal,
+                  padding: EdgeInsets.symmetric(horizontal: 20.w),
+                  itemCount: steps.length,
+                  separatorBuilder: (_, __) => SizedBox(width: 12.w),
                   itemBuilder: (context, index) {
-                    final story = stories[index];
-                    return Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 8.w),
-                      child: StoryCard(
-                        image: story["image"]!,
-                        title: story["title"]!,
-                        desc: story["desc"]!,
-                      ),
+                    final step = steps[index];
+                    return StoryCard(
+                      step: step["step"]!,
+                      desc: step["desc"]!,
                     );
                   },
                 ),
               ),
 
               SizedBox(height: 15.h),
-              /// =============================> Page Indicator =============================>
-              Align(
-                alignment: Alignment.center,
-                child: SmoothPageIndicator(
-                  controller: _pageController,
-                  count: stories.length,
-                  effect: ExpandingDotsEffect(
-                    dotWidth: 10.w,
-                    dotHeight: 6.h,
-                    spacing: 6.w,
-                    activeDotColor: AppColors.primaryColorC79235,
-                    dotColor: AppColors.textColorFFFFFF,
-                  ),
-                ),
-              ),
 
 
               SizedBox(height: 50.h)
@@ -110,26 +101,21 @@ class _StartCreateStoryScreenState extends State<StartCreateStoryScreen> {
     );
   }
 
-  final PageController _pageController = PageController();
-
-  var indicatorIndex = 0.obs;
-
-  final List<Map<String, String>> stories = [
+  final List<Map<String, String>> steps = [
     {
-      "image": "assets/images/create.png",
-      "title": "Innovation Finds Its Space",
+      "step": "Step 1",
       "desc":
-      "In this modern workspace, ideas flow freely. Every desk holds the start of a new story.",
+      "At first, enter your story’s title, add a short description, and select tags to make it easier to find.",
     },
     {
-      "image": "assets/images/create.png",
-      "title": "Collaboration Zone",
-      "desc": "Work together, share ideas, and create something amazing every day.",
+      "step": "Step 2",
+      "desc":
+      "Next, upload your media or record directly in the app to bring your story to life.",
     },
     {
-      "image": "assets/images/create.png",
-      "title": "Creative Hub",
-      "desc": "This space fuels creativity and sparks innovation for every team.",
+      "step": "Step 3",
+      "desc":
+      "Finally, review your story and publish it to share with your audience.",
     },
   ];
 }

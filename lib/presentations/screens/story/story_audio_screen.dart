@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
 import 'package:klokkin_app/presentations/widgets/custom_app_bar.dart';
 import 'package:klokkin_app/presentations/widgets/custom_text.dart';
 import '../../../controllers/audio_book_controller.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../widgets/custom_audio_progress.dart';
+import '../../widgets/custom_network_image.dart';
 
 
 
@@ -25,6 +27,7 @@ class _StoryAudioScreenState extends State<StoryAudioScreen> {
 
   @override
   Widget build(BuildContext context) {
+    Map routeData = GoRouterState.of(context).extra as Map;
     return Scaffold(
       key: _scaffoldKey,
       resizeToAvoidBottomInset: true,
@@ -38,17 +41,20 @@ class _StoryAudioScreenState extends State<StoryAudioScreen> {
                 alignment: Alignment.center,
                 child: Padding(
                   padding: EdgeInsets.only(left: 10.w),
-                  child: Image.asset(
-                    "assets/images/audiostory.png",
-                    fit: BoxFit.cover,
-                  ),
+                  child:  CustomNetworkImage(
+                      imageUrl: "${routeData["imagePath"]}",
+                      boxShape: BoxShape.circle,
+                      height: 110.h,
+                      width: 110.w,
+                      border: Border.all(color: AppColors.primaryColorC79235)),
+
                 ),
               ),
               SizedBox(height: 16.h),
               Align(
                 alignment: Alignment.center,
                 child: CustomText(
-                  text: 'Stories from the Desk',
+                  text: "${routeData["caption"]}",
                   color: AppColors.textColorFFFFFF,
                   fontsize: 16.sp,
                   fontWeight: FontWeight.w500,

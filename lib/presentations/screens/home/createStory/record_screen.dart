@@ -98,6 +98,7 @@ class RecordStoryScreen extends StatelessWidget {
 
   /// ========== Audio View ==========
   Widget _audioView() {
+    final controller = Get.find<RecordStoryController>();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
@@ -142,14 +143,46 @@ class RecordStoryScreen extends StatelessWidget {
 
         SizedBox(height: 30.h),
 
-        CustomText(text: "00:08:10",
-            fontsize: 32.sp, color: AppColors.textColor919191, fontWeight: FontWeight.w400),
-
+        Obx(() => CustomText(
+          text: controller.formattedDuration,
+          fontsize: 32.sp,
+          color: AppColors.textColor919191,
+          fontWeight: FontWeight.w400,
+        )),
         SizedBox(height: 16.h),
-        CustomButton(
-            title: 'Record',
-          onpress: () {
 
+        GestureDetector(
+          onTap: controller.isRecording.value
+              ? null
+              : () {
+            Get.snackbar("Info", "Pause/resume not supported");
+          },
+          child: Opacity(
+            opacity: controller.isRecording.value ? 1.0 : 0.5,
+            child: Assets.icons.resume.svg(width: 74.w, height: 74.h),
+          ),
+        ),
+
+        GestureDetector(
+          onTap: () {
+            if (controller.isRecording.value) {
+              controller.stopRecording();
+            }
+            // Always start fresh
+            controller.startRecording();
+          },
+          child: Assets.icons.resume.svg(width: 74.w, height: 74.h),
+        ),
+
+
+        CustomButton(
+          title: controller.isRecording.value ? 'Stop' : 'Record',
+          onpress: () {
+            if (controller.isRecording.value) {
+              controller.stopRecording();
+            } else {
+              controller.startRecording();
+            }
           },
           width: 180.w,
           height: 40,
@@ -157,17 +190,42 @@ class RecordStoryScreen extends StatelessWidget {
           titlecolor: AppColors.textColor919191,
           borderRadius: 8.r,
         ),
+
+
+
         SizedBox(height: 56.h),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Assets.icons.cross.svg(width: 40.w, height: 40.h),
+            GestureDetector(
+              onTap: () => controller.stopRecording(),
+              child: Assets.icons.cross.svg(width: 40.w, height: 40.h),
+            ),
             SizedBox(width: 50.w),
-            Assets.icons.resume.svg(width: 74.w, height: 74.h),
+            GestureDetector(
+              onTap: () {
+                if (controller.isRecording.value) {
+                  controller.startRecording();
+                } else {
+                  controller.stopRecording();
+                }
+              },
+              child: Assets.icons.resume.svg(width: 74.w, height: 74.h),
+            ),
             SizedBox(width: 50.w),
-            Assets.icons.checkCircle.svg(width: 40.w, height: 40.h),
+            GestureDetector(
+              onTap: () {
+                print("Final File: ${controller.recordPath.value}");
+
+              },
+              child: Assets.icons.checkCircle.svg(width: 40.w, height: 40.h),
+            ),
           ],
         ),
+
+
+
+
       ],
     );
   }

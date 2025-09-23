@@ -3,6 +3,8 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:klokkin_app/core/constants/app_colors.dart';
 import 'package:klokkin_app/presentations/widgets/custom_text.dart';
 
+import 'custom_network_image.dart';
+
 class AudioBookCard extends StatelessWidget {
   final String title;
   final String subtitle;
@@ -40,11 +42,11 @@ class AudioBookCard extends StatelessWidget {
                 /// Circle Image
                 ClipRRect(
                   borderRadius: BorderRadius.circular(40.r),
-                  child: Image.asset(
-                    imagePath,
+                  child: CustomNetworkImage(
+                    imageUrl: imagePath,
+                    borderRadius: BorderRadius.zero,
                     width: 64.w,
                     height: 64.h,
-                    fit: BoxFit.cover,
                   ),
                 ),
                 SizedBox(width: 12.w),

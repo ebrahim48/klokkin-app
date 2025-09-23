@@ -140,7 +140,7 @@ class _StoryScreenState extends State<StoryScreen> {
                         subtitle: subtitleText,
                         imagePath: imagePath,
                         onTap: () {
-                          context.pushNamed(AppRoutes.storyImageScreen);
+                          context.pushNamed(AppRoutes.storyAudioScreen);
                         },
                       );
                     },
@@ -150,6 +150,9 @@ class _StoryScreenState extends State<StoryScreen> {
 
               }),
               SizedBox(height: 27.h),
+
+              /// =====================================> Audio Book Scroll =====================================>
+
               Padding(
                 padding:  EdgeInsets.symmetric(horizontal: 20.w),
                 child: CustomText(
@@ -160,28 +163,58 @@ class _StoryScreenState extends State<StoryScreen> {
                 ),
               ),
               SizedBox(height: 9.h),
-              /// =====================================> Audio Book Scroll =====================================>
 
-              SizedBox(
-                height: 400.h,
-                child: ListView.separated(
-                  padding: EdgeInsets.symmetric(horizontal: 20.w),
-                  itemCount: 6,
-                  separatorBuilder: (context, index) => SizedBox(height: 12.h),
-                  itemBuilder: (context, index) {
-                    return AudioBookCard(
-                      title: "Stories from the Desk",
-                      subtitle: "Audio 1hr 30m",
-                      imagePath: "assets/images/stories.png",
-                      isPlaying: index == 1,
-                      // isPlaying: controller.isPlayingList[index],
-                      onTap: () {
-                        context.pushNamed(AppRoutes.storyAudioScreen);
-                      },
-                    );
-                  },
-                ),
+              Obx((){
+                // if (controller.getLibraryStoryLoading.value) {
+                //   return const Center(child: CustomLoader());
+                // }
+
+                if (controller.libraryStoryData.isEmpty) {
+                  return CustomText(
+                    text: "Audio Book Data Unavailable",
+                    textAlign: TextAlign.center,
+                    color: AppColors.textColorC2C2C2,
+                  );
+                }
+               return SizedBox(
+                  height: 400.h,
+                  child: ListView.separated(
+                    padding: EdgeInsets.symmetric(horizontal: 20.w),
+                    itemCount: controller.libraryStoryData.length,
+                    separatorBuilder: (context, index) => SizedBox(height: 12.h),
+                    itemBuilder: (context, index) {
+                      final audioBook = controller.libraryStoryData[index];
+                      return AudioBookCard(
+                        title: audioBook.caption ?? 'N/A',
+                        subtitle: "Audio 1hr 30m",
+                        imagePath: audioBook.mediaUrl != null && audioBook.mediaUrl!.isNotEmpty
+                            ? audioBook.mediaUrl!.first
+                            : "https://templates.joomla-monster.com/joomla30/jm-news-portal/components/com_djclassifieds/assets/images/default_profile.png",
+                        isPlaying: index == 1,
+                        // isPlaying: controller.isPlayingList[index],
+                        onTap: () {
+                          context.pushNamed(
+                              AppRoutes.storyAudioScreen,
+                            extra: {
+                                "caption": audioBook.caption ??"",
+                              "imagePath": audioBook.mediaUrl != null && audioBook.mediaUrl!.isNotEmpty
+                                  ? audioBook.mediaUrl!.first
+                                  : "https://templates.joomla-monster.com/joomla30/jm-news-portal/components/com_djclassifieds/assets/images/default_profile.png" ??"",
+
+
+                            }
+                          );
+                        },
+                      );
+                    },
+                  ),
+                );
+              }
+
               ),
+
+
+
 
               SizedBox(height: 10.h),
             ],
