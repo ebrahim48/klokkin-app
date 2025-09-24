@@ -9,6 +9,7 @@ import 'package:klokkin_app/presentations/widgets/custom_button.dart';
 import 'package:klokkin_app/presentations/widgets/custom_text.dart';
 import '../../../../controllers/record_controller.dart';
 import '../../../../global/custom_assets/assets.gen.dart';
+import '../../../widgets/waveform-painter.dart';
 
 class RecordStoryScreen extends StatelessWidget {
   const RecordStoryScreen({super.key});
@@ -137,91 +138,105 @@ class RecordStoryScreen extends StatelessWidget {
         ),
         SizedBox(height: 30.h),
 
-        /// Fake waveform
-        Assets.icons.wave.svg(width: 430.w, height: 88.h),
+
 
 
         SizedBox(height: 30.h),
 
-        Obx(() => CustomText(
-          text: controller.formattedDuration,
-          fontsize: 32.sp,
-          color: AppColors.textColor919191,
-          fontWeight: FontWeight.w400,
-        )),
-        SizedBox(height: 16.h),
-
-        GestureDetector(
-          onTap: controller.isRecording.value
-              ? null
-              : () {
-            Get.snackbar("Info", "Pause/resume not supported");
-          },
-          child: Opacity(
-            opacity: controller.isRecording.value ? 1.0 : 0.5,
-            child: Assets.icons.resume.svg(width: 74.w, height: 74.h),
-          ),
-        ),
-
-        GestureDetector(
-          onTap: () {
-            if (controller.isRecording.value) {
-              controller.stopRecording();
-            }
-            // Always start fresh
-            controller.startRecording();
-          },
-          child: Assets.icons.resume.svg(width: 74.w, height: 74.h),
-        ),
-
-
-        CustomButton(
-          title: controller.isRecording.value ? 'Stop' : 'Record',
-          onpress: () {
-            if (controller.isRecording.value) {
-              controller.stopRecording();
-            } else {
-              controller.startRecording();
-            }
-          },
-          width: 180.w,
-          height: 40,
-          color: AppColors.textColor323539,
-          titlecolor: AppColors.textColor919191,
-          borderRadius: 8.r,
-        ),
-
-
-
-        SizedBox(height: 56.h),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
+        Column(
           children: [
-            GestureDetector(
-              onTap: () => controller.stopRecording(),
-              child: Assets.icons.cross.svg(width: 40.w, height: 40.h),
-            ),
-            SizedBox(width: 50.w),
-            GestureDetector(
-              onTap: () {
+
+            Obx(() => Container(
+              height: 96.h,
+              width: 430.w,
+              child: CustomPaint(
+                painter: RealWaveformPainter(
+                  controller.currentAmplitude.value,
+                  isRecording: controller.isRecording.value,
+                ),
+                size: Size(430.w, 96.h),
+              ),
+            )),
+
+            SizedBox(height: 30.h),
+
+            /// Dynamic timer text
+            Obx(() => CustomText(
+              text: controller.formattedDuration,
+              fontsize: 32.sp,
+              color: AppColors.textColor919191,
+              fontWeight: FontWeight.w400,
+            )),
+
+            SizedBox(height: 16.h),
+
+            /// Record / Stop / Resume Button
+            Obx(() => CustomButton(
+              title: controller.isRecording.value
+                  ? 'Stop Recording'
+                  : (controller.isPaused.value ? 'Resume Recording' : 'Start Recording'),
+              onpress: () {
                 if (controller.isRecording.value) {
-                  controller.startRecording();
+                  controller.pauseRecording();
+                } else if (controller.isPaused.value) {
+                  controller.resumeRecording();
                 } else {
-                  controller.stopRecording();
+                  controller.startRecording();
                 }
               },
-              child: Assets.icons.resume.svg(width: 74.w, height: 74.h),
-            ),
-            SizedBox(width: 50.w),
-            GestureDetector(
-              onTap: () {
-                print("Final File: ${controller.recordPath.value}");
+              width: 180.w,
+              height: 40,
+              color: AppColors.textColor323539,
+              titlecolor: AppColors.textColor919191,
+              borderRadius: 8.r,
+            )),
 
-              },
-              child: Assets.icons.checkCircle.svg(width: 40.w, height: 40.h),
+            SizedBox(height: 56.h),
+
+            /// Action Row: Cancel, Restart, Done
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+
+                GestureDetector(
+                  onTap: () async {
+                    try {
+                      if (Get.isRegistered<RecordStoryController>()) {
+                        await controller.cancelRecording();
+                      }
+                      // Get.back();
+                    } catch (e) {
+                      print('Error in cross button: $e');
+                      // Force close even if error occurs
+                      // Get.back();
+                    }
+                  },
+                  child: Assets.icons.cross.svg(width: 40.w, height: 40.h),
+                ),
+
+                SizedBox(width: 50.w),
+
+                /// 🔄 Restart (clear current recording and start fresh)
+                GestureDetector(
+                  onTap: () {
+                    controller.restartRecording();
+                  },
+                  child: Assets.icons.resume.svg(width: 74.w, height: 74.h),
+                ),
+
+                SizedBox(width: 50.w),
+
+                /// ✅ Done — Save the recording properly
+                GestureDetector(
+                  onTap: () {
+                    controller.saveRecording();
+                  },
+                  child: Assets.icons.checkCircle.svg(width: 40.w, height: 40.h),
+                ),
+              ],
             ),
           ],
-        ),
+        )
 
 
 

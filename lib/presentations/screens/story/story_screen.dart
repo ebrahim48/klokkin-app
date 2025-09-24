@@ -35,12 +35,13 @@ class _StoryScreenState extends State<StoryScreen> {
     return Scaffold(
       key: _scaffoldKey,
       resizeToAvoidBottomInset: true,
-      appBar: const CustomAppBar(),
+      // appBar: const CustomAppBar(),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              SizedBox(height: 50.h),
               Center(child: Assets.icons.storyIcon.svg()),
               SizedBox(height: 7.h),
               Align(
@@ -93,10 +94,12 @@ class _StoryScreenState extends State<StoryScreen> {
                 }
 
                 if (controller.libraryStoryData.isEmpty) {
-                  return CustomText(
-                    text: "Library Story Data Unavailable",
-                     textAlign: TextAlign.center,
-                    color: AppColors.textColorC2C2C2,
+                  return Center(
+                    child: CustomText(
+                      text: "Library Story Data Unavailable",
+                       textAlign: TextAlign.center,
+                      color: AppColors.textColorC2C2C2,
+                    ),
                   );
                 }
                 return SizedBox(
@@ -170,10 +173,12 @@ class _StoryScreenState extends State<StoryScreen> {
                 // }
 
                 if (controller.libraryStoryData.isEmpty) {
-                  return CustomText(
-                    text: "Audio Book Data Unavailable",
-                    textAlign: TextAlign.center,
-                    color: AppColors.textColorC2C2C2,
+                  return Center(
+                    child: CustomText(
+                      text: "Audio Book Data Unavailable",
+                      textAlign: TextAlign.center,
+                      color: AppColors.textColorC2C2C2,
+                    ),
                   );
                 }
                return SizedBox(
