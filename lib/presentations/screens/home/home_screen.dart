@@ -467,10 +467,12 @@ class _HomeScreenState extends State<HomeScreen> {
                 }
 
                 if (homeController.latestForm.isEmpty) {
-                  return CustomText(
-                    text: "Latest Form Unavailable",
-                    textAlign: TextAlign.center,
-                    color: AppColors.textColorC2C2C2,
+                  return Center(
+                    child: CustomText(
+                      text: "Latest Form Unavailable",
+                      textAlign: TextAlign.center,
+                      color: AppColors.textColorC2C2C2,
+                    ),
                   );
                 }
                 return SizedBox(

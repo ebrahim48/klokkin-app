@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
+import 'package:logger/logger.dart';
 import '../../core/app_constants/app_constants.dart';
 import '../../core/config/app_routes/app_routes.dart';
 import '../../core/helpers/prefs_helper.dart';
@@ -20,6 +21,7 @@ class AuthController extends GetxController {
   bool isCheckboxError = false;
   RxBool isObscure = true.obs;
   RxBool isObscureConfirmPassword = true.obs;
+  var logger = Logger();
 
   toggleIsObscure() {
     isObscure.value = !isObscure.value;
@@ -156,8 +158,12 @@ class AuthController extends GetxController {
     if (response.statusCode == 200 || response.statusCode == 201) {
       var data = response.body['data']['attributes']["userWithoutPassword"];
 
+
+      logger.d("token khujtechi .....");
       /// Access token save
-      await PrefsHelper.setString(AppConstants.bearerToken, response.body["data"]['attributes']["tokens"]["accessToken"],
+      var token=response.body["data"]['attributes']["tokens"]["accessToken"];
+      logger.d("token paichi  ...., eije tomar token ======>> $token");
+      await PrefsHelper.setString(AppConstants.bearerToken, token,
       );
       await PrefsHelper.setString(AppConstants.role, data['role']);
 
