@@ -22,6 +22,7 @@ class ApiConstants{
   static String updateTagEndPoint(String id) => "/tag/tags/$id";
   static const String uploadEndPoint = "/story/story";
   static const String getLatestFormEndPoint = "/story/story";
+  static const String getWorkingDaysEndPoint = "/story/working-days";
   static  String getMyStoryEndPoint(String page) =>  "/story/stories?page=$page";
   static  String getStoryLibraryEndPoint = "/story/libraryData";
 

@@ -116,7 +116,7 @@ class ApiClient extends GetxService {
       bearerToken = await PrefsHelper.getString(AppConstants.bearerToken);
 
       var mainHeaders = {
-        'Content-Type': 'application/x-www-form-urlencoded',
+        'Content-Type': 'multipart/form-data',
         'Authorization': bearerToken
       };
 
