@@ -210,8 +210,7 @@ class _SystemSettingScreenState extends State<SystemSettingScreen> {
                 // Confirm Button
                 TextButton(
                   onPressed: () {
-                   context.pushNamed(AppRoutes.signUpScreen);
-
+                   context.pushNamed(AppRoutes.logInScreen);
                   },
                   child: CustomText(
                     text: 'Confirm',

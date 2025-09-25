@@ -82,10 +82,14 @@ class UploadCreateStoryScreen extends StatelessWidget {
                         onTap: controller.pickFile),
                     SizedBox(height: 12.h),
                     PillButton(
-                        label: "Take photo or video",
-                        width: 160.w,
-                        height: 40.h,
-                        onTap: controller.takePhotoOrVideo),
+                      label: "Take photo or video",
+                      width: 160.w,
+                      height: 40.h,
+                      onTap: () => controller.takePhotoOrVideo(context),
+                    ),
+
+
+
                   ],
                 ),
               ),

@@ -11,6 +11,7 @@ import '../../../services/api_constants.dart';
 import '../core/helpers/toast_message_helper.dart';
 import '../models/all_tags_model.dart';
 import '../models/latest_form_model.dart';
+import '../models/working_days_model.dart';
 
 class HomeController extends GetxController {
 
@@ -70,24 +71,27 @@ class HomeController extends GetxController {
 
   RxBool uploadStoryLoading = false.obs;
 
-  uploadStory(
-      { required List<File> images,
+  uploadStory({
+     required List<File> images,
         String? caption,
-        String? type,
+        File? thumbnail,
         String? description,
         String? tags,
         required BuildContext context}) async {
     uploadStoryLoading(true);
 
     List<MultipartBody> photoList = [];
+
     for (var photos in images) {
       photoList.add(MultipartBody("files", photos));
     }
     List<MultipartBody> multipartBody = photoList ?? [];
+    if (thumbnail != null) {
+      multipartBody.add(MultipartBody("thumbnail", thumbnail));
+    }
 
     var body = {
       "caption": "$caption",
-      "type": "$type",
       "description": "$description",
       "tags": "$tags",
     };
@@ -165,6 +169,24 @@ class HomeController extends GetxController {
   }
 
 
+  /// ================================> Working Days   ==============================>
+
+
+  RxBool getWorkingLoading = false.obs;
+  RxList<WorkingDaysModel> workingDays = <WorkingDaysModel>[].obs;
+  getWorkingDays()async{
+    getWorkingLoading(true);
+    var response = await ApiClient.getData(ApiConstants.getWorkingDaysEndPoint);
+    if(response.statusCode == 200){
+      workingDays.value = List<WorkingDaysModel>.from(response.body["data"]["attributes"]["data"].
+      map((x)=> WorkingDaysModel.fromJson(x)));
+
+
+      getWorkingLoading(false);
+    }else{
+      getWorkingLoading(false);
+    }
+  }
 
 
 

@@ -20,9 +20,9 @@ class BottomNavBar extends StatefulWidget {
 class _BottomNavBarState extends State<BottomNavBar> {
   final List<Widget> screens = [
     const HomeScreen(),
-    StoryScreen() ,// Story
-    LibraryScreen(), // Library
-   ProfileScreen(), // Profile
+    const StoryScreen() ,
+    const LibraryScreen(),
+   const ProfileScreen(),
   ];
 
   int currentIndex = 0;
@@ -44,7 +44,8 @@ class _BottomNavBarState extends State<BottomNavBar> {
           elevation: 4,
           shape: const CircleBorder(),
           onPressed: () {
-            context.pushNamed(AppRoutes.everyStoryScreen, extra: {
+            context.pushNamed(AppRoutes.everyStoryScreen,
+                extra: {
               "title" : "Every story beings with a step",
 
             });
