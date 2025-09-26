@@ -44,11 +44,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
           elevation: 4,
           shape: const CircleBorder(),
           onPressed: () {
-            context.pushNamed(AppRoutes.everyStoryScreen,
-                extra: {
-              "title" : "Every story beings with a step",
 
-            });
           },
           child: Icon(
             Icons.add,

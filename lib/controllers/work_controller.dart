@@ -2,40 +2,30 @@ import 'package:get/get.dart';
 import 'package:video_player/video_player.dart';
 
 class WorkCardController extends GetxController {
-  late VideoPlayerController controller;
+  late VideoPlayerController videoController;
   var isPlaying = false.obs;
+  var isInitialized = false.obs;
 
-  @override
-  void onInit() {
-    super.onInit();
-    controller = VideoPlayerController.asset('')
+  void setVideoPath(String videoUrl) {
+    videoController = VideoPlayerController.networkUrl(Uri.parse(videoUrl))
       ..initialize().then((_) {
-        update();
-      });
-  }
-
-  void setVideoPath(String videoPath) {
-    controller = VideoPlayerController.asset(videoPath)
-      ..initialize().then((_) {
+        isInitialized.value = true;
         update();
       });
   }
 
   void togglePlayPause() {
     if (isPlaying.value) {
-      controller.pause();
+      videoController.pause();
     } else {
-      controller.play();
+      videoController.play();
     }
     isPlaying.value = !isPlaying.value;
   }
 
   @override
   void onClose() {
-    controller.dispose();
+    videoController.dispose();
     super.onClose();
   }
-
-
-
 }

@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:video_player/video_player.dart';
 import '../../controllers/work_controller.dart';
 import '../../core/constants/app_colors.dart';
+import 'custom_network_image.dart';
 import 'custom_text.dart';
 
 class WorkCard extends StatelessWidget {
@@ -39,16 +41,36 @@ class WorkCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              /// =============================> Image with overlay ========================>
+              /// =============================> Image/Video with overlay ========================>
               Expanded(
                 child: Stack(
                   children: [
-                    Positioned.fill(
-                      child: Image.asset(
-                        imagePath,
-                        fit: BoxFit.cover,
-                      ),
-                    ),
+                    /// Show video if initialized, else fallback image
+                    Obx(() {
+                      if (controller.isInitialized.value) {
+                        return Stack(
+                          children: [
+
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(6.r),
+                              child: AspectRatio(
+                                aspectRatio:
+                                controller.videoController.value.aspectRatio,
+                                child: VideoPlayer(controller.videoController),
+                              ),
+                            ),
+                          ],
+                        );
+                      } else {
+
+                        return CustomNetworkImage(
+                          imageUrl: imagePath,
+                          borderRadius: BorderRadius.zero,
+                        );
+                      }
+                    }),
+
+                    /// Top overlay: Title + Download
                     Positioned(
                       top: 16,
                       left: 8,
@@ -62,13 +84,15 @@ class WorkCard extends StatelessWidget {
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            CustomText(
-                              textAlign: TextAlign.start,
-                              text: title,
-                              color: AppColors.textColorFFFFFF,
-                              fontsize: 16.sp,
-                              fontWeight: FontWeight.w900,
-                              maxline: 2,
+                            Expanded(
+                              child: CustomText(
+                                textAlign: TextAlign.start,
+                                text: title,
+                                color: AppColors.textColorFFFFFF,
+                                fontsize: 12.sp,
+                                fontWeight: FontWeight.w900,
+                                maxline: 2,
+                              ),
                             ),
                             SvgPicture.asset(
                               "assets/icons/downloadSimple.svg",
@@ -81,14 +105,14 @@ class WorkCard extends StatelessWidget {
                       ),
                     ),
 
-                    /// =============================> Bottom Overlay (Blur + Play + Duration) ========================>
+                    /// Bottom overlay: Play button + Duration
                     Positioned(
                       bottom: 8.h,
                       left: 8.w,
                       right: 8.w,
                       child: ClipRRect(
                         child: Container(
-                          height: 32.h,
+                          height: 34.h,
                           padding: EdgeInsets.symmetric(horizontal: 8.w),
                           color: AppColors.textColor000000.withOpacity(0.1),
                           child: Row(
