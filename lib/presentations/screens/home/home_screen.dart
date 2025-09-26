@@ -6,12 +6,14 @@ import 'package:go_router/go_router.dart';
 import 'package:klokkin_app/core/config/app_routes/app_routes.dart';
 import 'package:klokkin_app/presentations/widgets/custom_text.dart';
 import '../../../controllers/home_controller.dart';
+import '../../../controllers/work_controller.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../global/custom_assets/assets.gen.dart';
 import '../../../services/api_constants.dart';
 import '../../widgets/custom_loader.dart';
 import '../../widgets/custom_network_image.dart';
 import '../../widgets/custom_profile_image.dart';
+import '../../widgets/every-story_begins_card.dart';
 import '../../widgets/latest_card_widget.dart';
 import '../../widgets/work_card_widget.dart';
 
@@ -29,11 +31,14 @@ class _HomeScreenState extends State<HomeScreen> {
   final TextEditingController _searchController = TextEditingController();
 
   HomeController homeController = Get.put(HomeController());
+  WorkCardController workCardController = Get.put(WorkCardController());
 
   void initState() {
     super.initState();
     homeController.getLatestForm();
     homeController.getMyStory();
+    homeController.getWorkingDays();
+    homeController.getStorySteps();
   }
 
   @override
@@ -511,26 +516,49 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
               SizedBox(height: 11.h),
-              SizedBox(
-                height: 180.h,
-                child: ListView.separated(
-                  scrollDirection: Axis.horizontal,
-                  padding: EdgeInsets.symmetric(horizontal: 20.w),
-                  itemCount: 6,
-                  separatorBuilder: (context, index) => SizedBox(width: 12.w),
-                  itemBuilder: (context, index) {
-                    return WorkCard(
-                      title: "Industry\nLife",
-                      duration: "12 min",
-                      imagePath: "assets/images/unsplashWork.png",
-                      videoPath: "assets/videos/your_video.mp4",
-                      onTap: () {
+              Obx((){
+                // if (homeController.getWorkingLoading.value) {
+                //   return const Center(child: CustomLoader());
+                // }
+                if (homeController.workingDays.isEmpty) {
+                  return Center(
+                    child: CustomText(
+                      text: "Working Days Unavailable",
+                      textAlign: TextAlign.center,
+                      color: AppColors.textColorC2C2C2,
+                    ),
+                  );
+                }
+                return SizedBox(
+                  height: 180.h,
+                  child: ListView.separated(
+                    scrollDirection: Axis.horizontal,
+                    padding: EdgeInsets.symmetric(horizontal: 20.w),
+                    itemCount: homeController.workingDays.length,
+                    separatorBuilder: (context, index) => SizedBox(width: 12.w),
+                    itemBuilder: (context, index) {
+                      final workingDaysStories = homeController.workingDays[index];
+                      return WorkCard(
+                        title: workingDaysStories.caption ?? 'N/A',
+                        duration: workingDaysStories.duration ?? 'N/A',
+                        imagePath: workingDaysStories.mediaUrl != null && workingDaysStories.mediaUrl!.isNotEmpty
+                            ? workingDaysStories.mediaUrl!.first
+                            : "https://templates.joomla-monster.com/joomla30/jm-news-portal/components/com_djclassifieds/assets/images/default_profile.png",
+                        videoPath: "assets/videos/your_video.mp4",
+                        onTap: () {
+                          if (workingDaysStories.mediaUrl != null && workingDaysStories.mediaUrl!.isNotEmpty) {
+                            workCardController.setVideoPath(workingDaysStories.mediaUrl!.first);
+                          }
+                        },
 
-                      },
-                    );
-                  },
-                ),
+                      );
+                    },
+                  ),
+                );
+              }
               ),
+              /// =====================================> Every story begins =====================================>
+
               SizedBox(height: 5.h),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 20.w),
@@ -541,7 +569,57 @@ class _HomeScreenState extends State<HomeScreen> {
                   fontsize: 20.sp,
                 ),
               ),
-          
+              SizedBox(height: 16.h),
+
+              Obx((){
+                if (homeController.storySteps.isEmpty) {
+                  return Center(
+                    child: CustomText(
+                      text: "Story Steps Unavailable",
+                      textAlign: TextAlign.center,
+                      color: AppColors.textColorC2C2C2,
+                    ),
+                  );
+                }
+                return SizedBox(
+                  height: 180.h,
+                  child: ListView.separated(
+                    scrollDirection: Axis.horizontal,
+                    padding: EdgeInsets.symmetric(horizontal: 20.w),
+                    itemCount: homeController.storySteps.length,
+                    separatorBuilder: (context, index) => SizedBox(width: 12.w),
+                    itemBuilder: (context, index) {
+                      final storyStartSteps = homeController.storySteps[index];
+                      return EveryStoryCard(
+                        caption: storyStartSteps.description ?? "N/A",
+                        imagePath: storyStartSteps.mediaUrl != null && storyStartSteps.mediaUrl!.isNotEmpty
+                            ? storyStartSteps.mediaUrl!.first
+                            : "https://templates.joomla-monster.com/joomla30/jm-news-portal/components/com_djclassifieds/assets/images/default_profile.png",
+                        onTap: () {
+                          if (storyStartSteps.mediaUrl != null && storyStartSteps.mediaUrl!.isNotEmpty) {
+                            // homeController.setVideoPath(storyStartSteps.mediaUrl!.first);
+                            context.pushNamed(
+                                AppRoutes.everyStoryScreen,
+                              extra: {
+                                "title" : "Every story beings with a step",
+                                "storyId": storyStartSteps.id,
+
+                              }
+                            );
+
+                          }
+                        },
+
+                      );
+                    },
+                  ),
+                );
+              }
+
+              ),
+
+
+
           
           
           

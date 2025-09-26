@@ -17,6 +17,7 @@ class CustomText extends StatelessWidget {
         this.right = 0,
         this.top = 0,
         this.bottom = 0,
+        this.softWrap = true,
         this.fontsize,
         this.textHeight,
         this.fontWeight = FontWeight.w400,
@@ -26,6 +27,7 @@ class CustomText extends StatelessWidget {
   final double left;
   final TextOverflow? textOverflow;
   final double right;
+  final bool softWrap;
   final double top;
   final double bottom;
   final double? fontsize;

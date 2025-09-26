@@ -6,11 +6,14 @@ import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
 import 'package:klokkin_app/core/config/app_routes/app_routes.dart';
 import 'package:klokkin_app/models/my_story_model.dart';
+import 'package:video_player/video_player.dart';
 import '../../../services/api_client.dart';
 import '../../../services/api_constants.dart';
 import '../core/helpers/toast_message_helper.dart';
 import '../models/all_tags_model.dart';
 import '../models/latest_form_model.dart';
+import '../models/story_single_model.dart';
+import '../models/story_steps_model.dart';
 import '../models/working_days_model.dart';
 
 class HomeController extends GetxController {
@@ -120,8 +123,6 @@ class HomeController extends GetxController {
     if(response.statusCode == 200){
       latestForm.value = List<LatestFormModel>.from(response.body["data"]["attributes"]["data"].
       map((x)=> LatestFormModel.fromJson(x)));
-
-
       getLatestFormLoading(false);
     }else{
       getLatestFormLoading(false);
@@ -180,8 +181,6 @@ class HomeController extends GetxController {
     if(response.statusCode == 200){
       workingDays.value = List<WorkingDaysModel>.from(response.body["data"]["attributes"]["data"].
       map((x)=> WorkingDaysModel.fromJson(x)));
-
-
       getWorkingLoading(false);
     }else{
       getWorkingLoading(false);
@@ -189,8 +188,78 @@ class HomeController extends GetxController {
   }
 
 
+  /// ================================> Working Days   ==============================>
 
 
+  RxBool getStoryStepsLoading = false.obs;
+  RxList<StoryStepsModel> storySteps = <StoryStepsModel>[].obs;
+  getStorySteps()async{
+    getStoryStepsLoading(true);
+    var response = await ApiClient.getData(ApiConstants.getStoryStepsEndPoint);
+    if(response.statusCode == 200){
+      storySteps.value = List<StoryStepsModel>.from(response.body["data"]["attributes"].
+      map((x)=> StoryStepsModel.fromJson(x)));
+      getStoryStepsLoading(false);
+    }else{
+      getStoryStepsLoading(false);
+    }
+  }
+
+  /// ================================> Story Single  ==============================>
+
+
+  RxBool getStorySingleLoading = false.obs;
+  Rx<StorySingleModel> storySingle = StorySingleModel().obs;
+  getStorySingle({String? id})async{
+    getStorySingleLoading(true);
+    var response = await ApiClient.getData(ApiConstants.getStorySingleEndPoint(id!));
+    if(response.statusCode == 200){
+      storySingle.value = StorySingleModel.fromJson(response.body['data']['attributes']);
+      getStorySingleLoading(false);
+    }else{
+      getStorySingleLoading(false);
+    }
+  }
+
+
+
+
+
+
+
+
+
+  late VideoPlayerController videoController;
+  var isPlaying = false.obs;
+  var isInitialized = false.obs;
+
+  @override
+  void onInit() {
+    super.onInit();
+  }
+
+  void setVideoPath(String videoUrl) {
+    videoController = VideoPlayerController.networkUrl(Uri.parse(videoUrl))
+      ..initialize().then((_) {
+        isInitialized.value = true;
+        update();
+      });
+  }
+
+  void togglePlayPause() {
+    if (isPlaying.value) {
+      videoController.pause();
+    } else {
+      videoController.play();
+    }
+    isPlaying.value = !isPlaying.value;
+  }
+
+  @override
+  void onClose() {
+    videoController.dispose();
+    super.onClose();
+  }
 
 
 }
