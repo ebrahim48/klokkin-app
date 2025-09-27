@@ -8,21 +8,22 @@ import 'custom_text.dart';
 import 'custom_network_image.dart';
 
 class EveryStoryCard extends StatelessWidget {
-
   final String caption;
   final String imagePath;
+  final String storyId;
   final VoidCallback? onTap;
 
   const EveryStoryCard({
     super.key,
     required this.caption,
     required this.imagePath,
+    required this.storyId,
     this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
-    final controller = Get.put(HomeController());
+    final homeController = Get.find<HomeController>();
 
     return GestureDetector(
       onTap: onTap,
@@ -32,108 +33,55 @@ class EveryStoryCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(6.r),
           color: AppColors.textColorFFFFFF,
         ),
+
+
+
         child: ClipRRect(
           borderRadius: BorderRadius.circular(6.r),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              /// =============================> Image with overlay ========================>
-
               Expanded(
                 child: Stack(
                   children: [
-
+                    // Video/Image display
                     Obx(() {
-                      if (controller.isInitialized.value) {
-                        return ClipRRect(
-                          borderRadius: BorderRadius.circular(6.r),
-                          child: AspectRatio(
-                            aspectRatio: controller.videoController.value.aspectRatio,
-                            child: VideoPlayer(controller.videoController),
-                          ),
-                        );
-                      } else {
-                        return CustomNetworkImage(
-                          imageUrl: imagePath,
-                          borderRadius: BorderRadius.zero,
-                        );
+                      if (homeController.isInitializedStates[storyId] == true) {
+                        final controller = homeController.videoControllers[storyId];
+                        if (controller != null) {
+                          return ClipRRect(
+                            borderRadius: BorderRadius.circular(6.r),
+                            child: AspectRatio(
+                              aspectRatio: controller.value.aspectRatio,
+                              child: VideoPlayer(controller),
+                            ),
+                          );
+                        }
                       }
+                      return CustomNetworkImage(
+                        imageUrl: imagePath,
+                        borderRadius: BorderRadius.zero,
+                      );
                     }),
 
-                    /// Play/Pause overlay
+                    // Play/Pause button
                     Align(
                       alignment: Alignment.center,
                       child: Obx(() => IconButton(
                         icon: Icon(
-                          controller.isPlaying.value ? Icons.pause : Icons.play_arrow,
+                          homeController.playStates[storyId] == true
+                              ? Icons.pause
+                              : Icons.play_arrow,
                           size: 40.sp,
                           color: Colors.white,
                         ),
-                        onPressed: controller.togglePlayPause,
+                        onPressed: () => homeController.togglePlayPause(storyId),
                       )),
                     ),
                   ],
                 ),
               ),
 
-
-
-              // Expanded(
-              //   child: Stack(
-              //     children: [
-              //       /// Background image
-              //       Positioned.fill(
-              //         child: CustomNetworkImage(
-              //           imageUrl: imagePath,
-              //           borderRadius: BorderRadius.zero,
-              //         ),
-              //       ),
-              //
-              //       /// Center overlay (Play/Pause + Duration)
-              //       Align(
-              //         alignment: Alignment.center,
-              //         child: ClipRRect(
-              //           borderRadius: BorderRadius.circular(6.r),
-              //           child: Container(
-              //             height: 40.h,
-              //             padding: EdgeInsets.symmetric(horizontal: 12.w),
-              //             child: Row(
-              //               mainAxisSize: MainAxisSize.min,
-              //               children: [
-              //                 /// Play/Pause button
-              //                 Obx(() => Container(
-              //                   width: 40.w,
-              //                   height: 40.w,
-              //                   decoration: BoxDecoration(
-              //                     color: AppColors.textColorFFFFFF,
-              //                     borderRadius: BorderRadius.circular(50.r),
-              //                   ),
-              //                   child: IconButton(
-              //                     icon: Icon(
-              //                       controller.isPlaying.value
-              //                           ? Icons.pause
-              //                           : Icons.play_arrow,
-              //                       color: Colors.orange,
-              //                       size: 25.sp,
-              //                     ),
-              //                     onPressed: controller.togglePlayPause,
-              //                   ),
-              //                 )),
-              //
-              //                 SizedBox(width: 12.w),
-              //
-              //
-              //               ],
-              //             ),
-              //           ),
-              //         ),
-              //       ),
-              //     ],
-              //   ),
-              // ),
-
-
-              /// Bottom caption
               Container(
                 width: double.infinity,
                 padding: EdgeInsets.all(8.w),

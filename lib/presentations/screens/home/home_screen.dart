@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:go_router/go_router.dart';
 import 'package:klokkin_app/core/config/app_routes/app_routes.dart';
 import 'package:klokkin_app/presentations/widgets/custom_text.dart';
@@ -9,7 +8,6 @@ import '../../../controllers/home_controller.dart';
 import '../../../controllers/work_controller.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../global/custom_assets/assets.gen.dart';
-import '../../../services/api_constants.dart';
 import '../../widgets/custom_loader.dart';
 import '../../widgets/custom_network_image.dart';
 import '../../widgets/custom_profile_image.dart';
@@ -571,7 +569,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               SizedBox(height: 16.h),
 
-              Obx((){
+              Obx(() {
                 if (homeController.storySteps.isEmpty) {
                   return Center(
                     child: CustomText(
@@ -595,38 +593,37 @@ class _HomeScreenState extends State<HomeScreen> {
                         imagePath: storyStartSteps.mediaUrl != null && storyStartSteps.mediaUrl!.isNotEmpty
                             ? storyStartSteps.mediaUrl!.first
                             : "https://templates.joomla-monster.com/joomla30/jm-news-portal/components/com_djclassifieds/assets/images/default_profile.png",
+                        storyId: storyStartSteps.id.toString(),
                         onTap: () {
                           if (storyStartSteps.mediaUrl != null && storyStartSteps.mediaUrl!.isNotEmpty) {
-                            // homeController.setVideoPath(storyStartSteps.mediaUrl!.first);
+                            homeController.setVideoPath(
+                                storyStartSteps.id.toString(),
+                                storyStartSteps.mediaUrl!.first
+                            );
                             context.pushNamed(
                                 AppRoutes.everyStoryScreen,
-                              extra: {
-                                "title" : "Every story beings with a step",
-                                "storyId": storyStartSteps.id,
-
-                              }
+                                extra: {
+                                  "title": "Every story beings with a step",
+                                  "storyId": storyStartSteps.id,
+                                }
                             );
-
                           }
                         },
-
                       );
                     },
                   ),
                 );
-              }
-
-              ),
+              }),
 
 
 
-          
-          
-          
-          
-          
-          
-          
+
+
+
+
+
+
+
               SizedBox(height: 10.h),
             ],
           ),

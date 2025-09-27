@@ -115,7 +115,7 @@ class LoginScreen extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  Assets.icons.facebook.svg(width: 54.w, height: 50.h),
+                  // Assets.icons.facebook.svg(width: 54.w, height: 50.h),
                   SizedBox(width: 30.h),
                   Assets.icons.google.svg(width: 54.w, height: 50.h),
                 ],

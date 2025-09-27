@@ -33,54 +33,56 @@ class AudioBookCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(12.r),
         ),
         padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            /// ==== Left Side (Image + Title + Subtitle) ====
-            Row(
-              children: [
-                /// Circle Image
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(40.r),
-                  child: CustomNetworkImage(
-                    imageUrl: imagePath,
-                    borderRadius: BorderRadius.zero,
-                    width: 64.w,
-                    height: 64.h,
+        child: SingleChildScrollView(
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              /// ==== Left Side (Image + Title + Subtitle) ====
+              Row(
+                children: [
+                  /// Circle Image
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(40.r),
+                    child: CustomNetworkImage(
+                      imageUrl: imagePath,
+                      borderRadius: BorderRadius.zero,
+                      width: 64.w,
+                      height: 64.h,
+                    ),
                   ),
-                ),
-                SizedBox(width: 12.w),
-
-                /// Title + Subtitle
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    CustomText(
-                      text: title,
-                      color: AppColors.textColorFFFFFF,
-                      fontsize: 16.sp,
-                      fontWeight: FontWeight.w600,
-                    ),
-                    SizedBox(height: 4.h),
-                    CustomText(
-                      text: subtitle,
-                      color: AppColors.textColor8C8C8C,
-                      fontsize: 14.sp,
-                      fontWeight: FontWeight.w400,
-                    ),
-                  ],
-                ),
-              ],
-            ),
-
-            /// ==== Right Side (Play / Pause Button) ====
-            Icon(
-              isPlaying ? Icons.pause_circle_filled : Icons.play_circle_fill,
-              size: 28.sp,
-              color: AppColors.primaryColorC79235,
-            ),
-          ],
+                  SizedBox(width: 12.w),
+          
+                  /// Title + Subtitle
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      CustomText(
+                        text: title,
+                        color: AppColors.textColorFFFFFF,
+                        fontsize: 16.sp,
+                        fontWeight: FontWeight.w600,
+                      ),
+                      SizedBox(height: 4.h),
+                      CustomText(
+                        text: subtitle,
+                        color: AppColors.textColor8C8C8C,
+                        fontsize: 14.sp,
+                        fontWeight: FontWeight.w400,
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+          
+              /// ==== Right Side (Play / Pause Button) ====
+              Icon(
+                isPlaying ? Icons.pause_circle_filled : Icons.play_circle_fill,
+                size: 28.sp,
+                color: AppColors.primaryColorC79235,
+              ),
+            ],
+          ),
         ),
       ),
     );
