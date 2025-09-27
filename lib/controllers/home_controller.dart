@@ -215,6 +215,7 @@ class HomeController extends GetxController {
     var response = await ApiClient.getData(ApiConstants.getStorySingleEndPoint(id!));
     if(response.statusCode == 200){
       storySingle.value = StorySingleModel.fromJson(response.body['data']['attributes']);
+      update();
       getStorySingleLoading(false);
     }else{
       getStorySingleLoading(false);
@@ -229,35 +230,54 @@ class HomeController extends GetxController {
 
 
 
-  late VideoPlayerController videoController;
-  var isPlaying = false.obs;
-  var isInitialized = false.obs;
+  // Store controllers for each story
+  Map<String, VideoPlayerController> videoControllers = {};
+  Map<String, bool> playStates = <String, bool>{}.obs;
+  Map<String, bool> isInitializedStates = <String, bool>{}.obs;
 
   @override
   void onInit() {
     super.onInit();
   }
 
-  void setVideoPath(String videoUrl) {
-    videoController = VideoPlayerController.networkUrl(Uri.parse(videoUrl))
+  void setVideoPath(String storyId, String videoUrl) {
+    // Dispose previous controller if exists
+    if (videoControllers.containsKey(storyId)) {
+      videoControllers[storyId]?.dispose();
+    }
+
+    videoControllers[storyId] = VideoPlayerController.networkUrl(Uri.parse(videoUrl))
       ..initialize().then((_) {
-        isInitialized.value = true;
+        isInitializedStates[storyId] = true;
         update();
       });
   }
 
-  void togglePlayPause() {
-    if (isPlaying.value) {
-      videoController.pause();
+  void togglePlayPause(String storyId) {
+    if (!videoControllers.containsKey(storyId)) return;
+
+    if (playStates[storyId] == true) {
+      videoControllers[storyId]?.pause();
     } else {
-      videoController.play();
+      videoControllers[storyId]?.play();
     }
-    isPlaying.value = !isPlaying.value;
+    playStates[storyId] = !(playStates[storyId] ?? false);
+  }
+
+  void disposeController(String storyId) {
+    if (videoControllers.containsKey(storyId)) {
+      videoControllers[storyId]?.dispose();
+      videoControllers.remove(storyId);
+      playStates.remove(storyId);
+      isInitializedStates.remove(storyId);
+    }
   }
 
   @override
   void onClose() {
-    videoController.dispose();
+    // Dispose all controllers
+    videoControllers.values.forEach((controller) => controller.dispose());
+    videoControllers.clear();
     super.onClose();
   }
 

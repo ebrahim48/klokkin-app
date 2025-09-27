@@ -68,17 +68,7 @@ class _EveryStoryScreenState extends State<EveryStoryScreen> {
                           fontWeight: FontWeight.w500),
                     ],
                   )
-
-
                 ],
-              ),
-              /// ============================================ Image ====================================>
-              SizedBox(height: 40.h),
-              Positioned.fill(
-                child: Image.asset(
-                  "assets/images/every.png",
-                  fit: BoxFit.cover,
-                ),
               ),
               SizedBox(height: 16.h),
               /// ============================================ line ====================================>
