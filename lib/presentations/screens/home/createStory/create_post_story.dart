@@ -148,7 +148,7 @@ class CreatePostStoryScreen extends StatelessWidget {
                       caption: title,
                       description: script,
                       tags: tags.join(","),
-                      // thumbnail: controller.thumbnail.value,
+                      thumbnail: controller.thumbnail.value,
                       context: context,
                     );
                   },

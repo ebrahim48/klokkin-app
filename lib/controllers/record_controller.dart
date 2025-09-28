@@ -3,8 +3,11 @@ import 'dart:io';
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:record/record.dart';
+
+import '../core/config/app_routes/app_routes.dart';
 
 enum RecordType { audio, video }
 
@@ -56,7 +59,7 @@ class RecordStoryController extends GetxController {
 
     try {
       final directory = await getApplicationDocumentsDirectory();
-      final filePath = '${directory.path}/voice_${DateTime.now().millisecondsSinceEpoch}.m4a';
+      final filePath = '${directory.path}/voice_${DateTime.now().millisecondsSinceEpoch}.mp4';
 
       var config = RecordConfig(
         encoder: AudioEncoder.aacLc,
@@ -238,11 +241,11 @@ class RecordStoryController extends GetxController {
     }
   }
 
-  Future<void> saveRecording() async {
+  Future<void> saveRecording(BuildContext context) async {
     try {
       String? finalPath;
 
-      // If currently recording, stop it first
+      // Stop recording if active
       if (isRecording.value || isPaused.value) {
         finalPath = await _recorder.stop();
         isRecording.value = false;
@@ -252,30 +255,44 @@ class RecordStoryController extends GetxController {
         currentAmplitude.value = 0.0;
       }
 
-      // Use the final path or existing recorded path
       if (finalPath != null || recordPath.value.isNotEmpty) {
         String pathToSave = finalPath ?? recordPath.value;
         recordPath.value = pathToSave;
 
-        // Get file info
         final file = File(pathToSave);
         final fileSize = await file.length();
         final fileSizeKB = (fileSize / 1024).toStringAsFixed(1);
 
-        // Save to app's internal storage (won't trigger default apps)
         await _moveToInternalStorage(pathToSave);
 
-        Get.snackbar(
-          "Voice Recording Saved! ✅",
-          "File: ${pathToSave.split('/').last}\nSize: ${fileSizeKB} KB\nDuration: $formattedDuration",
-          duration: Duration(seconds: 5),
-          backgroundColor: Colors.green.shade600,
-          colorText: Colors.white,
-          snackPosition: SnackPosition.BOTTOM,
-        );
+        // ✅ Show snackbar immediately (no delayed)
+        if (Get.context != null) {
+          Get.snackbar(
+            "Voice Recording Saved! ✅",
+            "File: ${pathToSave.split('/').last}\n"
+                "Size: ${fileSizeKB} KB\n"
+                "Duration: $formattedDuration",
+            duration: const Duration(seconds: 3),
+            backgroundColor: Colors.green.shade600,
+            colorText: Colors.white,
+            snackPosition: SnackPosition.BOTTOM,
+          );
+        }
 
         print("💾 Voice recording saved: $pathToSave");
 
+        // ✅ Navigate *after* showing snackbar
+        if (context.mounted) {
+          context.pushNamed(
+            AppRoutes.audioRecordAddPostDetailsScreen,
+            extra: {
+              "title": "Add Post Details",
+              "filePath": pathToSave,
+              "size": fileSizeKB,
+              "duration": formattedDuration,
+            },
+          );
+        }
       } else {
         Get.snackbar(
           "No Recording Found",
@@ -289,6 +306,8 @@ class RecordStoryController extends GetxController {
       Get.snackbar("Error", "Failed to save recording.");
     }
   }
+
+
 
   Future<void> _moveToInternalStorage(String originalPath) async {
     try {

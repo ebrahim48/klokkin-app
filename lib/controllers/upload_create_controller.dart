@@ -63,7 +63,7 @@ class UploadCreateStoryController extends GetxController {
 
     if (media != null && images.length < maxImages) {
       images.add(File(media.path));
-      update(); // UI refresh if using GetX
+      update();
     }
   }
 

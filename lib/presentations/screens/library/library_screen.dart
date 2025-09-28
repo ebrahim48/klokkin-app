@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:go_router/go_router.dart';
 import 'package:klokkin_app/core/config/app_routes/app_routes.dart';
 import 'package:klokkin_app/presentations/widgets/custom_text.dart';
+import '../../../controllers/audio_book_controller.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../global/custom_assets/assets.gen.dart';
 import '../../widgets/border_button.dart';
@@ -19,6 +22,14 @@ class _LibraryScreenState extends State<LibraryScreen> {
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final TextEditingController _searchController = TextEditingController();
+  final AudioBookController controller = Get.put(AudioBookController());
+
+
+
+  void initState() {
+    super.initState();
+    controller.getLibraryStoryData();
+  }
 
 
   @override
@@ -263,7 +274,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
                 ),
               ),
 
-              /// =====================================> I*mage 10 =====================================>
+              /// =====================================> Image 10 =====================================>
 
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 8.h),
@@ -282,15 +293,6 @@ class _LibraryScreenState extends State<LibraryScreen> {
 
               SizedBox(height: 21.h),
 
-
-
-
-
-
-
-
-
-              SizedBox(height: 10.h),
             ],
           ),
         ),

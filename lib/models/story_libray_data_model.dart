@@ -124,6 +124,7 @@ class StoryLibraryDataModel {
   final String? id;
   final String? user;
   final String? caption;
+  final String? duration;
   final List<String>? tags;
   final String? status;
   final int? shared;
@@ -137,6 +138,7 @@ class StoryLibraryDataModel {
   StoryLibraryDataModel({
     this.id,
     this.user,
+    this.duration,
     this.caption,
     this.tags,
     this.status,
@@ -162,6 +164,7 @@ class StoryLibraryDataModel {
       id: json["_id"],
       user: json["user"],
       caption: json["caption"],
+      duration: json["duration"],
       tags: parsedTags,
       status: json["status"],
       shared: json["shared"],
@@ -184,6 +187,7 @@ class StoryLibraryDataModel {
     "_id": id,
     "user": user,
     "caption": caption,
+    "duration": duration,
     "tags": tags ?? [],
     "status": status,
     "shared": shared,

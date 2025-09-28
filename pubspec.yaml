@@ -61,6 +61,8 @@ dependencies:
   camera:
   permission_handler:
   logger:
+  path: ^1.8.3
+  ffmpeg_kit_flutter:
 
 
   device_preview:
