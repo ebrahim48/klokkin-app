@@ -51,7 +51,7 @@ class AudioBookCard extends StatelessWidget {
                     ),
                   ),
                   SizedBox(width: 12.w),
-          
+
                   /// Title + Subtitle
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -60,8 +60,9 @@ class AudioBookCard extends StatelessWidget {
                       CustomText(
                         text: title,
                         color: AppColors.textColorFFFFFF,
-                        fontsize: 16.sp,
+                        fontsize: 13.sp,
                         fontWeight: FontWeight.w600,
+                        maxline: 2,
                       ),
                       SizedBox(height: 4.h),
                       CustomText(

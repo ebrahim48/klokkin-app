@@ -1,3 +1,6 @@
+import 'dart:io';
+import 'package:path/path.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -7,6 +10,7 @@ import 'package:klokkin_app/core/constants/app_colors.dart';
 import 'package:klokkin_app/presentations/widgets/custom_app_bar.dart';
 import 'package:klokkin_app/presentations/widgets/custom_button.dart';
 import 'package:klokkin_app/presentations/widgets/custom_text.dart';
+import 'package:path_provider/path_provider.dart';
 import '../../../../controllers/record_controller.dart';
 import '../../../../global/custom_assets/assets.gen.dart';
 import '../../../widgets/waveform-painter.dart';
@@ -54,7 +58,7 @@ class RecordStoryScreen extends StatelessWidget {
             /// ================== Conditional View ==================
             Obx(() {
               if (controller.selectedType.value == RecordType.audio) {
-                return _audioView();
+                return _audioView(context);
               } else {
                 return _videoView(
                   context
@@ -98,7 +102,7 @@ class RecordStoryScreen extends StatelessWidget {
 }
 
   /// ========== Audio View ==========
-  Widget _audioView() {
+  Widget _audioView(BuildContext context) {
     final controller = Get.find<RecordStoryController>();
     return Column(
       crossAxisAlignment: CrossAxisAlignment.center,
@@ -194,6 +198,7 @@ class RecordStoryScreen extends StatelessWidget {
             SizedBox(height: 56.h),
 
             /// Action Row: Cancel, Restart, Done
+
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -204,11 +209,9 @@ class RecordStoryScreen extends StatelessWidget {
                       if (Get.isRegistered<RecordStoryController>()) {
                         await controller.cancelRecording();
                       }
-                      // Get.back();
+
                     } catch (e) {
                       print('Error in cross button: $e');
-                      // Force close even if error occurs
-                      // Get.back();
                     }
                   },
                   child: Assets.icons.cross.svg(width: 40.w, height: 40.h),
@@ -229,10 +232,11 @@ class RecordStoryScreen extends StatelessWidget {
                 /// ✅ Done — Save the recording properly
                 GestureDetector(
                   onTap: () {
-                    controller.saveRecording();
+                    controller.saveRecording(context);
                   },
                   child: Assets.icons.checkCircle.svg(width: 40.w, height: 40.h),
                 ),
+
               ],
             ),
           ],
@@ -244,6 +248,7 @@ class RecordStoryScreen extends StatelessWidget {
       ],
     );
   }
+
 
   /// ========== Video View ==========
   Widget _videoView(BuildContext context) {

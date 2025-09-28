@@ -34,7 +34,8 @@ class _StartCreateStoryScreenState extends State<StartCreateStoryScreen> {
 
               /// ============================================ Button ====================================>
 
-              CustomButton(title: "Create My Story",
+              CustomButton(
+                  title: "Create My Story",
                   onpress: () {
                     context.pushNamed(AppRoutes.nextCreateStoryScreen, extra: {
                       "title" : "Create a story",

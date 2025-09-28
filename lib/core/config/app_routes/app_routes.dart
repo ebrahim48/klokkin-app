@@ -18,6 +18,9 @@ import '../../../presentations/screens/auth/reset/reset_pass_screen.dart';
 import '../../../presentations/screens/auth/signIn/sign_in_screen.dart';
 import '../../../presentations/screens/auth/signup/sign_up_screen.dart';
 import '../../../presentations/screens/auth/verification/verification_screen.dart';
+import '../../../presentations/screens/home/createStory/audio_record_add_post_details_screen.dart';
+import '../../../presentations/screens/home/createStory/record_video_list_page.dart';
+import '../../../presentations/screens/home/createStory/record_video_player_screen.dart';
 import '../../../presentations/screens/home/createStory/start_create_story.dart';
 import '../../../presentations/screens/home/createStory/upload_create_story.dart';
 import '../../../presentations/screens/home/createStory/video_create_story_screen.dart';
@@ -29,6 +32,7 @@ import '../../../presentations/screens/profile/personal_screen.dart';
 import '../../../presentations/screens/profile/profile_screen.dart';
 import '../../../presentations/screens/profile/question_help_screen.dart';
 import '../../../presentations/screens/splash/splash_screen.dart';
+import '../../../presentations/screens/story/story_audio_book_screen.dart';
 import '../../../presentations/screens/story/story_audio_screen.dart';
 import '../../../presentations/screens/story/story_image_details_screen.dart';
 import '../../../presentations/screens/story/story_image_screen.dart';
@@ -65,6 +69,7 @@ class AppRoutes {
   static const String storyScreen = "/storyScreen";
   static const String createPostStoryScreen = "/createPostStoryScreen";
   static const String storyAudioScreen = "/storyAudioScreen";
+  static const String storyAudioBookScreen = "/storyAudioBookScreen";
   static const String storyImageScreen = "/storyImageScreen";
   static const String storyImageDetailsScreen = "/storyImageDetailsScreen";
   static const String storyVideoScreen = "/storyVideoScreen";
@@ -79,6 +84,9 @@ class AppRoutes {
   static const String permissionScreen = "/permissionScreen";
   static const String aboutScreen = "/aboutScreen";
   static const String questionHelpScreen = "/questionHelpScreen";
+  static const String recordVideoListPageScreen = "/recordVideoListPageScreen";
+  static const String recordVideoPlayerScreen = "/recordVideoPlayerScreen";
+  static const String audioRecordAddPostDetailsScreen = "/audioRecordAddPostDetailsScreen";
 
   static final GoRouter goRouter = GoRouter(
     initialLocation: splashScreen,
@@ -251,6 +259,35 @@ class AppRoutes {
                 _customTransitionPage(RecordStoryScreen(), state),
       ),
 
+
+      //<<<=============>>> Record Story Screen  <<<===============>>>
+
+      GoRoute(
+        path: recordVideoListPageScreen,
+        name: recordVideoListPageScreen,
+        pageBuilder:
+            (context, state) =>
+            _customTransitionPage(RecordVideoListPageScreen(), state),
+      ),
+
+      //<<<=============>>> Audio Record Add Post DetailsScreen  <<<===============>>>
+      GoRoute(
+        path: audioRecordAddPostDetailsScreen,
+        name: audioRecordAddPostDetailsScreen,
+        pageBuilder:
+            (context, state) =>
+            _customTransitionPage(AudioRecordAddPostDetailsScreen(), state),
+      ),
+
+
+      // GoRoute(
+      //   path: recordVideoPlayerScreen,
+      //   name: recordVideoPlayerScreen,
+      //   pageBuilder:
+      //       (context, state) =>
+      //       _customTransitionPage(RecordVideoPlayerScreen(videoFile: null,), state),
+      // ),
+
       //<<<=============>>> Video Story Screen  <<<===============>>>
       GoRoute(
         path: videoCreateStoryScreen,
@@ -276,6 +313,15 @@ class AppRoutes {
             (context, state) =>
                 _customTransitionPage(StoryAudioScreen(), state),
       ),
+      //<<<=============>>>  Story Audio Book Screen  <<<===============>>>
+      GoRoute(
+        path: storyAudioBookScreen,
+        name: storyAudioBookScreen,
+        pageBuilder:
+            (context, state) =>
+            _customTransitionPage(StoryAudioBookScreen(), state),
+      ),
+
 
       //<<<=============>>>  Story Image Screen  <<<===============>>>
       GoRoute(

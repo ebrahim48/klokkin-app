@@ -11,7 +11,7 @@ import '../core/app_constants/app_constants.dart';
 import '../core/helpers/prefs_helper.dart';
 import 'api_constants.dart';
 import 'error_response.dart';
-
+import 'package:mime/mime.dart';
 
 
 class ApiClient extends GetxService {
@@ -108,30 +108,45 @@ class ApiClient extends GetxService {
 
 
 
+
   static Future<Response> postMultipartData(
-      String uri, Map<String, String> body,
-      {required List<MultipartBody> multipartBody,
-        Map<String, String>? headers}) async {
+      String uri,
+      Map<String, String> body, {
+        required List<MultipartBody> multipartBody,
+        Map<String, String>? headers,
+      }) async {
     try {
       bearerToken = await PrefsHelper.getString(AppConstants.bearerToken);
 
       var mainHeaders = {
-        'Content-Type': 'multipart/form-data',
-        'Authorization': bearerToken
+        'Authorization': bearerToken,
       };
 
       debugPrint('====> API Call: $uri\nHeader: ${headers ?? mainHeaders}');
-      debugPrint('====> API Body: $body with ${multipartBody.length} picture');
-      var request =
-      http.MultipartRequest('POST', Uri.parse(ApiConstants.baseUrl + uri));
+      debugPrint('====> API Body: $body with ${multipartBody.length} files');
+
+      var request = http.MultipartRequest(
+        'POST',
+        Uri.parse(ApiConstants.baseUrl + uri),
+      );
+
       request.headers.addAll(headers ?? mainHeaders);
+
       for (MultipartBody element in multipartBody) {
-        request.files.add(await http.MultipartFile.fromPath(
-          element.key,
-          element.file.path,
-        ));
+        final mimeType = lookupMimeType(element.file.path) ?? 'application/octet-stream';
+        final mimeSplit = mimeType.split('/');
+
+        request.files.add(
+          await http.MultipartFile.fromPath(
+            element.key,
+            element.file.path,
+            contentType: MediaType(mimeSplit[0], mimeSplit[1]),
+          ),
+        );
       }
+
       request.fields.addAll(body);
+
       http.Response _response =
       await http.Response.fromStream(await request.send());
       return handleResponse(_response, uri);
@@ -139,6 +154,39 @@ class ApiClient extends GetxService {
       return const Response(statusCode: 1, statusText: noInternetMessage);
     }
   }
+
+
+  // static Future<Response> postMultipartData(
+  //     String uri, Map<String, String> body,
+  //     {required List<MultipartBody> multipartBody,
+  //       Map<String, String>? headers}) async {
+  //   try {
+  //     bearerToken = await PrefsHelper.getString(AppConstants.bearerToken);
+  //
+  //     var mainHeaders = {
+  //       'Content-Type': 'multipart/form-data',
+  //       'Authorization': bearerToken
+  //     };
+  //
+  //     debugPrint('====> API Call: $uri\nHeader: ${headers ?? mainHeaders}');
+  //     debugPrint('====> API Body: $body with ${multipartBody.length} picture');
+  //     var request =
+  //     http.MultipartRequest('POST', Uri.parse(ApiConstants.baseUrl + uri));
+  //     request.headers.addAll(headers ?? mainHeaders);
+  //     for (MultipartBody element in multipartBody) {
+  //       request.files.add(await http.MultipartFile.fromPath(
+  //         element.key,
+  //         element.file.path,
+  //       ));
+  //     }
+  //     request.fields.addAll(body);
+  //     http.Response _response =
+  //     await http.Response.fromStream(await request.send());
+  //     return handleResponse(_response, uri);
+  //   } catch (e) {
+  //     return const Response(statusCode: 1, statusText: noInternetMessage);
+  //   }
+  // }
 
 
   ///=======================Patch By Id========================>

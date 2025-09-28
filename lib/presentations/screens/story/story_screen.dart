@@ -107,13 +107,14 @@ class _StoryScreenState extends State<StoryScreen> {
                   child: ListView.separated(
                     scrollDirection: Axis.horizontal,
                     padding: EdgeInsets.symmetric(horizontal: 20.w),
-                    itemCount: controller.libraryStoryData.length,
+                    itemCount: 3,
                     separatorBuilder: (context, index) => SizedBox(width: 12.w),
                     itemBuilder: (context, index) {
-                      final library = controller.libraryStoryData[index];
+                      final types = ["audio", "video", "image"];
+                      final type = types[index];
 
                       final subtitleText = () {
-                        switch (library.type) {
+                        switch (type) {
                           case "audio":
                             return "${controller.audioMeta.value?.total ?? 0} Stories";
                           case "video":
@@ -126,7 +127,7 @@ class _StoryScreenState extends State<StoryScreen> {
                       }();
 
                       final imagePath = () {
-                        switch (library.type) {
+                        switch (type) {
                           case "audio":
                             return "assets/images/audioimage.png";
                           case "video":
@@ -139,16 +140,23 @@ class _StoryScreenState extends State<StoryScreen> {
                       }();
 
                       return CategoryCard(
-                        title: library.type ?? 'N/A',
+                        title: type.toUpperCase(),
                         subtitle: subtitleText,
                         imagePath: imagePath,
                         onTap: () {
-                          context.pushNamed(AppRoutes.storyAudioScreen);
+                          if (type == "audio") {
+                            context.pushNamed(AppRoutes.storyAudioBookScreen);
+                          } else if (type == "video") {
+                            context.pushNamed(AppRoutes.storyVideoScreen);
+                          } else if (type == "image") {
+                            context.pushNamed(AppRoutes.storyImageScreen);
+                          }
                         },
                       );
                     },
                   ),
                 );
+
 
 
               }),
@@ -191,7 +199,7 @@ class _StoryScreenState extends State<StoryScreen> {
                       final audioBook = controller.libraryStoryData[index];
                       return AudioBookCard(
                         title: audioBook.caption ?? 'N/A',
-                        subtitle: "Audio 1hr 30m",
+                        subtitle: audioBook.duration ?? 'N/A',
                         imagePath: audioBook.mediaUrl != null && audioBook.mediaUrl!.isNotEmpty
                             ? audioBook.mediaUrl!.first
                             : "https://templates.joomla-monster.com/joomla30/jm-news-portal/components/com_djclassifieds/assets/images/default_profile.png",
@@ -214,9 +222,7 @@ class _StoryScreenState extends State<StoryScreen> {
                     },
                   ),
                 );
-              }
-
-              ),
+              }),
 
 
 
