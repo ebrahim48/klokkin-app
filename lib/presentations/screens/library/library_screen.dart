@@ -1,18 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:go_router/go_router.dart';
 import 'package:klokkin_app/core/config/app_routes/app_routes.dart';
 import 'package:klokkin_app/presentations/widgets/custom_text.dart';
-import '../../../controllers/audio_book_controller.dart';
+import 'package:video_player/video_player.dart';
+import '../../../controllers/home_controller.dart';
+import '../../../controllers/work_controller.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../global/custom_assets/assets.gen.dart';
 import '../../widgets/border_button.dart';
+import '../../widgets/custom_network_image.dart';
 
 
 class LibraryScreen extends StatefulWidget {
-  const LibraryScreen({super.key});
+  final String videoPath;
+   LibraryScreen({super.key,required this.videoPath});
 
   @override
   State<LibraryScreen> createState() => _LibraryScreenState();
@@ -22,18 +25,22 @@ class _LibraryScreenState extends State<LibraryScreen> {
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final TextEditingController _searchController = TextEditingController();
-  final AudioBookController controller = Get.put(AudioBookController());
+
+  HomeController homeController = Get.put(HomeController());
+  final controller = Get.put(WorkCardController());
 
 
 
   void initState() {
     super.initState();
-    controller.getLibraryStoryData();
+    homeController.getWorkingDays();
+    controller.setVideoPath(widget.videoPath);
   }
 
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       key: _scaffoldKey,
       resizeToAvoidBottomInset: true,
@@ -143,26 +150,97 @@ class _LibraryScreenState extends State<LibraryScreen> {
                 child: Row(
                   children: [
                     Expanded(
-                      child: Container(
-                        height: 116.h,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(8.r),
-                          image: const DecorationImage(
-                            image: AssetImage("assets/images/imagelist.png"),
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                        child: Center(
-                          child: Assets.icons.play.svg(
-                            width: 40.w,
-                            height: 40.h,
-                          ),
-                        ),
-                      ),
+                      child: Obx(() {
+                        if (controller.isInitialized.value) {
+                          return Stack(
+                            alignment: Alignment.center,
+                            children: [
+                              /// Video Player
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(8.r),
+                                child: AspectRatio(
+                                  aspectRatio: controller.videoController.value.aspectRatio,
+                                  child: VideoPlayer(controller.videoController),
+                                ),
+                              ),
+
+                              /// Play / Pause Button Only
+                              Positioned(
+                                bottom: 8.h,
+                                right: 8.w,
+                                child: GestureDetector(
+                                  onTap: () {
+                                    if (controller.videoController.value.isPlaying) {
+                                      controller.videoController.pause();
+                                    } else {
+                                      controller.videoController.play();
+                                    }
+                                    controller.update(); // refresh GetX
+                                  },
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      shape: BoxShape.circle,
+                                      color: Colors.black54,
+                                    ),
+                                    padding: EdgeInsets.all(8.r),
+                                    child: Icon(
+                                      controller.videoController.value.isPlaying
+                                          ? Icons.pause
+                                          : Icons.play_arrow,
+                                      size: 28.r,
+                                      color: Colors.white,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          );
+                        } else {
+                          /// Fallback Image
+                          return Container(
+                            height: 116.h,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(8.r),
+                            ),
+                            clipBehavior: Clip.hardEdge,
+                            child: CustomNetworkImage(
+                              imageUrl: homeController.workingDays.first.mediaUrl?.isNotEmpty == true
+                                  ? homeController.workingDays.first.mediaUrl!.first
+                                  : "https://templates.joomla-monster.com/joomla30/jm-news-portal/components/com_djclassifieds/assets/images/default_profile.png",
+                              width: 82.w,
+                              height: 70.h,
+
+                            ),
+                          );
+                        }
+                      }),
                     ),
+
+
+
                     SizedBox(width: 14.w),
                     Expanded(
-                      child: Container(
+                      child:
+
+                      // Container(
+                      //   width: 82.w,
+                      //   height: 116.h,
+                      //   decoration: BoxDecoration(
+                      //     borderRadius: BorderRadius.circular(8.r),
+                      //   ),
+                      //   clipBehavior: Clip.hardEdge,
+                      //   child: CustomNetworkImage(
+                      //     imageUrl: homeController.workingDays.first.mediaUrl?.isNotEmpty == true
+                      //         ? homeController.workingDays.first.mediaUrl!.first
+                      //         : "https://templates.joomla-monster.com/joomla30/jm-news-portal/components/com_djclassifieds/assets/images/default_profile.png",
+                      //     width: 82.w,
+                      //     height: 70.h,
+                      //
+                      //   ),
+                      // )
+
+
+                      Container(
                         height: 116.h,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(8.r),
@@ -183,16 +261,34 @@ class _LibraryScreenState extends State<LibraryScreen> {
                 child: Row(
                   children: [
                     Expanded(
-                      child: Container(
-                        height: 116.h,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(8.r),
-                          image: const DecorationImage(
-                            image: AssetImage("assets/images/imageStory.png"),
-                            fit: BoxFit.cover,
+                        child:Container(
+                          width: 82.w,
+                          height: 116.h,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(8.r),
                           ),
-                        ),
-                      ),
+                          clipBehavior: Clip.hardEdge,
+                          child: CustomNetworkImage(
+                            imageUrl: homeController.myStory.first.mediaUrl?.isNotEmpty == true
+                                ? homeController.myStory.first.mediaUrl!.first
+                                : "https://templates.joomla-monster.com/joomla30/jm-news-portal/components/com_djclassifieds/assets/images/default_profile.png",
+                            width: 82.w,
+                            height: 70.h,
+
+                          ),
+                        )
+
+
+                      // Container(
+                      //   height: 116.h,
+                      //   decoration: BoxDecoration(
+                      //     borderRadius: BorderRadius.circular(8.r),
+                      //     image: const DecorationImage(
+                      //       image: AssetImage("assets/images/imageStory.png"),
+                      //       fit: BoxFit.cover,
+                      //     ),
+                      //   ),
+                      // ),
                     ),
                     SizedBox(width: 14.w),
                     Expanded(
@@ -200,18 +296,17 @@ class _LibraryScreenState extends State<LibraryScreen> {
                         height: 116.h,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(8.r),
-                          image: const DecorationImage(
-                            image: AssetImage("assets/images/unsplashWork.png"),
-                            fit: BoxFit.cover,
-                          ),
                         ),
-                        child: Center(
-                          child: Assets.icons.play.svg(
-                            width: 40.w,
-                            height: 40.h,
-                          ),
+                        clipBehavior: Clip.hardEdge,
+                        child: CustomNetworkImage(
+                          imageUrl: homeController.workingDays.first.mediaUrl?.isNotEmpty == true
+                              ? homeController.workingDays.first.mediaUrl!.first
+                              : "https://templates.joomla-monster.com/joomla30/jm-news-portal/components/com_djclassifieds/assets/images/default_profile.png",
+                          width: 82.w,
+                          height: 70.h,
+
                         ),
-                      ),
+                      )
                     ),
 
 
@@ -222,22 +317,21 @@ class _LibraryScreenState extends State<LibraryScreen> {
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 8.h),
                 child: Container(
-                  width: 390.w,
-                  height: 102.h,
+                  width: 390,
+                  height: 120.h,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(8.r),
-                    image: const DecorationImage(
-                      image: AssetImage("assets/images/videocreate.png"),
-                      fit: BoxFit.cover,
-                    ),
                   ),
-                  child: Center(
-                    child: Assets.icons.play.svg(
-                      width: 40.w,
-                      height: 40.h,
-                    ),
+                  clipBehavior: Clip.hardEdge,
+                  child: CustomNetworkImage(
+                    imageUrl: homeController.workingDays.first.mediaUrl?.isNotEmpty == true
+                        ? homeController.workingDays.first.mediaUrl!.first
+                        : "https://templates.joomla-monster.com/joomla30/jm-news-portal/components/com_djclassifieds/assets/images/default_profile.png",
+                    width: 82.w,
+                    height: 70.h,
+
                   ),
-                ),
+                )
               ),
 
               /// =====================================> Image 6 =====================================>
@@ -250,25 +344,37 @@ class _LibraryScreenState extends State<LibraryScreen> {
                         height: 160.h,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(8.r),
-                          image: const DecorationImage(
-                            image: AssetImage("assets/images/industry.png"),
-                            fit: BoxFit.cover,
-                          ),
                         ),
-                      ),
+                        clipBehavior: Clip.hardEdge,
+                        child: CustomNetworkImage(
+                          imageUrl: homeController.workingDays.first.mediaUrl?.isNotEmpty == true
+                              ? homeController.workingDays.first.mediaUrl!.first
+                              : "https://templates.joomla-monster.com/joomla30/jm-news-portal/components/com_djclassifieds/assets/images/default_profile.png",
+                          width: 82.w,
+                          height: 70.h,
+
+                        ),
+                      )
                     ),
                     SizedBox(width: 14.w),
                     Expanded(
-                      child: Container(
-                        height: 160.h,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(8.r),
-                          image: const DecorationImage(
-                            image: AssetImage("assets/images/imageStory.png"),
-                            fit: BoxFit.cover,
+                        child: Container(
+                          width: 82.w,
+                          height: 160.h,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(8.r),
                           ),
-                        ),
-                      ),
+                          clipBehavior: Clip.hardEdge,
+                          child: CustomNetworkImage(
+                            imageUrl: homeController.workingDays.first.mediaUrl?.isNotEmpty == true
+                                ? homeController.workingDays.first.mediaUrl!.first
+                                : "https://templates.joomla-monster.com/joomla30/jm-news-portal/components/com_djclassifieds/assets/images/default_profile.png",
+                            width: 82.w,
+                            height: 70.h,
+
+                          ),
+                        )
+
                     ),
                   ],
                 ),
@@ -283,12 +389,17 @@ class _LibraryScreenState extends State<LibraryScreen> {
                   height: 128.h,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(8.r),
-                    image: const DecorationImage(
-                      image: AssetImage("assets/images/usplash1.png"),
-                      fit: BoxFit.cover,
-                    ),
                   ),
-                ),
+                  clipBehavior: Clip.hardEdge,
+                  child: CustomNetworkImage(
+                    imageUrl: homeController.workingDays.first.mediaUrl?.isNotEmpty == true
+                        ? homeController.workingDays.first.mediaUrl!.first
+                        : "https://templates.joomla-monster.com/joomla30/jm-news-portal/components/com_djclassifieds/assets/images/default_profile.png",
+                    width: 82.w,
+                    height: 70.h,
+
+                  ),
+                )
               ),
 
               SizedBox(height: 21.h),

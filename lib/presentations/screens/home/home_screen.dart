@@ -37,6 +37,7 @@ class _HomeScreenState extends State<HomeScreen> {
     homeController.getMyStory();
     homeController.getWorkingDays();
     homeController.getStorySteps();
+    homeController.getProfile();
   }
 
   @override
@@ -164,7 +165,10 @@ class _HomeScreenState extends State<HomeScreen> {
                       const Spacer(),
                       GestureDetector(
                         onTap: () {
-
+                          context.pushNamed(
+                            AppRoutes.startCreateStoryScreen,
+                            extra: {"title": "Lets get started!"},
+                          );
                         },
                         child: CustomText(
                           text: 'View all',

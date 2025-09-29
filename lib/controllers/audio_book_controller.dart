@@ -1,5 +1,8 @@
+import 'dart:convert';
+
 import 'package:get/get.dart';
 
+import '../core/helpers/toast_message_helper.dart';
 import '../models/story_libray_data_model.dart';
 import '../services/api_client.dart';
 import '../services/api_constants.dart';
@@ -110,6 +113,27 @@ class AudioBookController extends GetxController {
 
 
 
+  var bookMarkLoading = false.obs;
+  bookMark(String storyId) async {
+
+    var body = {
+      'story':storyId,
+    };
+    bookMarkLoading(true);
+    var response = await ApiClient.postData(
+        ApiConstants.bookMarkEndPoint,
+        jsonEncode(body));
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      ToastMessageHelper.showToastMessage("${response.body["message"]}");
+      // getLibraryStoryData();
+      // update();
+      // Get.back();
+    } else {
+
+    }
+    bookMarkLoading(false);
+
+  }
 
 
 

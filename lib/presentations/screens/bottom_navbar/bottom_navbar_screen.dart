@@ -21,7 +21,7 @@ class _BottomNavBarState extends State<BottomNavBar> {
   final List<Widget> screens = [
     const HomeScreen(),
     const StoryScreen() ,
-    const LibraryScreen(),
+     LibraryScreen(videoPath: '',),
    const ProfileScreen(),
   ];
 

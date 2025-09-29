@@ -362,9 +362,15 @@ class AppRoutes {
       GoRoute(
         path: libraryScreen,
         name: libraryScreen,
-        pageBuilder:
-            (context, state) => _customTransitionPage(LibraryScreen(), state),
+        pageBuilder: (context, state) {
+          final videoPath = state.extra as String? ?? "";
+          return _customTransitionPage(
+            LibraryScreen(videoPath: videoPath),
+            state,
+          );
+        },
       ),
+
 
       //<<<=============>>>  Bookm arkScreen Screen  <<<===============>>>
       GoRoute(

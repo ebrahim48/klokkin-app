@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:klokkin_app/core/constants/app_colors.dart';
 import 'package:klokkin_app/presentations/widgets/custom_text.dart';
 import '../../global/custom_assets/assets.gen.dart';
+import 'custom_network_image.dart';
 
 class ImageListCard extends StatelessWidget {
   final String title;
@@ -37,17 +38,20 @@ class ImageListCard extends StatelessWidget {
               Row(
                 children: [
                   /// Image
+
+
                   Container(
                     width: 124.w,
                     height: 90.h,
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(8.r),
-                      image: DecorationImage(
-                        image: AssetImage(imagePath),
-                        fit: BoxFit.cover,
-                      ),
+                      borderRadius: BorderRadius.circular(4.r),
+                    ),
+                    clipBehavior: Clip.hardEdge,
+                    child: CustomNetworkImage(
+                      imageUrl: imagePath,
                     ),
                   ),
+
                   SizedBox(width: 12.w),
 
                   /// Texts

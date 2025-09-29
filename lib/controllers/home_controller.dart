@@ -12,6 +12,7 @@ import '../../../services/api_constants.dart';
 import '../core/helpers/toast_message_helper.dart';
 import '../models/all_tags_model.dart';
 import '../models/latest_form_model.dart';
+import '../models/profile_model.dart';
 import '../models/story_single_model.dart';
 import '../models/story_steps_model.dart';
 import '../models/working_days_model.dart';
@@ -222,6 +223,23 @@ class HomeController extends GetxController {
     }
   }
 
+
+
+  /// ================================>  Profile ==============================>
+
+  RxBool getProfileLoading = false.obs;
+  Rx<UserProfileModel> profile = UserProfileModel().obs;
+  getProfile() async {
+    getProfileLoading(true);
+    var response = await ApiClient.getData(ApiConstants.userProfileEndPoint);
+    if (response.statusCode == 200) {
+      profile.value = UserProfileModel.fromJson(response.body['data']['attributes']);
+      update();
+      getProfileLoading(false);
+    } else if (response.statusCode == 404) {
+      getProfileLoading(false);
+    }
+  }
 
 
 
