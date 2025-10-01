@@ -157,8 +157,7 @@ class _PersonalScreenState extends State<PersonalScreen> {
                 value: selectedGender,
                 decoration: InputDecoration(
                   hintText: "Write gender",
-                  hintStyle:
-                  TextStyle(color: Colors.grey.shade500, fontSize: 14.sp),
+                  hintStyle: TextStyle(color: Colors.grey.shade500, fontSize: 14.sp),
                   filled: true,
                   fillColor: fieldBg,
                   border: OutlineInputBorder(

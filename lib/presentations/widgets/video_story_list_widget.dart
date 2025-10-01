@@ -1,7 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
+import 'package:video_player/video_player.dart';
+import '../../controllers/work_controller.dart';
 import '../../core/constants/app_colors.dart';
 import '../../global/custom_assets/assets.gen.dart';
+import 'custom_network_image.dart';
 import 'custom_text.dart';
 
 class VideoStoryCard extends StatelessWidget {
@@ -10,6 +16,8 @@ class VideoStoryCard extends StatelessWidget {
   final String timestamp;
   final String readingTime;
   final VoidCallback? onTap;
+  final String videoPath;
+
 
   const VideoStoryCard({
     super.key,
@@ -17,11 +25,18 @@ class VideoStoryCard extends StatelessWidget {
     required this.imagePath,
     required this.timestamp,
     required this.readingTime,
+    required this.videoPath,
     this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
+
+
+    final controller = Get.put(WorkCardController());
+    controller.setVideoPath(videoPath);
+
+
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -39,16 +54,43 @@ class VideoStoryCard extends StatelessWidget {
               /// =============================> Image + Play Icon ========================>
               Stack(
                 children: [
-                  Container(
-                    width: 268.w,
-                    height: 180.h,
-                    decoration: BoxDecoration(
-                      image: DecorationImage(
-                        image: AssetImage(imagePath),
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                  ),
+                  Obx(() {
+                    if (controller.isInitialized.value) {
+                      return Stack(
+                        children: [
+
+                          Container(
+                              width: 268.w,
+                              height: 180.h,
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(6.r),
+                              child: AspectRatio(
+                                aspectRatio:
+                                controller.videoController.value.aspectRatio,
+                                child: VideoPlayer(controller.videoController),
+                              ),
+                            ),
+                          ),
+                        ],
+                      );
+                    } else {
+
+                      return CustomNetworkImage(
+                        imageUrl: imagePath,
+                        borderRadius: BorderRadius.zero,
+                      );
+                    }
+                  }),
+                  // Container(
+                  //   width: 268.w,
+                  //   height: 180.h,
+                  //   decoration: BoxDecoration(
+                  //     image: DecorationImage(
+                  //       image: AssetImage(imagePath),
+                  //       fit: BoxFit.cover,
+                  //     ),
+                  //   ),
+                  // ),
                   /// Play Icon Centered
                   Positioned.fill(
                     child: Center(

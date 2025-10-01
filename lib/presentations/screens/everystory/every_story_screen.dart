@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:go_router/go_router.dart';
 import 'package:klokkin_app/core/constants/app_colors.dart';
 import 'package:klokkin_app/presentations/widgets/custom_app_bar.dart';
@@ -49,13 +48,13 @@ class _EveryStoryScreenState extends State<EveryStoryScreen> {
 
               Row(
                 children: [
-                  Padding(
-                    padding: EdgeInsets.only(left: 15.w),
-                    child: const CustomProfileImage(
-                      imageUrl:
-                      'https://media.licdn.com/dms/image/v2/C4E03AQGAvYAY6kdVXQ/profile-displayphoto-shrink_200_200/profile-displayphoto-shrink_200_200/0/1603315936568?e=1758758400&v=beta&t=QeIvlqHz22MKUgXX6U56FSocAyZYGAA5NUi3CMb_alQ',
-                    ),
-                  ),
+                  // Padding(
+                  //   padding: EdgeInsets.only(left: 15.w),
+                  //   child: const CustomProfileImage(
+                  //     imageUrl:
+                  //     'https://media.licdn.com/dms/image/v2/C4E03AQGAvYAY6kdVXQ/profile-displayphoto-shrink_200_200/profile-displayphoto-shrink_200_200/0/1603315936568?e=1758758400&v=beta&t=QeIvlqHz22MKUgXX6U56FSocAyZYGAA5NUi3CMb_alQ',
+                  //   ),
+                  // ),
                   SizedBox(width: 11.h),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,

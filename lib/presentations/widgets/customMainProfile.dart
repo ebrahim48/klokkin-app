@@ -2,10 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:klokkin_app/core/constants/app_colors.dart';
 
-class CustomMainProfileImage extends StatelessWidget {
-  final String imageUrl;
+import 'custom_network_image.dart';
 
-  const CustomMainProfileImage({super.key, required this.imageUrl});
+class CustomMainProfileImage extends StatelessWidget {
+  // final String imageUrl;
+  final String imagePath;
+
+  const CustomMainProfileImage({super.key, required this.imagePath});
 
   @override
   Widget build(BuildContext context) {
@@ -20,10 +23,17 @@ class CustomMainProfileImage extends StatelessWidget {
         ),
       ),
       child: ClipOval(
-        child: Image.network(
-          imageUrl,
-          fit: BoxFit.cover,
+        child: CustomNetworkImage(
+          imageUrl: imagePath,
+          borderRadius: BorderRadius.zero,
         ),
+
+        // Image.network(
+        //   imageUrl,
+        //   fit: BoxFit.cover,
+        // ),
+
+
       ),
     );
   }

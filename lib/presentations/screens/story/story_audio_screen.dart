@@ -65,7 +65,7 @@ class _StoryAudioScreenState extends State<StoryAudioScreen> {
                 alignment: Alignment.center,
                 child: CustomText(
                   textAlign: TextAlign.center,
-                  text: 'Audio 1hr 30m',
+                  text: "${routeData["duration"]}",
                   color: AppColors.textColor4B4B4B,
                   fontsize: 14.sp,
                   fontWeight: FontWeight.w500,

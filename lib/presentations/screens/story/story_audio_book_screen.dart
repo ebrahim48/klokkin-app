@@ -1,19 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
-import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
 import 'package:go_router/go_router.dart';
 import 'package:klokkin_app/presentations/widgets/custom_app_bar.dart';
-
 import '../../../controllers/audio_book_controller.dart';
 import '../../../core/config/app_routes/app_routes.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../widgets/audio_book_card.dart';
 import '../../widgets/custom_text.dart';
-
-
-
 
 
 class StoryAudioBookScreen extends StatefulWidget {
@@ -25,7 +19,6 @@ class StoryAudioBookScreen extends StatefulWidget {
 
 class _StoryAudioBookScreenState extends State<StoryAudioBookScreen> {
   final AudioBookController controller = Get.put(AudioBookController());
-
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   void initState() {
@@ -36,7 +29,6 @@ class _StoryAudioBookScreenState extends State<StoryAudioBookScreen> {
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
       key: _scaffoldKey,
       resizeToAvoidBottomInset: true,
@@ -89,6 +81,7 @@ class _StoryAudioBookScreenState extends State<StoryAudioBookScreen> {
                               AppRoutes.storyAudioScreen,
                               extra: {
                                 "caption": audioBook.caption ??"",
+                                "duration": audioBook.duration ??"",
                                 "imagePath": audioBook.mediaUrl != null && audioBook.mediaUrl!.isNotEmpty
                                     ? audioBook.mediaUrl!.first
                                     : "https://templates.joomla-monster.com/joomla30/jm-news-portal/components/com_djclassifieds/assets/images/default_profile.png" ??"",

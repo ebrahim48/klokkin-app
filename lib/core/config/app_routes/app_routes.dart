@@ -24,11 +24,13 @@ import '../../../presentations/screens/home/createStory/record_video_player_scre
 import '../../../presentations/screens/home/createStory/start_create_story.dart';
 import '../../../presentations/screens/home/createStory/upload_create_story.dart';
 import '../../../presentations/screens/home/createStory/video_create_story_screen.dart';
+import '../../../presentations/screens/home/createStory/video_record_add_post_details_screen.dart';
 import '../../../presentations/screens/library/bookmark_screen.dart';
 import '../../../presentations/screens/library/download_screen.dart';
 import '../../../presentations/screens/onboarding/onboarding_screen.dart';
 import '../../../presentations/screens/profile/permission_screen.dart';
 import '../../../presentations/screens/profile/personal_screen.dart';
+import '../../../presentations/screens/profile/personal_screen_update.dart';
 import '../../../presentations/screens/profile/profile_screen.dart';
 import '../../../presentations/screens/profile/question_help_screen.dart';
 import '../../../presentations/screens/splash/splash_screen.dart';
@@ -79,6 +81,7 @@ class AppRoutes {
   static const String downloadScreen = "/downloadScreen";
   static const String profileScreen = "/profileScreen";
   static const String personalScreen = "/personalScreen";
+  static const String personalScreenUpdate = "/personalScreenUpdate";
   static const String systemSettingScreen = "/systemSettingScreen";
   static const String feedbackScreen = "/feedbackScreen";
   static const String permissionScreen = "/permissionScreen";
@@ -87,6 +90,7 @@ class AppRoutes {
   static const String recordVideoListPageScreen = "/recordVideoListPageScreen";
   static const String recordVideoPlayerScreen = "/recordVideoPlayerScreen";
   static const String audioRecordAddPostDetailsScreen = "/audioRecordAddPostDetailsScreen";
+  static const String videoRecordAddPostDetailsScreen = "/videoRecordAddPostDetailsScreen";
 
   static final GoRouter goRouter = GoRouter(
     initialLocation: splashScreen,
@@ -278,6 +282,13 @@ class AppRoutes {
             (context, state) =>
             _customTransitionPage(AudioRecordAddPostDetailsScreen(), state),
       ),
+      GoRoute(
+        path: videoRecordAddPostDetailsScreen,
+        name: videoRecordAddPostDetailsScreen,
+        pageBuilder:
+            (context, state) =>
+            _customTransitionPage(VideoRecordAddPostDetailsScreen(), state),
+      ),
 
 
       // GoRoute(
@@ -396,12 +407,18 @@ class AppRoutes {
             (context, state) => _customTransitionPage(ProfileScreen(), state),
       ),
 
-      //<<<=============>>>  Personal  Screen  <<<===============>>>
+      //<<<=============>>>  PersonalScreenUpdate<<<===============>>>
       GoRoute(
         path: personalScreen,
         name: personalScreen,
         pageBuilder:
             (context, state) => _customTransitionPage(PersonalScreen(), state),
+      ),
+      GoRoute(
+        path: personalScreenUpdate,
+        name: personalScreenUpdate,
+        pageBuilder:
+            (context, state) => _customTransitionPage(PersonalScreenUpdate(), state),
       ),
 
       //<<<=============>>>  Personal  Screen  <<<===============>>>
