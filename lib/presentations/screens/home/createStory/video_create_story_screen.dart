@@ -105,7 +105,7 @@ class _VideoCreateStoryScreenState extends State<VideoCreateStoryScreen> {
       }
     });
   }
-
+/// ============================================> Add Post Details Next Screen =====================================================>
   Future<void> _stopVideoRecording() async {
     if (!_controller!.value.isRecordingVideo) return;
 
@@ -126,7 +126,13 @@ class _VideoCreateStoryScreenState extends State<VideoCreateStoryScreen> {
       });
 
       if (mounted) {
-        context.pushNamed(AppRoutes.recordVideoListPageScreen);
+        context.pushNamed(
+            AppRoutes.videoRecordAddPostDetailsScreen,
+          extra: {
+            "title": "Add Post Details",
+            "videoPath": savedPath
+          }
+        );
       }
     } catch (e) {
       setState(() {

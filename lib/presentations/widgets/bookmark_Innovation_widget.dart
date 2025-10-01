@@ -1,22 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
+import '../../controllers/audio_book_controller.dart';
 import '../../core/constants/app_colors.dart';
 import '../../global/custom_assets/assets.gen.dart';
+import 'custom_network_image.dart';
 import 'custom_text.dart';
 
 class BookmarkInnovationCard extends StatelessWidget {
   final String title;
+  final String id;
   final String caption;
   final String imagePath;
   final VoidCallback? onTap;
 
-  const BookmarkInnovationCard({
+   BookmarkInnovationCard({
     super.key,
     required this.title,
+    required this.id,
     required this.caption,
     required this.imagePath,
     this.onTap,
   });
+
+  final AudioBookController controller = Get.put(AudioBookController());
 
   @override
   Widget build(BuildContext context) {
@@ -41,23 +48,30 @@ class BookmarkInnovationCard extends StatelessWidget {
                     height: 63.h,
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(4.r),
-                      image: DecorationImage(
-                        image: AssetImage(imagePath),
-                        fit: BoxFit.cover,
-                      ),
+                    ),
+                    clipBehavior: Clip.hardEdge,
+                    child: CustomNetworkImage(
+                      imageUrl: imagePath,
                     ),
                   ),
+
 
                   /// Bookmark Icon Top Right
                   Positioned(
                     top: 8.h,
                     right: 6.w,
-                    child: Assets.icons.bookmarkSimple.svg(
-                      width: 20.w,
-                      height: 20.h,
-                      colorFilter: const ColorFilter.mode(
-                        Color(0xFFC79235),
-                        BlendMode.srcIn,
+                    child: GestureDetector(
+                      onTap: () {
+                        controller.bookMark(id
+                        );
+                      },
+                      child: Assets.icons.bookmarkSimple.svg(
+                        width: 20.w,
+                        height: 20.h,
+                        colorFilter: const ColorFilter.mode(
+                          Color(0xFFC79235),
+                          BlendMode.srcIn,
+                        ),
                       ),
                     ),
                   ),

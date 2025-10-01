@@ -33,6 +33,9 @@ class $AssetsIconsGen {
   SvgGenImage get plusSquare =>
       const SvgGenImage('assets/icons/PlusSquare.svg');
 
+  /// File path: assets/icons/about.svg
+  SvgGenImage get about => const SvgGenImage('assets/icons/about.svg');
+
   /// File path: assets/icons/caption.svg
   SvgGenImage get caption => const SvgGenImage('assets/icons/caption.svg');
 
@@ -83,6 +86,9 @@ class $AssetsIconsGen {
   /// File path: assets/icons/facebook.svg
   SvgGenImage get facebook => const SvgGenImage('assets/icons/facebook.svg');
 
+  /// File path: assets/icons/feedback.svg
+  SvgGenImage get feedback => const SvgGenImage('assets/icons/feedback.svg');
+
   /// File path: assets/icons/filter.svg
   SvgGenImage get filter => const SvgGenImage('assets/icons/filter.svg');
 
@@ -115,6 +121,13 @@ class $AssetsIconsGen {
   SvgGenImage get notification =>
       const SvgGenImage('assets/icons/notification.svg');
 
+  /// File path: assets/icons/permissions.svg
+  SvgGenImage get permissions =>
+      const SvgGenImage('assets/icons/permissions.svg');
+
+  /// File path: assets/icons/personal.svg
+  SvgGenImage get personal => const SvgGenImage('assets/icons/personal.svg');
+
   /// File path: assets/icons/phone.svg
   SvgGenImage get phone => const SvgGenImage('assets/icons/phone.svg');
 
@@ -128,6 +141,10 @@ class $AssetsIconsGen {
   /// File path: assets/icons/profileIcon.svg
   SvgGenImage get profileIcon =>
       const SvgGenImage('assets/icons/profileIcon.svg');
+
+  /// File path: assets/icons/questionshelp.svg
+  SvgGenImage get questionshelp =>
+      const SvgGenImage('assets/icons/questionshelp.svg');
 
   /// File path: assets/icons/resume.svg
   SvgGenImage get resume => const SvgGenImage('assets/icons/resume.svg');
@@ -150,6 +167,10 @@ class $AssetsIconsGen {
   /// File path: assets/icons/storyIcon.svg
   SvgGenImage get storyIcon => const SvgGenImage('assets/icons/storyIcon.svg');
 
+  /// File path: assets/icons/systemsettings.svg
+  SvgGenImage get systemsettings =>
+      const SvgGenImage('assets/icons/systemsettings.svg');
+
   /// File path: assets/icons/upload.svg
   SvgGenImage get upload => const SvgGenImage('assets/icons/upload.svg');
 
@@ -168,6 +189,7 @@ class $AssetsIconsGen {
     play,
     plusCircle,
     plusSquare,
+    about,
     caption,
     caretRight,
     category,
@@ -183,6 +205,7 @@ class $AssetsIconsGen {
     email,
     eyeClosed,
     facebook,
+    feedback,
     filter,
     google,
     greater,
@@ -193,10 +216,13 @@ class $AssetsIconsGen {
     lockKey,
     nameProfile,
     notification,
+    permissions,
+    personal,
     phone,
     playCircle,
     profile,
     profileIcon,
+    questionshelp,
     resume,
     search,
     settings,
@@ -204,6 +230,7 @@ class $AssetsIconsGen {
     slider,
     story,
     storyIcon,
+    systemsettings,
     upload,
     videoicon,
     volume,
@@ -219,6 +246,10 @@ class $AssetsImagesGen {
 
   /// File path: assets/images/audio.png
   AssetGenImage get audio => const AssetGenImage('assets/images/audio.png');
+
+  /// File path: assets/images/audioimage.png
+  AssetGenImage get audioimage =>
+      const AssetGenImage('assets/images/audioimage.png');
 
   /// File path: assets/images/audiostory.png
   AssetGenImage get audiostory =>
@@ -253,6 +284,10 @@ class $AssetsImagesGen {
   /// File path: assets/images/imagelist.png
   AssetGenImage get imagelist =>
       const AssetGenImage('assets/images/imagelist.png');
+
+  /// File path: assets/images/imageworld.png
+  AssetGenImage get imageworld =>
+      const AssetGenImage('assets/images/imageworld.png');
 
   /// File path: assets/images/industry.png
   AssetGenImage get industry =>
@@ -294,6 +329,10 @@ class $AssetsImagesGen {
   AssetGenImage get videocreate =>
       const AssetGenImage('assets/images/videocreate.png');
 
+  /// File path: assets/images/videoimage.png
+  AssetGenImage get videoimage =>
+      const AssetGenImage('assets/images/videoimage.png');
+
   /// File path: assets/images/welcome1.png
   AssetGenImage get welcome1 =>
       const AssetGenImage('assets/images/welcome1.png');
@@ -306,6 +345,7 @@ class $AssetsImagesGen {
   List<dynamic> get values => [
     eyeClosed,
     audio,
+    audioimage,
     audiostory,
     category,
     create,
@@ -315,6 +355,7 @@ class $AssetsImagesGen {
     every,
     imageStory,
     imagelist,
+    imageworld,
     industry,
     logo,
     splash,
@@ -326,6 +367,7 @@ class $AssetsImagesGen {
     usplash1,
     videoStory,
     videocreate,
+    videoimage,
     welcome1,
     welcome2,
   ];

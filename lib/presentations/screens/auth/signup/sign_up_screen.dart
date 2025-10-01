@@ -163,7 +163,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                           fontWeight: FontWeight.w400
                         ),
                         children: [
-                          const TextSpan(text: 'Are You Agree to Our '),
+                          const TextSpan(text: 'do you agree with our '),
                           TextSpan(
                             text: 'Terms of service',
                             style:  TextStyle(

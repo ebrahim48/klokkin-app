@@ -128,6 +128,7 @@ class StoryLibraryDataModel {
   final List<String>? tags;
   final String? status;
   final int? shared;
+  final int? view;
   final String? description;
   final List<String>? mediaUrl;
   final String? type;
@@ -142,6 +143,7 @@ class StoryLibraryDataModel {
     this.caption,
     this.tags,
     this.status,
+    this.view,
     this.shared,
     this.description,
     this.mediaUrl,
@@ -168,6 +170,7 @@ class StoryLibraryDataModel {
       tags: parsedTags,
       status: json["status"],
       shared: json["shared"],
+      view: json["view"],
       description: json["description"],
       mediaUrl: json["mediaUrl"] == null
           ? []
@@ -191,6 +194,7 @@ class StoryLibraryDataModel {
     "tags": tags ?? [],
     "status": status,
     "shared": shared,
+    "view": view,
     "description": description,
     "mediaUrl": mediaUrl ?? [],
     "type": type,

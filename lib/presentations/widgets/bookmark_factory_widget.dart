@@ -1,23 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
+import '../../controllers/audio_book_controller.dart';
 import '../../core/constants/app_colors.dart';
+import '../../global/custom_assets/assets.gen.dart';
+import 'custom_network_image.dart';
 import 'custom_text.dart';
 
 class BookmarkFactoryCard extends StatelessWidget {
   final String title;
+  final String id;
   final String caption;
   final String imagePath;
   final VoidCallback? onTap;
 
-  const BookmarkFactoryCard({
+   BookmarkFactoryCard({
     super.key,
+    required this.id,
     required this.title,
     required this.caption,
     required this.imagePath,
     this.onTap,
   });
-
+  final AudioBookController controller = Get.put(AudioBookController());
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -38,9 +45,9 @@ class BookmarkFactoryCard extends StatelessWidget {
                 child: Stack(
                   children: [
                     Positioned.fill(
-                      child: Image.asset(
-                        imagePath,
-                        fit: BoxFit.cover,
+                      child: CustomNetworkImage(
+                        imageUrl: imagePath,
+
                       ),
                     ),
                     Positioned(
@@ -51,17 +58,25 @@ class BookmarkFactoryCard extends StatelessWidget {
                         height: 24.h,
                         padding: EdgeInsets.symmetric(horizontal: 6.w),
                         decoration: BoxDecoration(
-                          color:AppColors.textColorFFFFFF.withOpacity(0.1),
+                          color: AppColors.textColorFFFFFF.withOpacity(0.1),
                         ),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            CustomText(
-                              text: title,
-                              color: AppColors.textColorFFFFFF,
-                              fontsize: 12.sp,
-                              fontWeight: FontWeight.w500,
+                            // Make the text flexible
+                            Expanded(
+                              child: CustomText(
+                                text: title,
+                                color: AppColors.textColorFFFFFF,
+                                fontsize: 12.sp,
+                                fontWeight: FontWeight.w500,
+                                maxline: 1,
+                                textOverflow: TextOverflow.ellipsis,
+                              ),
                             ),
+
+                            SizedBox(width: 8.w), // spacing between text and icon
+
                             SvgPicture.asset(
                               "assets/icons/downloadSimple.svg",
                               width: 16.w,
@@ -70,7 +85,24 @@ class BookmarkFactoryCard extends StatelessWidget {
                             ),
                           ],
                         ),
-
+                      ),
+                    ),
+                    Positioned(
+                      top: 8.h,
+                      right: 6.w,
+                      child: GestureDetector(
+                        onTap: () {
+                          controller.bookMark(id
+                          );
+                        },
+                        child: Assets.icons.bookmarkSimple.svg(
+                          width: 20.w,
+                          height: 20.h,
+                          colorFilter: const ColorFilter.mode(
+                            Color(0xFFC79235),
+                            BlendMode.srcIn,
+                          ),
+                        ),
                       ),
                     ),
                   ],
@@ -83,6 +115,7 @@ class BookmarkFactoryCard extends StatelessWidget {
                 padding: EdgeInsets.all(6.w),
                 color: AppColors.textColorFFFFFF,
                 child: CustomText(
+                  textAlign: TextAlign.start,
                   text: caption,
                   fontsize: 12.sp,
                   maxline: 2,

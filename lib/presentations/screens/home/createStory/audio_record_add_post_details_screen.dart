@@ -10,10 +10,7 @@ import 'package:klokkin_app/core/constants/app_colors.dart';
 import 'package:klokkin_app/presentations/widgets/custom_app_bar.dart';
 import 'package:klokkin_app/presentations/widgets/custom_loader.dart';
 import 'package:klokkin_app/presentations/widgets/custom_text.dart';
-import 'package:path/path.dart' as tags;
-
 import '../../../../controllers/upload_create_controller.dart';
-import '../../../../core/config/app_routes/app_routes.dart';
 
 
 class AudioRecordAddPostDetailsScreen extends StatefulWidget {

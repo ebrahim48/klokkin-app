@@ -6,7 +6,10 @@ import 'package:klokkin_app/core/config/app_routes/app_routes.dart';
 import 'package:klokkin_app/core/constants/app_colors.dart';
 import 'package:klokkin_app/presentations/widgets/custom_app_bar.dart';
 import '../../../controllers/audio_book_controller.dart';
+import '../../../controllers/home_controller.dart';
+import '../../../global/custom_assets/assets.gen.dart';
 import '../../widgets/customMainProfile.dart';
+import '../../widgets/custom_profile_listtile.dart';
 import '../../widgets/custom_text.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -19,9 +22,12 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   final AudioBookController controller = Get.put(AudioBookController());
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  HomeController homeController = Get.put(HomeController());
 
-  final Color textColor = const Color(0xFFC79235);
-
+  void initState() {
+    super.initState();
+    homeController.getProfile();
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -32,7 +38,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              // Profile Image with Edit Button
+              /// ==============================>  Profile Image with Edit Button ====================================>
               Align(
                 alignment: Alignment.center,
                 child: Stack(
@@ -40,8 +46,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   children: [
                     // Profile Image
                     CustomMainProfileImage(
-                      imageUrl:
-                      'https://media.licdn.com/dms/image/v2/C4E03AQGAvYAY6kdVXQ/profile-displayphoto-shrink_200_200/profile-displayphoto-shrink_200_200/0/1603315936568?e=1758758400&v=beta&t=QeIvlqHz22MKUgXX6U56FSocAyZYGAA5NUi3CMb_alQ',
+                      imagePath: homeController.profile.value.profile?.avatar != null &&
+                          homeController.profile.value.profile!.avatar!.isNotEmpty
+                          ? homeController.profile.value.profile!.avatar!
+                          : "https://templates.joomla-monster.com/joomla30/jm-news-portal/components/com_djclassifieds/assets/images/default_profile.png",
                     ),
 
                     // Positioned Edit Button
@@ -71,40 +79,51 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
               // Username
               CustomText(
-                text: "Ebrahim",
+                text: homeController.profile.value.profile?.nickname ?? 'N/A',
                 fontsize: 18.sp,
                 fontWeight: FontWeight.w600,
                 color: AppColors.textColorFFFFFF,
               ),
               SizedBox(height: 65.h),
 
-              // Menu Items
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 20.w),
-                child: Column(
-                  children: [
-                    menuItem(Icons.person_outline, "Personal", () {
-                      context.pushNamed(AppRoutes.personalScreen);
 
-                    }),
-                    menuItem(Icons.settings_outlined, "System settings", () {
-                      context.pushNamed(AppRoutes.systemSettingScreen);
-                    }),
-                    menuItem(Icons.lock_outline, "Permissions", () {
-                      context.pushNamed(AppRoutes.permissionScreen);
-                    }),
-                    menuItem(Icons.feedback_outlined, "Feedback", () {
-                      context.pushNamed(AppRoutes.feedbackScreen);
-                    }),
-                    menuItem(Icons.info_outline, "About", () {
-                      context.pushNamed(AppRoutes.aboutScreen);
-                    }),
-                    menuItem(Icons.help_outline, "Questions and help", () {
-                      context.pushNamed(AppRoutes.questionHelpScreen);
-                    }),
-                  ],
-                ),
-              ),
+              CustomProfileListTile(
+                  title: 'Personal',
+                  icon: Assets.icons.personal.svg(),
+                  onTap: () {
+                    context.pushNamed(AppRoutes.personalScreen);
+                  }),
+              CustomProfileListTile(
+                  title: 'System settings',
+                  icon: Assets.icons.systemsettings.svg(),
+                  onTap: () {
+                    context.pushNamed(AppRoutes.systemSettingScreen);
+                  }),
+              CustomProfileListTile(
+                  title: 'Permissions',
+                  icon: Assets.icons.permissions.svg(),
+                  onTap: () {
+                    context.pushNamed(AppRoutes.permissionScreen);
+                  }),
+              CustomProfileListTile(
+                  title: 'Feedback',
+                  icon: Assets.icons.feedback.svg(),
+                  onTap: () {
+                    context.pushNamed(AppRoutes.feedbackScreen);
+                  }),
+              CustomProfileListTile(
+                  title: 'About',
+                  icon: Assets.icons.about.svg(),
+                  onTap: () {
+                    context.pushNamed(AppRoutes.aboutScreen);
+                  }),
+              CustomProfileListTile(
+                  title: 'Questions and help',
+                  icon: Assets.icons.questionshelp.svg(),
+                  onTap: () {
+                    context.pushNamed(AppRoutes.questionHelpScreen);
+                  }),
+
 
             ],
           ),
@@ -113,33 +132,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget menuItem(IconData icon, String title, VoidCallback onTap) {
-    return Padding(
-      padding: EdgeInsets.only(bottom: 20.h), // gap: 20px
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(8.r),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Row(
-              children: [
-                Icon(icon, color: textColor, size: 22.sp),
-                SizedBox(width: 12.w),
-                CustomText(
-                  text: title,
-                  fontsize: 16.sp,
-                  fontWeight: FontWeight.w500,
-                  color: textColor,
-                ),
-              ],
-            ),
-            Icon(Icons.arrow_forward_ios, color: textColor, size: 16.sp),
-          ],
-        ),
-      ),
-    );
-  }
+
 
 }
 

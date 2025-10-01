@@ -1,24 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:klokkin_app/presentations/widgets/custom_text.dart';
-import 'package:share_plus/share_plus.dart';
-
-import '../../controllers/audio_controller.dart';
+import '../../controllers/audio_book_controller.dart';
 import '../../controllers/playback_controller.dart';
 import '../../controllers/story_audio_controller.dart';
 import '../../core/constants/app_colors.dart';
 import '../../global/custom_assets/assets.gen.dart';
+import 'package:intl/intl.dart';
 
-class CustomAudioProgressBar extends StatelessWidget {
-  CustomAudioProgressBar({super.key});
+class CustomAudioProgressBar extends StatefulWidget {
+   CustomAudioProgressBar({super.key});
 
-  // String _formatTime(double seconds) {
-  //   final m = (seconds ~/ 60).toString();
-  //   final s = (seconds % 60).toInt().toString().padLeft(2, '0');
-  //   return "$m:$s";
-  // }
+
+  @override
+  State<CustomAudioProgressBar> createState() => _CustomAudioProgressBarState();
+}
+
+class _CustomAudioProgressBarState extends State<CustomAudioProgressBar> {
+
+  final AudioBookController controllers = Get.put(AudioBookController());
+
+  void initState() {
+    super.initState();
+    controllers.getLibraryStoryData();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -65,13 +71,15 @@ class CustomAudioProgressBar extends StatelessWidget {
                   ),
                 ),
               ),
-              CustomText(text: '30:20/01:30h',color: AppColors.textColor919191),
+              CustomText(
+                  text: '${controllers.libraryStoryData.value.first.duration}',
+                  color: AppColors.textColor919191),
               SizedBox(width: 15.w),
               GestureDetector(
                 onTap: () {
                   showModalBottomSheet(
                     context: context,
-                    backgroundColor:  Color(0xFF0D0D0D),
+                    backgroundColor:  const Color(0xFF0D0D0D),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.only(
                         topLeft: Radius.circular(20.r),
@@ -242,14 +250,14 @@ class CustomAudioProgressBar extends StatelessWidget {
                   children: [
                     CustomText(
                       textAlign: TextAlign.start,
-                      text: 'Post: Dec 10,2024',
+                      text: 'Post: ${DateFormat("dd MMM yyyy").format(DateTime.parse('${controllers.libraryStoryData.value.first.createdAt}'))}',
                       color: AppColors.textColorFFFFFF,
                       fontsize: 14.sp,
                       fontWeight: FontWeight.w400,
                     ),
                     CustomText(
                       textAlign: TextAlign.start,
-                      text: 'View 10K',
+                      text: '${controllers.libraryStoryData.value.first.view ?? 'N/A'}',
                       color: AppColors.textColor6B6B6B,
                       fontsize: 12.sp,
                       fontWeight: FontWeight.w400,
@@ -326,7 +334,7 @@ class CustomAudioProgressBar extends StatelessWidget {
           ),
           CustomText(
             textAlign: TextAlign.start,
-            text: 'Story Description:',
+            text: 'Story Description',
             color: AppColors.textColorFFFFFF,
             fontsize: 16.sp,
             fontWeight: FontWeight.w400,
@@ -334,7 +342,7 @@ class CustomAudioProgressBar extends StatelessWidget {
           SizedBox(height: 16.h),
           CustomText(
             textAlign: TextAlign.start,
-            text: 'Behind every desk, theres a story waiting to be told.From awkward Monday mornings to surprise promotions, and the quiet triumphs that go unnoticed — this episode brings you tales from the heart of the workplace. Told from the perspective of a desk-bound dreamer, this audio journey is both nostalgic and relatable for anyone whos ever typed away under buzzing lights.',
+            text: controllers.libraryStoryData.first.description ?? 'N/A',
             color: AppColors.textColor8B8B8B,
             fontsize: 12.sp,
             fontWeight: FontWeight.w400,
@@ -346,7 +354,7 @@ class CustomAudioProgressBar extends StatelessWidget {
           ),
           CustomText(
             textAlign: TextAlign.start,
-            text: 'Tags:',
+            text: 'Tags',
             color: AppColors.textColorFFFFFF,
             fontsize: 16.sp,
             fontWeight: FontWeight.w400,
@@ -355,24 +363,15 @@ class CustomAudioProgressBar extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Expanded(
-                child: Wrap(
-                  spacing: 8.w,
-                  children: controller.hashtags.map((tag) {
-                    return GestureDetector(
-                      onTap: () {
-                        print("$tag tapped");
-                      },
-                      child: CustomText(text:
-                      tag,
-                        color: AppColors.textColor2165DF, fontsize: 14.sp, fontWeight: FontWeight.w400,
-                      ),
-                    );
-                  }).toList(),
-                ),
-              ),
 
-              // Download Icon
+              CustomText(
+                text: (controllers.libraryStoryData.first.tags is List)
+                    ? (controllers.libraryStoryData.first.tags as List).join(", ")
+                    : (controllers.libraryStoryData.first.tags?.toString() ?? 'N/A'),
+                color: AppColors.textColor2165DF,
+                fontsize: 14.sp,
+                fontWeight: FontWeight.w400,
+              ),
               GestureDetector(
                 onTap: () {
 
@@ -482,7 +481,6 @@ class CustomAudioProgressBar extends StatelessWidget {
     );
   }
 
-
   Widget _speedChip(String text, PlaybackController controller) {
     final value = double.parse(text.replaceAll("X", ""));
     return GestureDetector(
@@ -505,6 +503,4 @@ class CustomAudioProgressBar extends StatelessWidget {
       ),
     );
   }
-
-
 }

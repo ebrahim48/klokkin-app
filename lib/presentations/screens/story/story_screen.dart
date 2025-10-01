@@ -213,8 +213,6 @@ class _StoryScreenState extends State<StoryScreen> {
                               "imagePath": audioBook.mediaUrl != null && audioBook.mediaUrl!.isNotEmpty
                                   ? audioBook.mediaUrl!.first
                                   : "https://templates.joomla-monster.com/joomla30/jm-news-portal/components/com_djclassifieds/assets/images/default_profile.png" ??"",
-
-
                             }
                           );
                         },

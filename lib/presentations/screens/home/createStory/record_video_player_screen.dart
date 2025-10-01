@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:klokkin_app/presentations/widgets/custom_loader.dart';
 import 'package:path/path.dart' as path;
