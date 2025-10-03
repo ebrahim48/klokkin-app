@@ -3,7 +3,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
 import 'package:klokkin_app/core/config/app_routes/app_routes.dart';
-import 'package:klokkin_app/presentations/widgets/custom_app_bar.dart';
 import 'package:klokkin_app/presentations/widgets/custom_text.dart';
 import '../../../controllers/audio_book_controller.dart';
 import '../../../core/constants/app_colors.dart';

@@ -32,5 +32,8 @@ class ApiConstants{
   static  String userUpdateProfileEndPoint = "/user/profile";
   static  String deleteProfileEndPoint = "/user/profile";
   static  String feedbackEndPoint = "/feedback/feedbacks";
+  static  String privacyEndPoint = "/setting/privacy-policy";
+  static  String aboutEndPoint = "/setting/about-us";
+  static  String termsEndPoint = "/setting/terms-conditions";
 
 }

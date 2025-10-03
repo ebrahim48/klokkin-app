@@ -127,6 +127,7 @@ class StoryLibraryDataModel {
   final String? duration;
   final List<String>? tags;
   final String? status;
+  final String? thumbnail;
   final int? shared;
   final int? view;
   final String? description;
@@ -139,6 +140,7 @@ class StoryLibraryDataModel {
   StoryLibraryDataModel({
     this.id,
     this.user,
+    this.thumbnail,
     this.duration,
     this.caption,
     this.tags,
@@ -171,6 +173,7 @@ class StoryLibraryDataModel {
       status: json["status"],
       shared: json["shared"],
       view: json["view"],
+      thumbnail: json["thumbnail"],
       description: json["description"],
       mediaUrl: json["mediaUrl"] == null
           ? []
@@ -193,6 +196,7 @@ class StoryLibraryDataModel {
     "duration": duration,
     "tags": tags ?? [],
     "status": status,
+    "thumbnail": thumbnail,
     "shared": shared,
     "view": view,
     "description": description,

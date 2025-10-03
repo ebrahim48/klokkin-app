@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import '../../core/constants/app_colors.dart';
 import '../../global/custom_assets/assets.gen.dart';
+import 'custom_network_image.dart';
 import 'custom_text.dart';
 
 class ImageStoryCard extends StatelessWidget {
@@ -43,11 +44,9 @@ class ImageStoryCard extends StatelessWidget {
                 Container(
                   width: 188.w,
                   height: 140.h,
-                  decoration: BoxDecoration(
-                    image: DecorationImage(
-                      image: AssetImage(imagePath),
-                      fit: BoxFit.cover,
-                    ),
+                  child: CustomNetworkImage(
+                    imageUrl: imagePath,
+                    borderRadius: BorderRadius.circular(6.r),
                   ),
                 ),
             
