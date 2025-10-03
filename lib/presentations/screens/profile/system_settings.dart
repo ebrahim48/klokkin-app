@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:go_router/go_router.dart';
 import 'package:klokkin_app/core/config/app_routes/app_routes.dart';
 import 'package:klokkin_app/core/constants/app_colors.dart';
 import 'package:klokkin_app/presentations/widgets/custom_button.dart';
 import 'package:klokkin_app/presentations/widgets/custom_text.dart';
+
+import '../../../controllers/home_controller.dart';
 
 class SystemSettingScreen extends StatefulWidget {
   const SystemSettingScreen({super.key});
@@ -14,72 +18,8 @@ class SystemSettingScreen extends StatefulWidget {
 }
 
 class _SystemSettingScreenState extends State<SystemSettingScreen> {
-  // Function to show the delete confirmation dialog
-  void _showDeleteDialog() {
-    showDialog(
-      context: context,
-      barrierDismissible: false, // Prevent dismissing by tapping outside
-      builder: (BuildContext context) {
-        return AlertDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12.r),
-          ),
-          title: CustomText(
-            text: 'Are you sure to delete your account?',
-            color: AppColors.textColorFFFFFF,
-            fontsize: 16.sp,
-            fontWeight: FontWeight.w500,
-          ),
-          actions: <Widget>[
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                // Confirm Button
-                TextButton(
-                  onPressed: () {
-                    // Handle the account deletion logic here
-                    Navigator.of(context).pop(); // Close the dialog
-                    _performDeleteAccount(); // Call the delete account function
-                  },
-                  child: CustomText(
-                    text: 'Confirm',
-                    color: AppColors.primaryColorC79235,
-                    fontsize: 16.sp,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-                SizedBox(width: 20.w), // Space between buttons
-                // Cancel Button
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop(); // Close the dialog without doing anything
-                  },
-                  child: CustomText(
-                    text: 'Cancel',
-                    color: AppColors.textColor8C8C8C,
-                    fontsize: 16.sp,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              ],
-            ),
-          ],
-          backgroundColor: AppColors.textColor323539,
-          contentPadding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
-          actionsPadding: EdgeInsets.only(bottom: 16.h),
-        );
-      },
-    );
-  }
 
-  // Function to simulate account deletion
-  void _performDeleteAccount() {
-    // Here you can add the logic to delete the account
-    // For example, calling an API or clearing user data
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Account deleted successfully!')),
-    );
-  }
+  HomeController homeController = Get.put(HomeController());
 
   @override
   Widget build(BuildContext context) {
@@ -144,7 +84,7 @@ class _SystemSettingScreenState extends State<SystemSettingScreen> {
                             fontsize: 16.sp,
                             fontWeight: FontWeight.w500,
                           ),
-                          Spacer(),
+                          const Spacer(),
                           CustomText(
                             text: 'This cannot be undone',
                             color: AppColors.textColor8C8C8C,
@@ -242,4 +182,64 @@ class _SystemSettingScreenState extends State<SystemSettingScreen> {
       },
     );
   }
+
+
+  void _showDeleteDialog() {
+    showDialog(
+      context: context,
+      barrierDismissible: false, // Prevent dismissing by tapping outside
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12.r),
+          ),
+          title: CustomText(
+            text: 'Are you sure to delete your account?',
+            color: AppColors.textColorFFFFFF,
+            fontsize: 16.sp,
+            fontWeight: FontWeight.w500,
+          ),
+          actions: <Widget>[
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                // Confirm Button
+                TextButton(
+                  onPressed: () {
+
+                    homeController.deleteProfile(context);
+
+                  },
+                  child: CustomText(
+                    text: 'Confirm',
+                    color: AppColors.primaryColorC79235,
+                    fontsize: 16.sp,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                SizedBox(width: 20.w), // Space between buttons
+                // Cancel Button
+                TextButton(
+                  onPressed: () {
+                    Navigator.of(context).pop(); // Close the dialog without doing anything
+                  },
+                  child: CustomText(
+                    text: 'Cancel',
+                    color: AppColors.textColor8C8C8C,
+                    fontsize: 16.sp,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
+            ),
+          ],
+          backgroundColor: AppColors.textColor323539,
+          contentPadding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 16.h),
+          actionsPadding: EdgeInsets.only(bottom: 16.h),
+        );
+      },
+    );
+  }
+
+
 }

@@ -18,7 +18,6 @@ class VideoStoryCard extends StatelessWidget {
   final VoidCallback? onTap;
   final String videoPath;
 
-
   const VideoStoryCard({
     super.key,
     required this.title,
@@ -31,14 +30,8 @@ class VideoStoryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-
-
-    final controller = Get.put(WorkCardController());
-    controller.setVideoPath(videoPath);
-
-
     return GestureDetector(
-      onTap: onTap,
+      onTap: onTap, // ✅ Direct tap করলে navigate করবে
       child: Container(
         width: 268.w,
         height: 280.h,
@@ -54,43 +47,16 @@ class VideoStoryCard extends StatelessWidget {
               /// =============================> Image + Play Icon ========================>
               Stack(
                 children: [
-                  Obx(() {
-                    if (controller.isInitialized.value) {
-                      return Stack(
-                        children: [
+                  // ✅ শুধু thumbnail image দেখান
+                  Container(
+                    width: 268.w,
+                    height: 180.h,
+                    child: CustomNetworkImage(
+                      imageUrl: imagePath,
+                      borderRadius: BorderRadius.circular(6.r),
+                    ),
+                  ),
 
-                          Container(
-                              width: 268.w,
-                              height: 180.h,
-                            child: ClipRRect(
-                              borderRadius: BorderRadius.circular(6.r),
-                              child: AspectRatio(
-                                aspectRatio:
-                                controller.videoController.value.aspectRatio,
-                                child: VideoPlayer(controller.videoController),
-                              ),
-                            ),
-                          ),
-                        ],
-                      );
-                    } else {
-
-                      return CustomNetworkImage(
-                        imageUrl: imagePath,
-                        borderRadius: BorderRadius.zero,
-                      );
-                    }
-                  }),
-                  // Container(
-                  //   width: 268.w,
-                  //   height: 180.h,
-                  //   decoration: BoxDecoration(
-                  //     image: DecorationImage(
-                  //       image: AssetImage(imagePath),
-                  //       fit: BoxFit.cover,
-                  //     ),
-                  //   ),
-                  // ),
                   /// Play Icon Centered
                   Positioned.fill(
                     child: Center(
@@ -122,7 +88,6 @@ class VideoStoryCard extends StatelessWidget {
                     ),
                     SizedBox(height: 6.h),
 
-                    // Timestamp and reading time row
                     Padding(
                       padding: EdgeInsets.all(3.h),
                       child: Row(
