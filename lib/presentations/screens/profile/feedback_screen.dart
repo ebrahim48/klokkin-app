@@ -1,12 +1,13 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:klokkin_app/core/constants/app_colors.dart';
 import 'package:klokkin_app/presentations/widgets/custom_button.dart';
 import 'package:klokkin_app/presentations/widgets/custom_text.dart';
+
+import '../../../controllers/home_controller.dart';
+
 
 class FeedbackScreen extends StatefulWidget {
   const FeedbackScreen({super.key});
@@ -22,6 +23,8 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
 
   final TextEditingController feedbackController = TextEditingController();
   final TextEditingController emailController = TextEditingController();
+
+  HomeController homeController = Get.put(HomeController());
 
   @override
   Widget build(BuildContext context) {
@@ -77,12 +80,12 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
               ),
               SizedBox(height: 16.h),
 
-              /// Add photos
+
               GestureDetector(
                 onTap: () {
                   showModalBottomSheet(
                     context: context,
-                    shape: RoundedRectangleBorder(
+                    shape: const RoundedRectangleBorder(
                       borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
                     ),
                     builder: (context) => Padding(
@@ -123,18 +126,58 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                 },
                 child: Column(
                   children: [
-                    Container(
-                      width: 50.w,
-                      height: 50.w,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(12.r),
-                      ),
-                      child: Icon(Icons.add, color: goldColor),
+                    Stack(
+                      children: [
+                        Container(
+                          width: 80.w,
+                          height: 80.w,
+                          decoration: BoxDecoration(
+                            color: _selectedImage == null ? Colors.white : null,
+                            borderRadius: BorderRadius.circular(12.r),
+                            border: _selectedImage != null
+                                ? Border.all(color: goldColor, width: 2)
+                                : null,
+                            image: _selectedImage != null
+                                ? DecorationImage(
+                              image: FileImage(_selectedImage!),
+                              fit: BoxFit.cover,
+                            )
+                                : null,
+                          ),
+                          child: _selectedImage == null
+                              ? Icon(Icons.add, color: goldColor, size: 30)
+                              : null,
+                        ),
+
+                        if (_selectedImage != null)
+                          Positioned(
+                            top: -5,
+                            right: -5,
+                            child: GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  _selectedImage = null;
+                                });
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.all(4),
+                                decoration: const BoxDecoration(
+                                  color: Colors.red,
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Icon(
+                                  Icons.close,
+                                  color: Colors.white,
+                                  size: 16,
+                                ),
+                              ),
+                            ),
+                          ),
+                      ],
                     ),
                     SizedBox(height: 4.h),
                     CustomText(
-                      text: "Add\nPhotos",
+                      text: _selectedImage == null ? "Add\nPhotos" : "Change\nPhoto",
                       color: goldColor,
                       fontsize: 10.sp,
                       textAlign: TextAlign.center,
@@ -143,38 +186,26 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
                 ),
               ),
 
-              SizedBox(height: 20.h),
 
-              /// Email field
-              CustomText(
-                text: "Your email",
-                color: goldColor,
-                fontsize: 14.sp,
-              ),
-              SizedBox(height: 8.h),
-              Container(
-                decoration: BoxDecoration(
-                  color: fieldBg,
-                  borderRadius: BorderRadius.circular(8.r),
-                ),
-                child: TextField(
-                  controller: emailController,
-                  keyboardType: TextInputType.emailAddress,
-                  style: const TextStyle(color: Colors.black),
-                  decoration: InputDecoration(
-                    contentPadding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 14.h),
-                    border: InputBorder.none,
-                    hintText: "Enter email",
-                    hintStyle: TextStyle(color: Colors.grey),
+
+              SizedBox(height: 250.h),
+              Obx(
+                    () => Center(
+                  child: CustomButton(
+                    loading: homeController.feedbackLoading.value,
+                    title: 'Send',
+                    onpress: () {
+                      homeController.feedback(
+                        file: _selectedImage,
+                        comment: feedbackController.text.trim(),
+                        context: context,
+                      );
+                    },
+                    width: 245.w,
                   ),
                 ),
               ),
-              SizedBox(height: 250.h),
 
-              CustomButton(title: 'Send'
-                  , onpress: () {
-
-              },)
             ],
           ),
         ),
@@ -197,3 +228,4 @@ class _FeedbackScreenState extends State<FeedbackScreen> {
 
 
 }
+

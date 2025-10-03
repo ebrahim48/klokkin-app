@@ -242,6 +242,144 @@ class HomeController extends GetxController {
   }
 
 
+  /// ================================> Update Profile ==============================>
+
+
+  var updateProfileLoading = false.obs;
+
+  updateProfile({
+    String? aboutself,
+    String? nickname,
+    gender,
+    dateofBirth,
+     File? file,
+    required BuildContext context
+
+  }) async {
+
+    updateProfileLoading(true);
+
+    List<MultipartBody> multipartBody = [];
+    if (file != null) {
+      multipartBody.add(MultipartBody("file", file));
+    }
+
+
+
+    var body = {
+      "aboutself": "$aboutself",
+      "nickname": "$nickname",
+      "gender": "$gender",
+      "dateofBirth": "$dateofBirth",
+    };
+
+
+    updateProfileLoading(true);
+
+    var response = await ApiClient.patchMultipartData(
+      ApiConstants.userUpdateProfileEndPoint,
+      body,
+        multipartBody: multipartBody
+    );
+
+
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      ToastMessageHelper.showToastMessage("${response.body["message"]}");
+      await getProfile();
+
+      updateProfileLoading(false);
+      context.pop();
+      update();
+    } else {
+      updateProfileLoading(false);
+      ToastMessageHelper.showToastMessage("Failed Update data.");
+    }
+  }
+
+
+  ///=============== Delete Account ================<>
+
+
+  var deleteLoading = false.obs;
+  deleteProfile(BuildContext context) async {
+
+    deleteLoading(true);
+    var response = await ApiClient.deleteData(
+        ApiConstants.deleteProfileEndPoint);
+    if (response.statusCode == 200) {
+      ToastMessageHelper.showToastMessage('Account Delete Successfully');
+      context.pushNamed(AppRoutes.logInScreen);
+    } else {
+      deleteLoading(false);
+    }
+
+  }
+
+
+  /// ================================> Feedback  ==============================>
+
+
+  var feedbackLoading = false.obs;
+
+  feedback({
+    String? comment,
+    File? file,
+    required BuildContext context
+
+  }) async {
+
+    feedbackLoading(true);
+
+    List<MultipartBody> multipartBody = [];
+    if (file != null) {
+      multipartBody.add(MultipartBody("file", file));
+    }
+
+
+
+    var body = {
+      "comment": "$comment",
+    };
+
+
+    feedbackLoading(true);
+
+    var response = await ApiClient.postMultipartData(
+        ApiConstants.feedbackEndPoint,
+        body,
+        multipartBody: multipartBody
+    );
+
+
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      ToastMessageHelper.showToastMessage("${response.body["message"]}");
+
+
+      feedbackLoading(false);
+      context.pop();
+      update();
+    } else {
+      feedbackLoading(false);
+      ToastMessageHelper.showToastMessage("Failed feedback data.");
+    }
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

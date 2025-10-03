@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:go_router/go_router.dart';
 import 'package:klokkin_app/core/constants/app_colors.dart';
 import 'package:klokkin_app/presentations/widgets/custom_app_bar.dart';
@@ -81,18 +80,23 @@ class _StoryVideoScreenState extends State<StoryVideoScreen> {
                             : "https://templates.joomla-monster.com/joomla30/jm-news-portal/components/com_djclassifieds/assets/images/default_profile.png",
                         timestamp: "4h ago",
                         readingTime: "21m read",
-                        videoPath: "assets/videos/your_video.mp4",
+                        videoPath: libraryData.mediaUrl != null && libraryData.mediaUrl!.isNotEmpty
+                            ? libraryData.mediaUrl!.first
+                            : "",
                         onTap: () {
+
                           if (libraryData.mediaUrl != null && libraryData.mediaUrl!.isNotEmpty) {
-                            workCardController.setVideoPath(libraryData.mediaUrl!.first);
+                            context.pushNamed(
+                                AppRoutes.storyVideoDetailsScreen,
+                                extra: {
+                                  "videoUrl": libraryData.mediaUrl!.first,
+                                  "title": libraryData.caption ?? 'N/A',
+                                  "timestamp": "4h ago",
+                                  "readingTime": "21m read",
+                                }
+                            );
                           }
                         },
-
-                        // onTap: () {
-                        //   context.pushNamed(AppRoutes.storyVideoDetailsScreen);
-                        //   // Example navigation
-                        //   // context.pushNamed(AppRoutes.storyDetails, extra: {...});
-                        // },
                       );
                     },
                   ),

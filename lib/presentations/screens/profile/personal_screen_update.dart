@@ -1,8 +1,14 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:klokkin_app/core/constants/app_colors.dart';
-import 'package:klokkin_app/presentations/widgets/custom_button.dart';
 import 'package:klokkin_app/presentations/widgets/custom_text.dart';
+import '../../../controllers/home_controller.dart';
+import '../../widgets/custom_button.dart';
+import '../../widgets/custom_network_image.dart';
 
 class PersonalScreenUpdate extends StatefulWidget {
   const PersonalScreenUpdate({super.key});
@@ -16,11 +22,36 @@ class _PersonalScreenUpdateState extends State<PersonalScreenUpdate> {
   final Color darkBg = const Color(0xFF1E1E1E);
   final Color fieldBg = const Color(0xFF2A2A2A);
 
+  final TextEditingController nicknameController = TextEditingController();
+  final TextEditingController aboutController = TextEditingController();
   final TextEditingController dobController = TextEditingController();
+
   String? selectedGender;
+  File? selectedImage;
+  String? profileImagePath;
+
+  HomeController homeController = Get.put(HomeController());
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+
+      final routerData = (GoRouterState.of(context).extra as Map?) ?? {};
+
+      nicknameController.text = routerData["nickname"] ?? "";
+      aboutController.text = routerData["aboutself"] ?? "";
+      dobController.text = routerData["dateofBirth"] ?? "";
+      selectedGender = routerData["gender"];
+      profileImagePath = routerData["avatar"];
+      setState(() {});
+    });
+  }
+
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       backgroundColor: darkBg,
       appBar: AppBar(
@@ -28,7 +59,7 @@ class _PersonalScreenUpdateState extends State<PersonalScreenUpdate> {
         elevation: 0,
         centerTitle: true,
         title: CustomText(
-          text: 'Personal',
+          text: 'Personal Update',
           fontsize: 24.sp,
           fontWeight: FontWeight.w600,
           color: goldColor,
@@ -54,10 +85,60 @@ class _PersonalScreenUpdateState extends State<PersonalScreenUpdate> {
                     fontWeight: FontWeight.w500,
                     color: AppColors.textColorFFFFFF,
                   ),
-                  CircleAvatar(
-                    radius: 20.r,
-                    backgroundColor: fieldBg,
-                    child: const Icon(Icons.person, color: Colors.white),
+                  GestureDetector(
+                    onTap: () {
+                      showImagePickerOption(context);
+                    },
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        Container(
+                          width: 50.w,
+                          height: 50.h,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(
+                              color: AppColors.primaryColorC79235,
+                              width: 3,
+                            ),
+                          ),
+                          child: selectedImage != null
+                              ? ClipOval(
+                              child: Image.file(selectedImage!,
+                                  fit: BoxFit.cover))
+                              : CustomNetworkImage(
+                            boxShape: BoxShape.circle,
+                            imageUrl: profileImagePath ?? "",
+                            height: 100.h,
+                            width: 100.w,
+                          ),
+                        ),
+                        Positioned(
+                          top: 67.h,
+                          left: 42.w,
+                          child: Container(
+                            width: 26.58.w,
+                            height: 26.58.h,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Colors.white.withOpacity(0.2),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.2),
+                                  blurRadius: 10,
+                                  offset: const Offset(0, 3),
+                                ),
+                              ],
+                            ),
+                            child: Icon(
+                              Icons.camera_alt,
+                              color: AppColors.textColorFFFFFF,
+                              size: 16.sp,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),
@@ -71,7 +152,7 @@ class _PersonalScreenUpdateState extends State<PersonalScreenUpdate> {
                 color: AppColors.textColorFFFFFF,
               ),
               SizedBox(height: 8.h),
-              inputBox("Enter a name"),
+              inputBox("Enter a name", controller: nicknameController),
               Divider(color: goldColor, thickness: 1, height: 24.h),
 
               // About
@@ -82,7 +163,8 @@ class _PersonalScreenUpdateState extends State<PersonalScreenUpdate> {
                 color: AppColors.textColorFFFFFF,
               ),
               SizedBox(height: 8.h),
-              inputBox("Enter a description", maxLines: 4),
+              inputBox("Enter a description",
+                  controller: aboutController, maxLines: 4),
               Divider(color: goldColor, thickness: 1, height: 24.h),
 
               // Date of Birth
@@ -156,7 +238,8 @@ class _PersonalScreenUpdateState extends State<PersonalScreenUpdate> {
                 value: selectedGender,
                 decoration: InputDecoration(
                   hintText: "Write gender",
-                  hintStyle: TextStyle(color: Colors.grey.shade500, fontSize: 14.sp),
+                  hintStyle:
+                  TextStyle(color: Colors.grey.shade500, fontSize: 14.sp),
                   filled: true,
                   fillColor: fieldBg,
                   border: OutlineInputBorder(
@@ -182,11 +265,23 @@ class _PersonalScreenUpdateState extends State<PersonalScreenUpdate> {
               ),
               SizedBox(height: 30.h),
 
-              Center(
-                child: CustomButton(
-                  title: 'DONE',
-                  onpress: () {},
-                  width: 245.w,
+              Obx(
+                    () => Center(
+                  child: CustomButton(
+                    loading: homeController.updateProfileLoading.value,
+                    title: 'Update Profile',
+                    onpress: () {
+                      homeController.updateProfile(
+                        file: selectedImage,
+                        aboutself: aboutController.text,
+                        dateofBirth: dobController.text,
+                        gender: selectedGender,
+                        nickname: nicknameController.text,
+                        context: context,
+                      );
+                    },
+                    width: 245.w,
+                  ),
                 ),
               ),
             ],
@@ -196,9 +291,10 @@ class _PersonalScreenUpdateState extends State<PersonalScreenUpdate> {
     );
   }
 
-  // Reusable dark input field
-  Widget inputBox(String hint, {int maxLines = 1}) {
+  Widget inputBox(String hint,
+      {TextEditingController? controller, int maxLines = 1}) {
     return TextField(
+      controller: controller,
       maxLines: maxLines,
       style: TextStyle(color: Colors.white, fontSize: 14.sp),
       decoration: InputDecoration(
@@ -212,5 +308,89 @@ class _PersonalScreenUpdateState extends State<PersonalScreenUpdate> {
         ),
       ),
     );
+  }
+
+  void showImagePickerOption(BuildContext context) {
+    showModalBottomSheet(
+        backgroundColor: Colors.white.withOpacity(.5),
+        elevation: 3,
+        context: context,
+        builder: (builder) {
+          return Container(
+            decoration: BoxDecoration(
+              border: const Border(
+                  top: BorderSide(color: AppColors.primaryColorC79235, width: 0.25)),
+              borderRadius: BorderRadius.circular(20.r),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(18.0),
+              child: SizedBox(
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height / 9.2,
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Expanded(
+                      child: InkWell(
+                        onTap: () {
+                          _pickImageFromGallery();
+                        },
+                        child: SizedBox(
+                          child: Column(
+                            children: [
+                              Icon(
+                                Icons.image,
+                                size: 50.w,
+                              ),
+                              CustomText(text: 'Gallery')
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: InkWell(
+                        onTap: () {
+                          _pickImageFromCamera();
+                        },
+                        child: SizedBox(
+                          child: Column(
+                            children: [
+                              Icon(
+                                Icons.camera_alt,
+                                size: 50.w,
+                              ),
+                              CustomText(text: 'Camera')
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          );
+        });
+  }
+
+  Future<void> _pickImageFromGallery() async {
+    final pickedFile =
+    await ImagePicker().pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      Navigator.pop(context);
+      selectedImage = File(pickedFile.path);
+      setState(() {});
+    }
+  }
+
+  Future<void> _pickImageFromCamera() async {
+    final pickedFile =
+    await ImagePicker().pickImage(source: ImageSource.camera);
+    if (pickedFile != null) {
+      Navigator.pop(context);
+      selectedImage = File(pickedFile.path);
+      setState(() {});
+    }
   }
 }
