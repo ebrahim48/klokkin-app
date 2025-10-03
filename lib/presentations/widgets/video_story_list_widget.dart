@@ -31,7 +31,7 @@ class VideoStoryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onTap, // ✅ Direct tap করলে navigate করবে
+      onTap: onTap,
       child: Container(
         width: 268.w,
         height: 280.h,
@@ -47,7 +47,7 @@ class VideoStoryCard extends StatelessWidget {
               /// =============================> Image + Play Icon ========================>
               Stack(
                 children: [
-                  // ✅ শুধু thumbnail image দেখান
+
                   Container(
                     width: 268.w,
                     height: 180.h,

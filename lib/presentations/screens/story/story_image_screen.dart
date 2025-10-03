@@ -1,9 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:go_router/go_router.dart';
 import 'package:klokkin_app/core/constants/app_colors.dart';
 import 'package:klokkin_app/presentations/widgets/custom_app_bar.dart';
+import '../../../controllers/audio_book_controller.dart';
+import '../../../controllers/work_controller.dart';
 import '../../../core/config/app_routes/app_routes.dart';
+import '../../widgets/custom_loader.dart';
+import '../../widgets/custom_text.dart';
 import '../../widgets/image_story_list_widget.dart';
 import '../../widgets/image_story_widget.dart';
 
@@ -21,7 +27,14 @@ class StoryImageScreen extends StatefulWidget {
 class _StoryImageScreenState extends State<StoryImageScreen> {
 
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  final AudioBookController controller = Get.put(AudioBookController());
 
+
+  @override
+  void initState() {
+    super.initState();
+    controller.getLibraryStoryData();
+  }
 
 
   @override
@@ -32,72 +45,106 @@ class _StoryImageScreenState extends State<StoryImageScreen> {
       resizeToAvoidBottomInset: true,
       appBar: const CustomAppBar(),
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
+        child: Obx((){
+          if (controller.getLibraryStoryLoading.value) {
+            return const Center(child: CustomLoader());
+          }
 
-              SizedBox(
-                height: 250.h,
-                child: ListView.separated(
-                  scrollDirection: Axis.horizontal,
-                  padding: EdgeInsets.symmetric(horizontal: 20.w),
-                  itemCount: 6,
-                  separatorBuilder: (context, index) => SizedBox(width: 12.w),
-                  itemBuilder: (context, index) {
-                    return ImageStoryCard(
-                      title: "Innovation Finds Its Space",
-                      caption: "In this modern workspace, ideas flow freely.",
-                      imagePath: "assets/images/imageStory.png",
-                      timestamp: "4h ago",
-                      readingTime: "21m read",
-                      onTap: () {
-                        context.pushNamed(AppRoutes.storyImageDetailsScreen);
-                        // Example navigation
-                        // context.pushNamed(AppRoutes.storyDetails, extra: {...});
-                      },
-                    );
-                  },
-                ),
+          if (controller.libraryStoryData.isEmpty) {
+            return Center(
+              child: CustomText(
+                text: "Data Unavailable",
+                textAlign: TextAlign.center,
+                color: AppColors.textColorC2C2C2,
               ),
+            );
+          }
 
-              Padding(
-                padding:  EdgeInsets.only(left: 20.w,right: 15.h),
-                child: Divider(
-                  color: AppColors.secondary836531,
-                  height: 0.4.h,
-                  thickness: 0.6,
+          return SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+
+                SizedBox(
+                  height: 250.h,
+                  child: ListView.separated(
+                    scrollDirection: Axis.horizontal,
+                    padding: EdgeInsets.symmetric(horizontal: 20.w),
+                    itemCount: controller.libraryStoryData.length,
+                    separatorBuilder: (context, index) => SizedBox(width: 12.w),
+                    itemBuilder: (context, index) {
+                      final libraryData = controller.libraryStoryData[index];
+                      return ImageStoryCard(
+                        title: libraryData.caption ?? 'N/A',
+                        caption: libraryData.description ?? 'N/A',
+                        imagePath: libraryData.mediaUrl != null && libraryData.mediaUrl!.isNotEmpty
+                            ? libraryData.mediaUrl!.first
+                            : "https://templates.joomla-monster.com/joomla30/jm-news-portal/components/com_djclassifieds/assets/images/default_profile.png",
+                        timestamp: "4h ago",
+                        readingTime: "21m read",
+                        onTap: () {
+                          context.pushNamed(
+                              AppRoutes.storyImageDetailsScreen,
+                              extra: {
+                                "caption": libraryData.caption ??"",
+                                "duration": libraryData.description ??"",
+                                "imagePath": libraryData.mediaUrl != null && libraryData.mediaUrl!.isNotEmpty
+                                    ? libraryData.mediaUrl!.first
+                                    : "https://templates.joomla-monster.com/joomla30/jm-news-portal/components/com_djclassifieds/assets/images/default_profile.png" ??"",
+
+
+                              }
+                          );
+                        },
+                      );
+                    },
+                  ),
                 ),
-              ),
 
-              SizedBox(height: 16.h),
-
-              SizedBox(
-                height: 400.h,
-                child: ListView.separated(
-                  padding: EdgeInsets.symmetric(horizontal: 20.w),
-                  itemCount: 6,
-                  separatorBuilder: (context, index) => SizedBox(height: 12.h),
-                  itemBuilder: (context, index) {
-                    return ImageListCard(
-                      title: "Innovation Finds Its Space",
-                      subtitle:
-                      "In this modern workspace, ideas flow freely. Every desk holds the start of a new story.",
-                      meta: "4h ago • 21m read",
-                      hashtags: "#Innovation   #tech   #engineer   #2010s",
-                      imagePath: "assets/images/imagelist.png",
-                      onTap: () {
-                        // context.pushNamed(AppRoutes.storyAudioScreen);
-                      },
-                    );
-                  },
+                Padding(
+                  padding:  EdgeInsets.only(left: 20.w,right: 15.h),
+                  child: Divider(
+                    color: AppColors.secondary836531,
+                    height: 0.4.h,
+                    thickness: 0.6,
+                  ),
                 ),
-              ),
+
+                SizedBox(height: 16.h),
+
+                SizedBox(
+                  height: 400.h,
+                  child: ListView.separated(
+                    padding: EdgeInsets.symmetric(horizontal: 20.w),
+                    itemCount: controller.libraryStoryData.length,
+                    separatorBuilder: (context, index) => SizedBox(height: 12.h),
+                    itemBuilder: (context, index) {
+                      final libraryData = controller.libraryStoryData[index];
+                      return ImageListCard(
+                        title:  libraryData.caption ?? 'N/A',
+                        subtitle:  libraryData.description ?? 'N/A',
+                        meta: "4h ago • 21m read",
+                        hashtags: (libraryData.tags is List)
+                            ? (libraryData.tags as List).join(", ")
+                            : (libraryData.tags?.toString() ?? 'N/A'),
+                        imagePath: libraryData.mediaUrl != null && libraryData.mediaUrl!.isNotEmpty
+                            ? libraryData.mediaUrl!.first
+                            : "https://templates.joomla-monster.com/joomla30/jm-news-portal/components/com_djclassifieds/assets/images/default_profile.png",
+                        onTap: () {
+                          // context.pushNamed(AppRoutes.storyAudioScreen);
+                        },
+                      );
+                    },
+                  ),
+                ),
 
 
-              SizedBox(height: 10.h),
-            ],
-          ),
+                SizedBox(height: 10.h),
+              ],
+            ),
+          );
+        }
+
         ),
       ),
     );

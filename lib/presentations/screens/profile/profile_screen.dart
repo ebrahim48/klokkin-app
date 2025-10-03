@@ -33,11 +33,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Scaffold(
       key: _scaffoldKey,
       resizeToAvoidBottomInset: true,
-      appBar: const CustomAppBar(),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
             children: [
+              SizedBox(height: 20.h),
               /// ==============================>  Profile Image with Edit Button ====================================>
               Align(
                 alignment: Alignment.center,

@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:klokkin_app/core/constants/app_colors.dart';
 import 'package:klokkin_app/presentations/widgets/custom_app_bar.dart';
 import 'package:klokkin_app/presentations/widgets/custom_text.dart';
+import '../../../controllers/home_controller.dart';
 import '../../../global/custom_assets/assets.gen.dart';
 import '../../widgets/custom_image_details_widget.dart';
 import '../../widgets/custom_imagedetails_progressbar_widget.dart';
@@ -19,6 +22,15 @@ class StoryVideoDetailsScreen extends StatefulWidget {
 }
 
 class _StoryVideoDetailsScreenState extends State<StoryVideoDetailsScreen> {
+
+
+  HomeController homeController = Get.put(HomeController());
+
+
+  void initState() {
+    super.initState();
+    homeController.getProfile();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -38,9 +50,11 @@ class _StoryVideoDetailsScreenState extends State<StoryVideoDetailsScreen> {
                 children: [
                   Padding(
                     padding: EdgeInsets.only(left: 15.w),
-                    child:  const CustomProfileImageDetailsImage(
-                      imageUrl:
-                      'https://media.licdn.com/dms/image/v2/C4E03AQGAvYAY6kdVXQ/profile-displayphoto-shrink_200_200/profile-displayphoto-shrink_200_200/0/1603315936568?e=1758758400&v=beta&t=QeIvlqHz22MKUgXX6U56FSocAyZYGAA5NUi3CMb_alQ',
+                    child:  CustomProfileImageDetailsImage(
+                      imagePath: homeController.profile.value.profile?.avatar != null &&
+                          homeController.profile.value.profile!.avatar!.isNotEmpty
+                          ? homeController.profile.value.profile!.avatar!
+                          : "https://templates.joomla-monster.com/joomla30/jm-news-portal/components/com_djclassifieds/assets/images/default_profile.png",
                     ),
                   ),
                   SizedBox(width: 11.h),
