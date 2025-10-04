@@ -4,7 +4,6 @@ import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
 import 'package:klokkin_app/core/config/app_routes/app_routes.dart';
 import 'package:klokkin_app/core/constants/app_colors.dart';
-import 'package:klokkin_app/presentations/widgets/custom_app_bar.dart';
 import '../../../controllers/audio_book_controller.dart';
 import '../../../controllers/home_controller.dart';
 import '../../../global/custom_assets/assets.gen.dart';
