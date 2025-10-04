@@ -159,10 +159,10 @@ class AuthController extends GetxController {
       var data = response.body['data']['attributes']["userWithoutPassword"];
 
 
-      logger.d("token khujtechi .....");
+      logger.d("token  .....");
       /// Access token save
       var token=response.body["data"]['attributes']["tokens"]["accessToken"];
-      logger.d("token paichi  ...., eije tomar token ======>> $token");
+      logger.d("token   .... ======>> $token");
       await PrefsHelper.setString(AppConstants.bearerToken, token,
       );
       await PrefsHelper.setString(AppConstants.role, data['role']);
@@ -255,12 +255,14 @@ class AuthController extends GetxController {
 
   RxBool setPasswordLoading = false.obs;
 
-  setPassword(String password, confirmPassword,
+  setPassword(
+      String password,
+      String confirmpassword,
       {required BuildContext context}) async {
     setPasswordLoading(true);
     var body = {
       "password": password.toString().trim(),
-      "confirmPassword": confirmPassword.toString().trim()
+      "confirmpassword": confirmpassword.toString().trim()
     };
 
     var response = await ApiClient.postData(
@@ -268,7 +270,7 @@ class AuthController extends GetxController {
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       context.pushNamed(AppRoutes.logInScreen);
-      ToastMessageHelper.showToastMessage('${response.body["message"]}');
+      ToastMessageHelper.showToastMessage('${response.body["message"]}',title: 'success');
       print("======>>> successful");
       setPasswordLoading(false);
     } else if (response.statusCode == 1) {
