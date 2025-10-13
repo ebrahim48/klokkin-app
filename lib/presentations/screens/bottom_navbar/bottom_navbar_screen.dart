@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:go_router/go_router.dart';
 import 'package:klokkin_app/core/config/app_routes/app_routes.dart';
 import 'package:klokkin_app/presentations/screens/home/home_screen.dart';
@@ -8,10 +10,13 @@ import 'package:klokkin_app/presentations/screens/profile/profile_screen.dart';
 import 'package:klokkin_app/presentations/screens/story/story_screen.dart';
 import 'package:klokkin_app/presentations/widgets/custom_text.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../core/helpers/network_connection.dart';
 import '../../../global/custom_assets/assets.gen.dart';
 
 class BottomNavBar extends StatefulWidget {
-  const BottomNavBar({super.key});
+   BottomNavBar({super.key});
+  final NetworkController networkController = Get.put(NetworkController());
+
 
   @override
   State<BottomNavBar> createState() => _BottomNavBarState();

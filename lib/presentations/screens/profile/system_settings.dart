@@ -9,6 +9,8 @@ import 'package:klokkin_app/presentations/widgets/custom_button.dart';
 import 'package:klokkin_app/presentations/widgets/custom_text.dart';
 
 import '../../../controllers/home_controller.dart';
+import '../../../core/app_constants/app_constants.dart';
+import '../../../core/helpers/prefs_helper.dart';
 
 class SystemSettingScreen extends StatefulWidget {
   const SystemSettingScreen({super.key});
@@ -149,7 +151,16 @@ class _SystemSettingScreenState extends State<SystemSettingScreen> {
               children: [
                 // Confirm Button
                 TextButton(
-                  onPressed: () {
+                  onPressed: () async{
+                    await PrefsHelper.remove(AppConstants.role);
+                    await PrefsHelper.remove(AppConstants.isLogged);
+                    await PrefsHelper.remove(AppConstants.bearerToken);
+                    await PrefsHelper.remove(AppConstants.name);
+                    await PrefsHelper.remove(AppConstants.image);
+                    await PrefsHelper.remove(AppConstants.userId);
+                    await PrefsHelper.remove(AppConstants.email);
+                    await PrefsHelper.remove(AppConstants.phone);
+                    await PrefsHelper.remove(AppConstants.emailValidator);
                    context.pushNamed(AppRoutes.logInScreen);
                   },
                   child: CustomText(

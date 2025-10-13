@@ -177,25 +177,14 @@ class AuthController extends GetxController {
       if (role == "user") {
         await PrefsHelper.setBool(AppConstants.isLogged, true);
         context.go(AppRoutes.bottomNavbarScreen);
-        ToastMessageHelper.showToastMessage("You are logged in");
+        ToastMessageHelper.showToastMessage("You are logged in",title: 'Success');
       } else {
         final message = response.body["message"];
 
         if (message == "Email not verified. Please verify your email.") {
           final verificationToken = response.body["data"]['attributes']["tokens"]["accessToken"];
 
-
           await PrefsHelper.setString(AppConstants.bearerToken, verificationToken);
-
-
-          // context.pushNamed(
-          //   AppRoutes.verifyScreen,
-          //   extra: {
-          //     "screenType": "login",
-          //     "email": email,
-          //     "token": verificationToken,
-          //   },
-          // );
 
           ToastMessageHelper.showToastMessage(
             "We've sent an OTP to your email. Please verify your email.",
