@@ -108,7 +108,8 @@ class AppRoutes {
               if (role == "user") {
                 AppRoutes.goRouter.replaceNamed(AppRoutes.bottomNavbarScreen);
               }
-            } else {
+            }
+            else {
               AppRoutes.goRouter.replaceNamed(AppRoutes.onBoardingScreen);
             }
           });
