@@ -28,7 +28,7 @@ class EveryStoryCard extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        width: 264.w,
+        width: 235.w,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(6.r),
           color: AppColors.textColorFFFFFF,
@@ -58,9 +58,11 @@ class EveryStoryCard extends StatelessWidget {
                           );
                         }
                       }
-                      return CustomNetworkImage(
-                        imageUrl: imagePath,
-                        borderRadius: BorderRadius.zero,
+                      return Center(
+                        child: CustomNetworkImage(
+                          imageUrl: imagePath,
+                          borderRadius: BorderRadius.zero,
+                        ),
                       );
                     }),
 

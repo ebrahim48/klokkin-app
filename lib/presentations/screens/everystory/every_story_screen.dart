@@ -48,13 +48,15 @@ class _EveryStoryScreenState extends State<EveryStoryScreen> {
 
               Row(
                 children: [
-                  // Padding(
-                  //   padding: EdgeInsets.only(left: 15.w),
-                  //   child: const CustomProfileImage(
-                  //     imageUrl:
-                  //     'https://media.licdn.com/dms/image/v2/C4E03AQGAvYAY6kdVXQ/profile-displayphoto-shrink_200_200/profile-displayphoto-shrink_200_200/0/1603315936568?e=1758758400&v=beta&t=QeIvlqHz22MKUgXX6U56FSocAyZYGAA5NUi3CMb_alQ',
-                  //   ),
-                  // ),
+                  Padding(
+                    padding: EdgeInsets.only(left: 15.w),
+                    child:   CustomProfileImage(
+                      imagePath: homeController.profile.value.profile?.avatar != null &&
+                          homeController.profile.value.profile!.avatar!.isNotEmpty
+                          ? homeController.profile.value.profile!.avatar!
+                          : "https://templates.joomla-monster.com/joomla30/jm-news-portal/components/com_djclassifieds/assets/images/default_profile.png",
+                    ),
+                  ),
                   SizedBox(width: 11.h),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -71,7 +73,7 @@ class _EveryStoryScreenState extends State<EveryStoryScreen> {
               ),
               SizedBox(height: 16.h),
               /// ============================================ line ====================================>
-              AudioProgressBar(),
+              const AudioProgressBar(),
 
 
 

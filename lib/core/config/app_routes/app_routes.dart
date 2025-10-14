@@ -20,13 +20,13 @@ import '../../../presentations/screens/auth/signup/sign_up_screen.dart';
 import '../../../presentations/screens/auth/verification/verification_screen.dart';
 import '../../../presentations/screens/home/createStory/audio_record_add_post_details_screen.dart';
 import '../../../presentations/screens/home/createStory/record_video_list_page.dart';
-import '../../../presentations/screens/home/createStory/record_video_player_screen.dart';
 import '../../../presentations/screens/home/createStory/start_create_story.dart';
 import '../../../presentations/screens/home/createStory/upload_create_story.dart';
 import '../../../presentations/screens/home/createStory/video_create_story_screen.dart';
 import '../../../presentations/screens/home/createStory/video_record_add_post_details_screen.dart';
 import '../../../presentations/screens/library/bookmark_screen.dart';
 import '../../../presentations/screens/library/download_screen.dart';
+import '../../../presentations/screens/notifications/notification_screen.dart';
 import '../../../presentations/screens/onboarding/onboarding_screen.dart';
 import '../../../presentations/screens/profile/permission_screen.dart';
 import '../../../presentations/screens/profile/personal_screen.dart';
@@ -91,6 +91,7 @@ class AppRoutes {
   static const String recordVideoPlayerScreen = "/recordVideoPlayerScreen";
   static const String audioRecordAddPostDetailsScreen = "/audioRecordAddPostDetailsScreen";
   static const String videoRecordAddPostDetailsScreen = "/videoRecordAddPostDetailsScreen";
+  static const String notificationsScreen = "/notificationsScreen";
 
   static final GoRouter goRouter = GoRouter(
     initialLocation: splashScreen,
@@ -470,6 +471,21 @@ class AppRoutes {
             (context, state) =>
                 _customTransitionPage(CreatePostStoryScreen(), state),
       ),
+
+      //<<<=============>>>  Notifications Screen  <<<===============>>>
+
+      GoRoute(
+        path: notificationsScreen,
+        name: notificationsScreen,
+        pageBuilder:
+            (context, state) =>
+                _customTransitionPage(NotificationsScreen(), state),
+      ),
+
+
+
+
+
     ],
   );
 

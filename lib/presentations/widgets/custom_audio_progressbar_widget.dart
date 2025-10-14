@@ -42,8 +42,8 @@ class _AudioProgressBarState extends State<AudioProgressBar> {
   @override
   Widget build(BuildContext context) {
     return Obx(() {
-      final story = homeController.storySingle.value;
 
+      final story = homeController.storySingle.value;
       if (homeController.getStorySingleLoading.value) {
         return const Center(child: CustomLoader());
       }
@@ -92,7 +92,7 @@ class _AudioProgressBarState extends State<AudioProgressBar> {
                 }
               }),
 
-              // Play/Pause overlay for video
+
               // if (controller.isVideo.value)
               //   Align(
               //     alignment: Alignment.center,

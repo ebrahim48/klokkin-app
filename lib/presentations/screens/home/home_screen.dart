@@ -72,7 +72,8 @@ class _HomeScreenState extends State<HomeScreen> {
               children: [
                 GestureDetector(
                   onTap: () {
-                    // context.pushNamed(AppRoutes.locationMapScreen);
+
+                    context.pushNamed(AppRoutes.notificationsScreen);
                   },
                   child:
                   Assets.icons.notification.svg(
@@ -111,7 +112,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                         child: TextFormField(
                           controller: _searchController,
-                          style: const TextStyle(color: AppColors.textColor000000),
+                          style:  const TextStyle(color: AppColors.textColorFFFFFF),
                           decoration: InputDecoration(
                             hintText: 'Search',
                             hintStyle: const TextStyle(color: AppColors.textColorFFFFFF),
@@ -505,6 +506,7 @@ class _HomeScreenState extends State<HomeScreen> {
               }),
           
               /// =====================================> Working Scroll =====================================>
+
               SizedBox(height: 21.h),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 20.w),
@@ -517,9 +519,6 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               SizedBox(height: 11.h),
               Obx((){
-                // if (homeController.getWorkingLoading.value) {
-                //   return const Center(child: CustomLoader());
-                // }
                 if (homeController.workingDays.isEmpty) {
                   return Center(
                     child: CustomText(
@@ -539,24 +538,23 @@ class _HomeScreenState extends State<HomeScreen> {
                     itemBuilder: (context, index) {
                       final workingDaysStories = homeController.workingDays[index];
                       return WorkCard(
+                        index: index,
                         title: workingDaysStories.caption ?? 'N/A',
                         duration: workingDaysStories.duration ?? 'N/A',
-                        imagePath: workingDaysStories.mediaUrl != null && workingDaysStories.mediaUrl!.isNotEmpty
+                        imagePath: workingDaysStories.mediaUrl != null &&
+                            workingDaysStories.mediaUrl!.isNotEmpty
                             ? workingDaysStories.mediaUrl!.first
                             : "https://templates.joomla-monster.com/joomla30/jm-news-portal/components/com_djclassifieds/assets/images/default_profile.png",
-                        videoPath: "assets/videos/your_video.mp4",
-                        onTap: () {
-                          if (workingDaysStories.mediaUrl != null && workingDaysStories.mediaUrl!.isNotEmpty) {
-                            workCardController.setVideoPath(workingDaysStories.mediaUrl!.first);
-                          }
-                        },
+                        videoPath: workingDaysStories.mediaUrl!.first,
+                        onTap: () {},
+
 
                       );
                     },
                   ),
                 );
-              }
-              ),
+              }),
+
               /// =====================================> Every story begins =====================================>
 
               SizedBox(height: 5.h),
@@ -582,7 +580,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   );
                 }
                 return SizedBox(
-                  height: 180.h,
+                  height: 179.h,
                   child: ListView.separated(
                     scrollDirection: Axis.horizontal,
                     padding: EdgeInsets.symmetric(horizontal: 20.w),
