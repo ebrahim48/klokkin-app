@@ -34,7 +34,7 @@ class _LibraryScreenState extends State<LibraryScreen> {
   void initState() {
     super.initState();
     homeController.getWorkingDays();
-    controller.setVideoPath(widget.videoPath);
+    // controller.setVideoPath(widget.videoPath);
   }
 
 
@@ -145,115 +145,115 @@ class _LibraryScreenState extends State<LibraryScreen> {
               ),
 
               /// =====================================> Image 1 and 2 =====================================>
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 8.h),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Obx(() {
-                        if (controller.isInitialized.value) {
-                          return Stack(
-                            alignment: Alignment.center,
-                            children: [
-                              /// Video Player
-                              ClipRRect(
-                                borderRadius: BorderRadius.circular(8.r),
-                                child: AspectRatio(
-                                  aspectRatio: controller.videoController.value.aspectRatio,
-                                  child: VideoPlayer(controller.videoController),
-                                ),
-                              ),
-
-                              /// Play / Pause Button Only
-                              Positioned(
-                                bottom: 8.h,
-                                right: 8.w,
-                                child: GestureDetector(
-                                  onTap: () {
-                                    if (controller.videoController.value.isPlaying) {
-                                      controller.videoController.pause();
-                                    } else {
-                                      controller.videoController.play();
-                                    }
-                                    controller.update(); // refresh GetX
-                                  },
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      color: Colors.black54,
-                                    ),
-                                    padding: EdgeInsets.all(8.r),
-                                    child: Icon(
-                                      controller.videoController.value.isPlaying
-                                          ? Icons.pause
-                                          : Icons.play_arrow,
-                                      size: 28.r,
-                                      color: Colors.white,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          );
-                        } else {
-                          /// Fallback Image
-                          return Container(
-                            height: 116.h,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(8.r),
-                            ),
-                            clipBehavior: Clip.hardEdge,
-                            child: CustomNetworkImage(
-                              imageUrl: homeController.workingDays.first.mediaUrl?.isNotEmpty == true
-                                  ? homeController.workingDays.first.mediaUrl!.first
-                                  : "https://templates.joomla-monster.com/joomla30/jm-news-portal/components/com_djclassifieds/assets/images/default_profile.png",
-                              width: 82.w,
-                              height: 70.h,
-
-                            ),
-                          );
-                        }
-                      }),
-                    ),
-
-
-
-                    SizedBox(width: 14.w),
-                    Expanded(
-                      child:
-
-                      // Container(
-                      //   width: 82.w,
-                      //   height: 116.h,
-                      //   decoration: BoxDecoration(
-                      //     borderRadius: BorderRadius.circular(8.r),
-                      //   ),
-                      //   clipBehavior: Clip.hardEdge,
-                      //   child: CustomNetworkImage(
-                      //     imageUrl: homeController.workingDays.first.mediaUrl?.isNotEmpty == true
-                      //         ? homeController.workingDays.first.mediaUrl!.first
-                      //         : "https://templates.joomla-monster.com/joomla30/jm-news-portal/components/com_djclassifieds/assets/images/default_profile.png",
-                      //     width: 82.w,
-                      //     height: 70.h,
-                      //
-                      //   ),
-                      // )
-
-
-                      Container(
-                        height: 116.h,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(8.r),
-                          image: const DecorationImage(
-                            image: AssetImage("assets/images/imageStory.png"),
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
+              // Padding(
+              //   padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 8.h),
+              //   child: Row(
+              //     children: [
+              //       Expanded(
+              //         child: Obx(() {
+              //           if (controller.isInitialized.value) {
+              //             return Stack(
+              //               alignment: Alignment.center,
+              //               children: [
+              //                 /// Video Player
+              //                 ClipRRect(
+              //                   borderRadius: BorderRadius.circular(8.r),
+              //                   child: AspectRatio(
+              //                     aspectRatio: controller.videoController.value.aspectRatio,
+              //                     child: VideoPlayer(controller.videoController),
+              //                   ),
+              //                 ),
+              //
+              //                 /// Play / Pause Button Only
+              //                 Positioned(
+              //                   bottom: 8.h,
+              //                   right: 8.w,
+              //                   child: GestureDetector(
+              //                     onTap: () {
+              //                       if (controller.videoController.value.isPlaying) {
+              //                         controller.videoController.pause();
+              //                       } else {
+              //                         controller.videoController.play();
+              //                       }
+              //                       controller.update(); // refresh GetX
+              //                     },
+              //                     child: Container(
+              //                       decoration: BoxDecoration(
+              //                         shape: BoxShape.circle,
+              //                         color: Colors.black54,
+              //                       ),
+              //                       padding: EdgeInsets.all(8.r),
+              //                       child: Icon(
+              //                         controller.videoController.value.isPlaying
+              //                             ? Icons.pause
+              //                             : Icons.play_arrow,
+              //                         size: 28.r,
+              //                         color: Colors.white,
+              //                       ),
+              //                     ),
+              //                   ),
+              //                 ),
+              //               ],
+              //             );
+              //           } else {
+              //             /// Fallback Image
+              //             return Container(
+              //               height: 116.h,
+              //               decoration: BoxDecoration(
+              //                 borderRadius: BorderRadius.circular(8.r),
+              //               ),
+              //               clipBehavior: Clip.hardEdge,
+              //               child: CustomNetworkImage(
+              //                 imageUrl: homeController.workingDays.first.mediaUrl?.isNotEmpty == true
+              //                     ? homeController.workingDays.first.mediaUrl!.first
+              //                     : "https://templates.joomla-monster.com/joomla30/jm-news-portal/components/com_djclassifieds/assets/images/default_profile.png",
+              //                 width: 82.w,
+              //                 height: 70.h,
+              //
+              //               ),
+              //             );
+              //           }
+              //         }),
+              //       ),
+              //
+              //
+              //
+              //       SizedBox(width: 14.w),
+              //       Expanded(
+              //         child:
+              //
+              //         // Container(
+              //         //   width: 82.w,
+              //         //   height: 116.h,
+              //         //   decoration: BoxDecoration(
+              //         //     borderRadius: BorderRadius.circular(8.r),
+              //         //   ),
+              //         //   clipBehavior: Clip.hardEdge,
+              //         //   child: CustomNetworkImage(
+              //         //     imageUrl: homeController.workingDays.first.mediaUrl?.isNotEmpty == true
+              //         //         ? homeController.workingDays.first.mediaUrl!.first
+              //         //         : "https://templates.joomla-monster.com/joomla30/jm-news-portal/components/com_djclassifieds/assets/images/default_profile.png",
+              //         //     width: 82.w,
+              //         //     height: 70.h,
+              //         //
+              //         //   ),
+              //         // )
+              //
+              //
+              //         Container(
+              //           height: 116.h,
+              //           decoration: BoxDecoration(
+              //             borderRadius: BorderRadius.circular(8.r),
+              //             image: const DecorationImage(
+              //               image: AssetImage("assets/images/imageStory.png"),
+              //               fit: BoxFit.cover,
+              //             ),
+              //           ),
+              //         ),
+              //       ),
+              //     ],
+              //   ),
+              // ),
 
               /// =====================================> Image 3 and 4 =====================================>
               Padding(

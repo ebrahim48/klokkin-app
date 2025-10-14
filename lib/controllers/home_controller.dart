@@ -182,6 +182,7 @@ class HomeController extends GetxController {
     if(response.statusCode == 200){
       workingDays.value = List<WorkingDaysModel>.from(response.body["data"]["attributes"]["data"].
       map((x)=> WorkingDaysModel.fromJson(x)));
+      update();
       getWorkingLoading(false);
     }else{
       getWorkingLoading(false);
@@ -200,6 +201,7 @@ class HomeController extends GetxController {
     if(response.statusCode == 200){
       storySteps.value = List<StoryStepsModel>.from(response.body["data"]["attributes"].
       map((x)=> StoryStepsModel.fromJson(x)));
+      update();
       getStoryStepsLoading(false);
     }else{
       getStoryStepsLoading(false);
@@ -386,7 +388,7 @@ class HomeController extends GetxController {
 
 
 
-  // Store controllers for each story
+  /// Store controllers for each story
   Map<String, VideoPlayerController> videoControllers = {};
   Map<String, bool> playStates = <String, bool>{}.obs;
   Map<String, bool> isInitializedStates = <String, bool>{}.obs;
