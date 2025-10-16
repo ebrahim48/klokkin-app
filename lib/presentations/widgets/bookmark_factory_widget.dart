@@ -92,8 +92,7 @@ class BookmarkFactoryCard extends StatelessWidget {
                       right: 6.w,
                       child: GestureDetector(
                         onTap: () {
-                          controller.bookMark(id
-                          );
+                          controller.bookMark(id);
                         },
                         child: Assets.icons.bookmarkSimple.svg(
                           width: 20.w,

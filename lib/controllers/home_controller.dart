@@ -190,7 +190,7 @@ class HomeController extends GetxController {
   }
 
 
-  /// ================================> Working Days   ==============================>
+  /// ================================> Story   ==============================>
 
 
   RxBool getStoryStepsLoading = false.obs;
@@ -224,6 +224,31 @@ class HomeController extends GetxController {
       getStorySingleLoading(false);
     }
   }
+
+
+  /// ================================> Share  ==============================>
+
+  var shareLoading = false.obs;
+  share(String storyId) async {
+
+    var body = {
+      'story':storyId,
+    };
+    shareLoading(true);
+    var response = await ApiClient.postData(
+        ApiConstants.shareEndPoint,
+        jsonEncode(body));
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      ToastMessageHelper.showToastMessage("${response.body["message"]}");
+      update();
+    } else {
+      shareLoading(false);
+    }
+    shareLoading(false);
+
+  }
+
+
 
 
 
