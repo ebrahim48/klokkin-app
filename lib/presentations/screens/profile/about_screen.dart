@@ -61,7 +61,7 @@ class _AboutScreenState extends State<AboutScreen> {
                       //     )),
                     CustomText(
                         textAlign: TextAlign.start,
-                        text: '${profileController.about.value}',
+                        text: profileController.about.value,
                         fontsize: 16.sp,
                         fontWeight: FontWeight.w500,
                         color: AppColors.textColorFFFFFF,

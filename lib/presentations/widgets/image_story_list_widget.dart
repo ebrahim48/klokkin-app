@@ -34,12 +34,10 @@ class ImageListCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              /// ==== Left Side ====
+
               Row(
                 children: [
                   /// Image
-
-
                   Container(
                     width: 124.w,
                     height: 90.h,
@@ -85,7 +83,7 @@ class ImageListCard extends StatelessWidget {
                               fontsize: 11.sp,
                               fontWeight: FontWeight.w300,
                             ),
-                            Spacer(),
+                            const Spacer(),
                             Assets.icons.downloadSimple.svg(
                               color: AppColors.primaryColorC79235,
                             )

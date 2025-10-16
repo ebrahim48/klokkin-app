@@ -52,25 +52,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ),
 
                     // Positioned Edit Button
-                    Positioned(
-                      bottom: -0.1.h, // adjust positioning
-                      child: Container(
-                        width: 64.w,
-                        height: 20.h,
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFC79235), // button color
-                          borderRadius: BorderRadius.circular(50.r),
-                        ),
-                        child: Center(
-                          child: CustomText(
-                            text: "Edit",
-                            fontsize: 12.sp,
-                            fontWeight: FontWeight.w500,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                    ),
+                    // Positioned(
+                    //   bottom: -0.1.h, // adjust positioning
+                    //   child: Container(
+                    //     width: 64.w,
+                    //     height: 20.h,
+                    //     decoration: BoxDecoration(
+                    //       color: const Color(0xFFC79235), // button color
+                    //       borderRadius: BorderRadius.circular(50.r),
+                    //     ),
+                    //     child: Center(
+                    //       child: CustomText(
+                    //         text: "Edit",
+                    //         fontsize: 12.sp,
+                    //         fontWeight: FontWeight.w500,
+                    //         color: Colors.white,
+                    //       ),
+                    //     ),
+                    //   ),
+                    // ),
                   ],
                 ),
               ),
