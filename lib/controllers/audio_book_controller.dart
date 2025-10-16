@@ -9,45 +9,7 @@ import '../services/api_constants.dart';
 
 class AudioBookController extends GetxController {
 
-
-  var isPlayingList = List.generate(6, (index) => false).obs;
-
-
-  int? playingIndex;
-  final List<Map<String, String>> audioBooks = [
-    {
-      "title": "Stories from the Desk",
-      "subtitle": "Audio 1hr 30m",
-      "image": "assets/images/audio.png",
-    },
-    {
-      "title": "Legends of the Forest",
-      "subtitle": "Audio 2hr 10m",
-      "image": "assets/images/audio.png",
-    },
-    {
-      "title": "Journey to the Stars",
-      "subtitle": "Audio 45m",
-      "image": "assets/images/audio.png",
-    },
-  ];
-
-  void togglePlayPause(int index) {
-    isPlayingList[index] = !isPlayingList[index];
-
-    for (int i = 0; i < isPlayingList.length; i++) {
-      if (i != index) {
-        isPlayingList[i] = false;
-      }
-    }
-  }
-
-
-
-
   /// ================================> Library Stories   ==============================>
-
-
 
   Rxn<Meta> audioMeta = Rxn<Meta>();
   Rxn<Meta> videoMeta = Rxn<Meta>();
@@ -64,7 +26,6 @@ class AudioBookController extends GetxController {
       print("**********************print here");
       update();
     }
-    print("**********************print here**************");
   }
   RxBool getLibraryStoryLoading = false.obs;
   RxList<StoryLibraryDataModel> libraryStoryData = <StoryLibraryDataModel>[].obs;
@@ -125,9 +86,6 @@ class AudioBookController extends GetxController {
         jsonEncode(body));
     if (response.statusCode == 200 || response.statusCode == 201) {
       ToastMessageHelper.showToastMessage("${response.body["message"]}");
-      // getLibraryStoryData();
-      // update();
-      // Get.back();
     } else {
 
     }
