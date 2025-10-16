@@ -21,14 +21,18 @@ class AudioProgressBar extends StatefulWidget {
 }
 
 class _AudioProgressBarState extends State<AudioProgressBar> {
+
+
   final controller = Get.put(AudioController());
   final HomeController homeController = Get.put(HomeController());
+  String? storyId;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final routeData = GoRouterState.of(context).extra as Map;
+      storyId = routeData['storyId'];
       homeController.getStorySingle(id: routeData['storyId']);
     });
   }
@@ -133,7 +137,7 @@ class _AudioProgressBarState extends State<AudioProgressBar> {
               ),
               SizedBox(width: 5.w),
 
-              // Speed
+              /// ======================================> Speed ==================================>
               Obx(() => CustomText(
                 text: controller.formatSpeed(controller.playbackSpeed.value),
                 color: AppColors.textColorFFFFFF,
@@ -173,13 +177,17 @@ class _AudioProgressBarState extends State<AudioProgressBar> {
               ),
               SizedBox(width: 15.w),
 
-              // Share
+              /// ========================================>  Share ===================================>
               GestureDetector(
                 onTap: () {
-                  Share.share(
-                    'Check this out: https://yourlink.com',
-                    subject: controller.isVideo.value ? 'Share Video' : 'Share Audio',
-                  );
+                  final currentStoryId = story.id ?? story.id ?? '';
+                  if (currentStoryId.isNotEmpty) {
+                    homeController.share(currentStoryId);
+                    Share.share(
+                      'Check this out: https://jakuan8080.syedbipul.me/api/v1/story/story/$currentStoryId',
+                      subject: controller.isVideo.value ? 'Share Video' : 'Share Audio',
+                    );
+                  }
                 },
                 child: SvgPicture.asset(
                   "assets/icons/share.svg",
@@ -188,6 +196,8 @@ class _AudioProgressBarState extends State<AudioProgressBar> {
                   color: AppColors.textColorC2C2C2,
                 ),
               ),
+
+
             ],
           ),
 
