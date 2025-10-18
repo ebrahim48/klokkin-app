@@ -34,7 +34,6 @@ class _StoryScreenState extends State<StoryScreen> {
     return Scaffold(
       key: _scaffoldKey,
       resizeToAvoidBottomInset: true,
-      // appBar: const CustomAppBar(),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
@@ -175,10 +174,6 @@ class _StoryScreenState extends State<StoryScreen> {
               SizedBox(height: 9.h),
 
               Obx((){
-                // if (controller.getLibraryStoryLoading.value) {
-                //   return const Center(child: CustomLoader());
-                // }
-
                 if (controller.libraryStoryData.isEmpty) {
                   return Center(
                     child: CustomText(
@@ -203,7 +198,6 @@ class _StoryScreenState extends State<StoryScreen> {
                             ? audioBook.mediaUrl!.first
                             : "https://templates.joomla-monster.com/joomla30/jm-news-portal/components/com_djclassifieds/assets/images/default_profile.png",
                         isPlaying: index == 1,
-                        // isPlaying: controller.isPlayingList[index],
                         onTap: () {
                           context.pushNamed(
                               AppRoutes.storyAudioScreen,
