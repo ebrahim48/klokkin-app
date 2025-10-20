@@ -72,7 +72,34 @@ class AudioBookController extends GetxController {
     getLibraryStoryLoading(false);
   }
 
-/// ============================> Bookmark ==================================>
+
+  /// ============================> Update Story  ==================================>
+
+  var updateStoryLoading = false.obs;
+  updateStory(String storyId) async {
+
+    var body = {
+      'caption':storyId,
+    };
+    updateStoryLoading(true);
+    var response = await ApiClient.patch(
+        ApiConstants.updateStoryEndPoint(storyId),
+        jsonEncode(body));
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      ToastMessageHelper.showToastMessage("${response.body["message"]}");
+    } else {
+
+    }
+    updateStoryLoading(false);
+
+  }
+
+
+
+
+
+
+  /// ============================> Bookmark ==================================>
 
   var bookMarkLoading = false.obs;
   bookMark(String storyId) async {

@@ -1,17 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:go_router/go_router.dart';
 import 'package:klokkin_app/core/constants/app_colors.dart';
 import 'package:klokkin_app/presentations/widgets/custom_app_bar.dart';
 import 'package:klokkin_app/presentations/widgets/custom_text.dart';
+import '../../../controllers/audio_book_controller.dart';
 import '../../../controllers/home_controller.dart';
 import '../../../global/custom_assets/assets.gen.dart';
 import '../../widgets/custom_image_details_widget.dart';
 import '../../widgets/custom_imagedetails_progressbar_widget.dart';
 import '../../widgets/custom_network_image.dart';
-import '../../widgets/custom_profile_image.dart';
 
 
 
@@ -26,7 +25,7 @@ class _StoryImageDetailsScreenState extends State<StoryImageDetailsScreen> {
 
 
   HomeController homeController = Get.put(HomeController());
-
+  final AudioBookController controller = Get.put(AudioBookController());
 
   void initState() {
     super.initState();
@@ -36,6 +35,7 @@ class _StoryImageDetailsScreenState extends State<StoryImageDetailsScreen> {
   @override
   Widget build(BuildContext context) {
     Map routeData = GoRouterState.of(context).extra as Map;
+    final String storyId = routeData["id"] ?? "";
     return Scaffold(
       appBar: const CustomAppBar(),
       body: SingleChildScrollView(
@@ -70,10 +70,17 @@ class _StoryImageDetailsScreenState extends State<StoryImageDetailsScreen> {
                               text: homeController.profile.value.fname ?? 'N/A',
                               color: AppColors.textColorFFFFFF,fontsize: 20.sp,fontWeight: FontWeight.w500),
                          SizedBox(width: 130.w),
-                          Assets.icons.editImage.svg(
-                          ),
+                          GestureDetector(
+                            onTap: () {
+                              controller.updateStory(storyId);
+                            },
+                              child: Assets.icons.editImage.svg()),
                           SizedBox(width: 10.w),
-                          Assets.icons.deleteimage.svg()
+                          GestureDetector(
+                            onTap: () {
+                              
+                            },
+                              child: Assets.icons.deleteimage.svg())
                         ],
                       ),
                       CustomText(
@@ -100,7 +107,9 @@ class _StoryImageDetailsScreenState extends State<StoryImageDetailsScreen> {
               ),
               SizedBox(height: 16.h),
               /// ============================================ line ====================================>
-              CustomImageDetailsProgressBar(),
+              CustomImageDetailsProgressBar(
+
+              ),
 
 
 

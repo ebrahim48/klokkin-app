@@ -11,7 +11,6 @@ class ImageStoryCard extends StatelessWidget {
   final String caption;
   final String imagePath;
   final String timestamp;
-  final String readingTime;
   final VoidCallback? onTap;
 
   const ImageStoryCard({
@@ -20,7 +19,6 @@ class ImageStoryCard extends StatelessWidget {
     required this.caption,
     required this.imagePath,
     required this.timestamp,
-    required this.readingTime,
     this.onTap,
   });
 
@@ -87,13 +85,13 @@ class ImageStoryCard extends StatelessWidget {
                             fontWeight: FontWeight.w300,
                             color: AppColors.textColor919191,
                           ),
-                          SizedBox(width: 8.w),
-                          CustomText(
-                            text: '• $readingTime',
-                            fontsize: 12.sp,
-                            fontWeight: FontWeight.w300,
-                            color: AppColors.textColor919191,
-                          ),
+                          // SizedBox(width: 8.w),
+                          // CustomText(
+                          //   text: '• $readingTime',
+                          //   fontsize: 12.sp,
+                          //   fontWeight: FontWeight.w300,
+                          //   color: AppColors.textColor919191,
+                          // ),
                           Spacer(),
                           Assets.icons.downloadSimple.svg(
                             color: AppColors.primaryColorC79235,

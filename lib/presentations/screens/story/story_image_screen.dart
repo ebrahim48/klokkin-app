@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 import 'package:go_router/go_router.dart';
 import 'package:klokkin_app/core/constants/app_colors.dart';
 import 'package:klokkin_app/presentations/widgets/custom_app_bar.dart';
 import '../../../controllers/audio_book_controller.dart';
-import '../../../controllers/work_controller.dart';
 import '../../../core/config/app_routes/app_routes.dart';
 import '../../widgets/custom_loader.dart';
 import '../../widgets/custom_text.dart';
@@ -29,12 +27,14 @@ class _StoryImageScreenState extends State<StoryImageScreen> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final AudioBookController controller = Get.put(AudioBookController());
 
-
   @override
   void initState() {
     super.initState();
-    controller.getLibraryStoryData();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      controller.getLibraryStoryData();
+    });
   }
+
 
 
   @override
@@ -80,12 +80,12 @@ class _StoryImageScreenState extends State<StoryImageScreen> {
                         imagePath: libraryData.mediaUrl != null && libraryData.mediaUrl!.isNotEmpty
                             ? libraryData.mediaUrl!.first
                             : "https://templates.joomla-monster.com/joomla30/jm-news-portal/components/com_djclassifieds/assets/images/default_profile.png",
-                        timestamp: "4h ago",
-                        readingTime: "21m read",
+                        timestamp: libraryData.duration ?? 'N/A',
                         onTap: () {
                           context.pushNamed(
                               AppRoutes.storyImageDetailsScreen,
                               extra: {
+                                "id": libraryData.id ?? "",
                                 "caption": libraryData.caption ??"",
                                 "duration": libraryData.description ??"",
                                 "imagePath": libraryData.mediaUrl != null && libraryData.mediaUrl!.isNotEmpty
@@ -123,7 +123,7 @@ class _StoryImageScreenState extends State<StoryImageScreen> {
                       return ImageListCard(
                         title:  libraryData.caption ?? 'N/A',
                         subtitle:  libraryData.description ?? 'N/A',
-                        meta: "4h ago • 21m read",
+                        meta: libraryData.duration ?? 'N/A',
                         hashtags: (libraryData.tags is List)
                             ? (libraryData.tags as List).join(", ")
                             : (libraryData.tags?.toString() ?? 'N/A'),
@@ -131,7 +131,7 @@ class _StoryImageScreenState extends State<StoryImageScreen> {
                             ? libraryData.mediaUrl!.first
                             : "https://templates.joomla-monster.com/joomla30/jm-news-portal/components/com_djclassifieds/assets/images/default_profile.png",
                         onTap: () {
-                          // context.pushNamed(AppRoutes.storyAudioScreen);
+
                         },
                       );
                     },

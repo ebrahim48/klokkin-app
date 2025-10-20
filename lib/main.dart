@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
+import 'package:klokkin_app/core/helpers/network_connection.dart';
 import 'package:toastification/toastification.dart';
 import 'core/config/app_routes/app_routes.dart';
 import 'core/config/app_themes/app_themes.dart';
@@ -41,7 +42,7 @@ class MyApp extends StatelessWidget {
               title: 'Klokkin App',
               theme: Themes().lightTheme,
               darkTheme: Themes().lightTheme,
-              builder: DevicePreview.appBuilder, // <== Required for layout simulation
+              // builder: DevicePreview.appBuilder, // <== Required for layout simulation
               useInheritedMediaQuery: true,      // <== Required for responsive behavior
               locale: DevicePreview.locale(context), // <== Optional: test different locales
               // darkTheme: ThemeData.dark(),
@@ -50,9 +51,9 @@ class MyApp extends StatelessWidget {
               routeInformationProvider:
               AppRoutes.goRouter.routeInformationProvider,
               routerDelegate: AppRoutes.goRouter.routerDelegate,
-              // builder: (context, child) {
-              //   return Scaffold(body: NoInterNetScreen(child: child!));
-              // },
+              builder: (context, child) {
+                return Scaffold(body: NoInterNetScreen(child: child!));
+              },
             );
           }),
     );
