@@ -1,6 +1,6 @@
 class ApiConstants{
 
-  static const String baseUrl = "https://jakuan8080.syedbipul.me/api/v1";
+  static const String baseUrl = "https://api.klokkin.com/api/v1";
   static const String imageBaseUrl = "https://jakuan8080.syedbipul.me";
 
 
@@ -32,6 +32,8 @@ class ApiConstants{
   static  String userProfileEndPoint = "/user/profile";
   static  String userUpdateProfileEndPoint = "/user/profile";
   static  String deleteProfileEndPoint = "/user/profile";
+  static  String deleteStoryEndPoint(String id) => "/story/story/$id";
+  static  String updateStoryEndPoint(String id) => "/story/story/$id";
   static  String feedbackEndPoint = "/feedback/feedbacks";
   static  String privacyEndPoint = "/setting/privacy-policy";
   static  String aboutEndPoint = "/setting/about-us";

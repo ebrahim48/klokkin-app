@@ -37,7 +37,7 @@ class AudioBookCard extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              /// ==== Left Side (Image + Title + Subtitle) ====
+              /// ===============  Title  Subtitle ====================
               Row(
                 children: [
                   /// Circle Image
@@ -60,8 +60,9 @@ class AudioBookCard extends StatelessWidget {
                       CustomText(
                         text: title,
                         color: AppColors.textColorFFFFFF,
-                        fontsize: 13.sp,
+                        fontsize: 12.sp,
                         fontWeight: FontWeight.w600,
+                        textOverflow: TextOverflow.ellipsis,
                         maxline: 2,
                       ),
                       SizedBox(height: 4.h),
@@ -75,7 +76,7 @@ class AudioBookCard extends StatelessWidget {
                   ),
                 ],
               ),
-          
+
               /// ==== Right Side (Play / Pause Button) ====
               Icon(
                 isPlaying ? Icons.pause_circle_filled : Icons.play_circle_fill,
