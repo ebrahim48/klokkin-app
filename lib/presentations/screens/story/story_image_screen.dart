@@ -87,7 +87,7 @@ class _StoryImageScreenState extends State<StoryImageScreen> {
                               extra: {
                                 "id": libraryData.id ?? "",
                                 "caption": libraryData.caption ??"",
-                                "duration": libraryData.description ??"",
+                                "description": libraryData.description ??"",
                                 "imagePath": libraryData.mediaUrl != null && libraryData.mediaUrl!.isNotEmpty
                                     ? libraryData.mediaUrl!.first
                                     : "https://templates.joomla-monster.com/joomla30/jm-news-portal/components/com_djclassifieds/assets/images/default_profile.png" ??"",

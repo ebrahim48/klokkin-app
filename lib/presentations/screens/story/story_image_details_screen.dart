@@ -29,13 +29,18 @@ class _StoryImageDetailsScreenState extends State<StoryImageDetailsScreen> {
 
   void initState() {
     super.initState();
-    homeController.getProfile();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      homeController.getProfile();
+    });
+
   }
 
   @override
   Widget build(BuildContext context) {
     Map routeData = GoRouterState.of(context).extra as Map;
     final String storyId = routeData["id"] ?? "";
+    final String caption = routeData["caption"] ?? "";
+    final String description = routeData["description"] ?? "";
     return Scaffold(
       appBar: const CustomAppBar(),
       body: SingleChildScrollView(
@@ -72,9 +77,102 @@ class _StoryImageDetailsScreenState extends State<StoryImageDetailsScreen> {
                          SizedBox(width: 130.w),
                           GestureDetector(
                             onTap: () {
-                              controller.updateStory(storyId);
+                              showDialog(
+                                context: context,
+                                builder: (context) {
+                                  TextEditingController captionController =
+                                  TextEditingController(text: caption);
+                                  TextEditingController descriptionController =
+                                  TextEditingController(text: description);
+
+                                  return AlertDialog(
+                                    backgroundColor: AppColors.backgColor20272E,
+                                    title: CustomText(
+                                      text: "Edit Story",
+                                      color: AppColors.textColorFFFFFF,
+                                      fontsize: 20.sp,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                    content: Column(
+                                      mainAxisSize: MainAxisSize.min,
+                                      children: [
+                                        TextField(
+                                          controller: captionController,
+                                          style: const TextStyle(color: Colors.white),
+                                          decoration: const InputDecoration(
+                                            hintText: "Enter caption",
+                                            hintStyle: TextStyle(color: Colors.grey),
+                                            enabledBorder: UnderlineInputBorder(
+                                              borderSide: BorderSide(color: AppColors.primaryColorC79235),
+                                            ),
+                                            focusedBorder: UnderlineInputBorder(
+                                              borderSide: BorderSide(color: AppColors.primaryColorC79235),
+                                            ),
+                                          ),
+                                        ),
+                                        SizedBox(height: 15.h),
+                                        TextField(
+                                          controller: descriptionController,
+                                          style: const TextStyle(color: Colors.white),
+                                          maxLines: 3,
+                                          decoration: const InputDecoration(
+                                            hintText: "Enter description",
+                                            hintStyle: TextStyle(color: Colors.grey),
+                                            enabledBorder: UnderlineInputBorder(
+                                              borderSide: BorderSide(color: AppColors.primaryColorC79235),
+                                            ),
+                                            focusedBorder: UnderlineInputBorder(
+                                              borderSide: BorderSide(color: AppColors.primaryColorC79235),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () => Navigator.pop(context),
+                                        child: CustomText(
+                                          text: "Cancel",
+                                          color: Colors.grey,
+                                          fontsize: 16.sp,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                      TextButton(
+                                        onPressed: () async {
+                                          // Update the values
+                                          await controller.updateStory(
+                                            storyId,
+                                            captionController.text,
+                                            descriptionController.text,
+                                          );
+                                          Navigator.of(context).pop();
+                                          // Optionally reload data
+                                          controller.getLibraryStoryData();
+
+                                          // Show feedback
+                                          Get.snackbar(
+                                            "Updated",
+                                            "Story updated successfully",
+                                            backgroundColor: Colors.green,
+                                            colorText: Colors.white,
+                                          );
+                                        },
+                                        child: CustomText(
+                                          text: "Save",
+                                          color: AppColors.primaryColorC79235,
+                                          fontsize: 16.sp,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ],
+                                  );
+                                },
+                              );
                             },
-                              child: Assets.icons.editImage.svg()),
+                            child: Assets.icons.editImage.svg(),
+                          ),
+
                           SizedBox(width: 10.w),
                           GestureDetector(
                             onTap: () {
@@ -97,19 +195,26 @@ class _StoryImageDetailsScreenState extends State<StoryImageDetailsScreen> {
               ),
               /// ============================================ Image ====================================>
               SizedBox(height: 40.h),
-              Positioned.fill(
-                child: CustomNetworkImage(
+              Stack(
+                children: [
+                  CustomNetworkImage(
                     imageUrl: "${routeData["imagePath"]}",
                     boxShape: BoxShape.rectangle,
                     height: 200.h,
-                    width: 400.w),
-
+                    width: double.infinity,
+                  ),
+                  // const Positioned(
+                  //   bottom: 10,
+                  //   top: 12,
+                  //   right: 80,
+                  //   child: Icon(Icons.play_circle_fill, size: 40, color: Colors.white),
+                  // ),
+                ],
               ),
+
               SizedBox(height: 16.h),
               /// ============================================ line ====================================>
-              CustomImageDetailsProgressBar(
-
-              ),
+              CustomImageDetailsProgressBar(),
 
 
 

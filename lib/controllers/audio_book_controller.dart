@@ -28,6 +28,7 @@ class AudioBookController extends GetxController {
     }
   }
   RxBool getLibraryStoryLoading = false.obs;
+
   RxList<StoryLibraryDataModel> libraryStoryData = <StoryLibraryDataModel>[].obs;
   getLibraryStoryData() async {
     if (page.value == 1) {
@@ -76,15 +77,22 @@ class AudioBookController extends GetxController {
   /// ============================> Update Story  ==================================>
 
   var updateStoryLoading = false.obs;
-  updateStory(String storyId) async {
+  updateStory(
+      String storyId,
+      String? caption,
+      String? description,
+
+      ) async {
 
     var body = {
-      'caption':storyId,
+      'caption':caption,
+      'description':description,
     };
     updateStoryLoading(true);
-    var response = await ApiClient.patch(
+    var response = await ApiClient.patchData(
         ApiConstants.updateStoryEndPoint(storyId),
-        jsonEncode(body));
+       body: body,
+    );
     if (response.statusCode == 200 || response.statusCode == 201) {
       ToastMessageHelper.showToastMessage("${response.body["message"]}");
     } else {
@@ -118,6 +126,20 @@ class AudioBookController extends GetxController {
     }
     bookMarkLoading(false);
 
+  }
+
+
+
+  var currentPlayingIndex = (-1).obs; // -1 means nothing is playing
+
+  void togglePlayPause(int index) {
+    if (currentPlayingIndex.value == index) {
+      // Pause if already playing
+      currentPlayingIndex.value = -1;
+    } else {
+      // Play this index, pause others
+      currentPlayingIndex.value = index;
+    }
   }
 
 

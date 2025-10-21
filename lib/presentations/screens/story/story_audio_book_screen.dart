@@ -23,7 +23,10 @@ class _StoryAudioBookScreenState extends State<StoryAudioBookScreen> {
 
   void initState() {
     super.initState();
-    controller.getLibraryStoryData();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      controller.getLibraryStoryData();
+    });
+
   }
 
 
