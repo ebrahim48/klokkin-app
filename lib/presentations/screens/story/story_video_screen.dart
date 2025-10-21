@@ -33,7 +33,10 @@ class _StoryVideoScreenState extends State<StoryVideoScreen> {
   @override
   void initState() {
     super.initState();
-    controller.getLibraryStoryData();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      controller.getLibraryStoryData();
+    });
+
   }
 
   @override
