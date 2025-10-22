@@ -6,7 +6,7 @@ import 'custom_text.dart';
 
 class NotificationItemWidget extends StatelessWidget {
   final String title;
-  final String message;
+  final String role;
   final String time;
   final String? avatarText;
   final Color? avatarColor;
@@ -14,7 +14,7 @@ class NotificationItemWidget extends StatelessWidget {
   const NotificationItemWidget({
     super.key,
     required this.title,
-    required this.message,
+    required this.role,
     required this.time,
     this.avatarText,
     this.avatarColor,
@@ -44,12 +44,11 @@ class NotificationItemWidget extends StatelessWidget {
               shape: BoxShape.circle,
             ),
             alignment: Alignment.center,
-            child: CustomText(
-              text: avatarText ?? 'N',
-              fontsize: 18.sp,
-              fontWeight: FontWeight.w600,
-              color: Colors.black54,
-            ),
+            child:   const Icon(
+        Icons.notifications,
+        color: Color(0xFF987433),
+        size: 26,
+      ),
           ),
 
           SizedBox(width: 12.w),
@@ -84,7 +83,7 @@ class NotificationItemWidget extends StatelessWidget {
                 SizedBox(height: 4.h),
                 CustomText(
                   textAlign: TextAlign.start,
-                  text: message,
+                  text: role,
                   fontsize: 14.sp,
                   fontWeight: FontWeight.w400,
                   color: AppColors.textColorBDC2C6,

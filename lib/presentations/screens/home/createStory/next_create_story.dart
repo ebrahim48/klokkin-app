@@ -26,7 +26,9 @@ class _NextCreateStoryScreenState extends State<NextCreateStoryScreen> {
   RxSet<String> selectedTags = <String>{}.obs;
   void initState() {
     super.initState();
-    homeController.getAllTags();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      homeController.getAllTags();
+    });
   }
 
   @override
@@ -301,13 +303,6 @@ class _NextCreateStoryScreenState extends State<NextCreateStoryScreen> {
   }
 
 
-
-
-
-
-
-
-
   final TextEditingController titleCtrl = TextEditingController();
   final TextEditingController scriptCtrl = TextEditingController();
 
@@ -322,7 +317,9 @@ class _NextCreateStoryScreenState extends State<NextCreateStoryScreen> {
       builder: (ctx) {
         return AlertDialog(
           backgroundColor: AppColors.backgColor20272E,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12.r),
+          ),
           title: CustomText(
             text: "Add New Tag",
             color: AppColors.textColorFFFFFF,
@@ -341,53 +338,34 @@ class _NextCreateStoryScreenState extends State<NextCreateStoryScreen> {
                 color: AppColors.textColorC2C2C2,
               ),
             ),
-            Obx(() {
-              return ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.buttonColorE8A533,
-                ),
-                onPressed: homeController.loading.value
-                    ? null
-                    : () async {
-                  if (newTagCtrl.text.trim().isEmpty) return;
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.buttonColorE8A533,
+              ),
+              onPressed: () async {
+                final newTag = newTagCtrl.text.trim();
+                if (newTag.isEmpty) return;
 
-                  final newTag = newTagCtrl.text.trim();
 
-                  try {
-                    homeController.loading.value = true;
-                    await homeController.updateTag(
-                      tagId,
-                      [...?tagGroup.tag, newTag],
-                    );
+                await homeController.updateTag(
+                  tagId,
+                  [...?tagGroup.tag, newTag],
+                );
 
-                    tagGroup.tag?.add(newTag);
-                    homeController.allTags.refresh();
-                    Navigator.pop(ctx);
-                  } finally {
-                    homeController.loading.value = false;
-                  }
-                },
-                child: homeController.loading.value
-                    ? const SizedBox(
-                  width: 18,
-                  height: 18,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2,
-                    color: Colors.white,
-                  ),
-                )
-                    : CustomText(
-                  text: "Add",
-                  color: AppColors.textColorFFFFFF,
-                ),
-              );
-            }),
+                tagGroup.tag?.add(newTag);
+                homeController.allTags.refresh();
+                Navigator.pop(ctx);
+              },
+              child: CustomText(
+                text: "Add",
+                color: AppColors.textColorFFFFFF,
+              ),
+            ),
           ],
         );
       },
     );
   }
-
 
 }
 

@@ -20,7 +20,10 @@ class _PermissionScreenState extends State<PermissionScreen> {
 
   void initState() {
     super.initState();
-    profileController.privacyPolicy();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      profileController.privacyPolicy();
+    });
+
   }
   @override
   Widget build(BuildContext context) {
@@ -63,7 +66,7 @@ class _PermissionScreenState extends State<PermissionScreen> {
 
                       CustomText(
                         textAlign: TextAlign.start,
-                        text: '${profileController.value.value}',
+                        text: profileController.value.value,
                         fontsize: 16.sp,
                         fontWeight: FontWeight.w500,
                         color: AppColors.textColorFFFFFF,

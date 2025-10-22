@@ -1,51 +1,22 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-
+import 'package:get/get.dart';
+import 'package:intl/intl.dart';
+import '../../../controllers/notifications_controller.dart';
 import '../../../core/constants/app_colors.dart';
+import '../../widgets/custom_loader.dart';
 import '../../widgets/custom_text.dart';
 import '../../widgets/notifications_widget.dart';
 
-class NotificationsScreen extends StatelessWidget {
-  NotificationsScreen({super.key});
+class NotificationsScreen extends StatefulWidget {
+  const NotificationsScreen({super.key});
 
-  final List<NotificationModel> notifications = [
-    NotificationModel(
-      title: 'Your booking is confirmed!',
-      message: 'Thank you for choosing us. We look forward to serving you.',
-      time: '2m ago',
-      avatarText: 'Tm',
-      avatarColor: Color(0xFFE5E5E5),
-    ),
-    NotificationModel(
-      title: 'New Feature Available',
-      message: 'Check out our new advanced scheduling feature for better time management.',
-      time: '1h ago',
-      avatarText: 'LI',
-      avatarColor: Color(0xFFDCFCE7),
-    ),
-    NotificationModel(
-      title: 'Weekly Report Ready',
-      message: 'Your weekly screen time report is now available. You\'ve reduced usage by 25%!',
-      time: '3h ago',
-      avatarText: 'WR',
-      avatarColor: Color(0xFFEDD69A),
-    ),
-    NotificationModel(
-      title: 'Goal Achievement',
-      message: 'Congratulations! You\'ve met your daily screen time goal for 7 days in a row.',
-      time: '1d ago',
-      avatarText: 'GA',
-      avatarColor: Color(0xFFDCFCE7),
-    ),
-    NotificationModel(
-      title: 'Premium Offer',
-      message: 'Upgrade to Premium and get 50% off for the first month. Limited time offer!',
-      time: '2d ago',
-      avatarText: 'PO',
-      avatarColor: Color(0xFFEDD69A),
-    ),
-  ];
+  @override
+  State<NotificationsScreen> createState() => _NotificationsScreenState();
+}
+
+class _NotificationsScreenState extends State<NotificationsScreen> {
+
 
   @override
   Widget build(BuildContext context) {
@@ -74,69 +45,58 @@ class NotificationsScreen extends StatelessWidget {
         ),
 
       ),
-      body: notifications.isEmpty
-          ? _buildEmptyState()
-          : ListView.builder(
-        padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 16.h),
-        itemCount: notifications.length,
-        itemBuilder: (context, index) {
-          final notification = notifications[index];
-          return NotificationItemWidget(
-            title: notification.title,
-            message: notification.message,
-            time: notification.time,
-            avatarText: notification.avatarText,
-            avatarColor: notification.avatarColor,
-          );
-        },
-      ),
+      body:  Obx(()=>
+      notificationsController.notificationLoading.value ? const CustomLoader() :
+      notificationsController.notifications.isEmpty ? Center(child: CustomText(text: "No Notification Found!")) :
+       ListView.builder(
+         controller: _scrollController,
+          padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 16.h),
+          itemCount: notificationsController.notifications.length,
+          itemBuilder: (context, index) {
+            var notification = notificationsController.notifications[index];
+            return NotificationItemWidget(
+              title: notification.title ?? '',
+              role: notification.role ?? '',
+              time: notification.createdAt != null
+                  ? DateFormat('yyyy-MM-dd HH:mm').format(notification.createdAt!)
+                  : '',
+
+
+
+            );
+          },
+        ),),
     );
   }
 
-  Widget _buildEmptyState() {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            Icons.notifications_none,
-            size: 80.r,
-            color: Colors.grey,
-          ),
-          SizedBox(height: 16.h),
-          CustomText(
-            text: 'No notifications yet',
-            fontsize: 18.sp,
-            fontWeight: FontWeight.w500,
-            color: AppColors.textColorBDC2C6,
-          ),
-          SizedBox(height: 8.h),
-          CustomText(
-            text: 'We\'ll notify you when something new arrives',
-            fontsize: 14.sp,
-            fontWeight: FontWeight.w400,
-            color: AppColors.textColorBDC2C6,
-            textAlign: TextAlign.center,
-          ),
-        ],
-      ),
-    );
+
+
+  NotificationsController notificationsController = Get.put(NotificationsController());
+
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    notificationsController.getNotifications();
+    super.initState();
+    _addScrollListener();
+  }
+
+  void _addScrollListener() {
+    _scrollController.addListener(() {
+      if (_scrollController.position.pixels ==
+          _scrollController.position.maxScrollExtent) {
+        notificationsController.loadMore();
+        print("==========test========load more true");
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
   }
 }
 
 
-class NotificationModel {
-  final String title;
-  final String message;
-  final String time;
-  final String? avatarText;
-  final Color? avatarColor;
-
-  NotificationModel({
-    required this.title,
-    required this.message,
-    required this.time,
-    this.avatarText,
-    this.avatarColor,
-  });
-}
