@@ -29,7 +29,10 @@ class _VideoRecordAddPostDetailsScreenState extends State<VideoRecordAddPostDeta
 
   void initState() {
     super.initState();
-    homeController.getAllTags();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      homeController.getAllTags();
+    });
+
   }
 
   @override

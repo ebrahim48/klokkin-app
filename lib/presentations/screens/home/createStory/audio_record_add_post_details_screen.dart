@@ -338,7 +338,9 @@ class _AudioRecordAddPostDetailsScreenState extends State<AudioRecordAddPostDeta
       builder: (ctx) {
         return AlertDialog(
           backgroundColor: AppColors.backgColor20272E,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.r)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12.r),
+          ),
           title: CustomText(
             text: "Add New Tag",
             color: AppColors.textColorFFFFFF,
@@ -357,52 +359,36 @@ class _AudioRecordAddPostDetailsScreenState extends State<AudioRecordAddPostDeta
                 color: AppColors.textColorC2C2C2,
               ),
             ),
-            Obx(() {
-              return ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.buttonColorE8A533,
-                ),
-                onPressed: homeController.loading.value
-                    ? null
-                    : () async {
-                  if (newTagCtrl.text.trim().isEmpty) return;
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.buttonColorE8A533,
+              ),
+              onPressed: () async {
+                final newTag = newTagCtrl.text.trim();
+                if (newTag.isEmpty) return;
 
-                  final newTag = newTagCtrl.text.trim();
 
-                  try {
-                    homeController.loading.value = true;
-                    await homeController.updateTag(
-                      tagId,
-                      [...?tagGroup.tag, newTag],
-                    );
+                await homeController.updateTag(
+                  tagId,
+                  [...?tagGroup.tag, newTag],
+                );
 
-                    tagGroup.tag?.add(newTag);
-                    homeController.allTags.refresh();
-                    Navigator.pop(ctx);
-                  } finally {
-                    homeController.loading.value = false;
-                  }
-                },
-                child: homeController.loading.value
-                    ? const SizedBox(
-                  width: 18,
-                  height: 18,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2,
-                    color: Colors.white,
-                  ),
-                )
-                    : CustomText(
-                  text: "Add",
-                  color: AppColors.textColorFFFFFF,
-                ),
-              );
-            }),
+                tagGroup.tag?.add(newTag);
+                homeController.allTags.refresh();
+                Navigator.pop(ctx);
+              },
+              child: CustomText(
+                text: "Add",
+                color: AppColors.textColorFFFFFF,
+              ),
+            ),
           ],
         );
       },
     );
   }
+
+
 
 
 }
