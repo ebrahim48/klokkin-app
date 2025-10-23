@@ -1,11 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
 import 'package:klokkin_app/presentations/widgets/custom_text.dart';
+import 'package:share_plus/share_plus.dart';
 import '../../controllers/audio_book_controller.dart';
+import '../../controllers/audio_controller.dart';
+import '../../controllers/home_controller.dart';
 import '../../controllers/playback_controller.dart';
 import '../../controllers/story_audio_controller.dart';
 import '../../core/constants/app_colors.dart';
+import '../../core/helpers/download_helper.dart';
+import '../../core/helpers/toast_message_helper.dart';
 import '../../global/custom_assets/assets.gen.dart';
 import 'package:intl/intl.dart';
 
@@ -23,8 +30,19 @@ class _CustomAudioProgressBarState extends State<CustomAudioProgressBar> {
 
   void initState() {
     super.initState();
-    controllers.getLibraryStoryData();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final routeData = GoRouterState.of(context).extra as Map;
+      storyId = routeData['storyId'];
+      homeController.getStorySingle(id: routeData['storyId']);
+      controllers.getLibraryStoryData();
+    });
+
   }
+  bool _isDownloaded = false;
+  final controller = Get.put(AudioController());
+  final HomeController homeController = Get.put(HomeController());
+  String? storyId;
+
 
   @override
   Widget build(BuildContext context) {
@@ -212,28 +230,6 @@ class _CustomAudioProgressBarState extends State<CustomAudioProgressBar> {
             ],
           ),
 
-          // /// ---- Bottom Times ----
-          // Row(
-          //   mainAxisAlignment: MainAxisAlignment.center,
-          //   children: [
-          //     CustomText(text:
-          //     _formatTime(controller.currentTime.value),
-          //       color: AppColors.textColorFFFFFF,
-          //       fontsize: 12.sp,
-          //       fontWeight: FontWeight.w400,
-          //     ),
-          //     Padding(
-          //       padding: EdgeInsets.only(left: 100.w),
-          //       child: CustomText(
-          //         text:
-          //         _formatTime(controller.totalTime.value),
-          //         color: AppColors.textColorFFFFFF,
-          //         fontsize: 12.sp,
-          //         fontWeight: FontWeight.w400,
-          //       ),
-          //     ),
-          //   ],
-          // ),
           SizedBox(height: 32.h),
 
           Container(
@@ -243,7 +239,7 @@ class _CustomAudioProgressBarState extends State<CustomAudioProgressBar> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                /// Left Side: Post info
+
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -269,58 +265,85 @@ class _CustomAudioProgressBarState extends State<CustomAudioProgressBar> {
                 Row(
                   children: [
                     /// ===== SHARE BUTTON =====
-                    Container(
-                      width: 79.w,
-                      height: 28.h,
-                      decoration: BoxDecoration(
-                        color: AppColors.textColor323539,
-                        borderRadius: BorderRadius.circular(16.r),
-                      ),
-                      padding: EdgeInsets.symmetric(horizontal: 6.w),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Assets.icons.share.svg(
-                            color: AppColors.textColorFFFFFF,
-                            width: 16.w,
-                            height: 16.h,
-                          ),
-                          SizedBox(width: 4.w),
-                          CustomText(
-                            text: "SHARE",
-                            color: AppColors.textColorFFFFFF,
-                            fontsize: 12.sp,
-                            fontWeight: FontWeight.w400,
-                          ),
-                        ],
+
+                    /// ========================================>  Share ===================================>
+                    GestureDetector(
+                      onTap: () {
+                        final currentStoryId = controllers.libraryStoryData.value.first.id ?? controllers.libraryStoryData.value.first.id ?? '';
+                        if (currentStoryId.isNotEmpty) {
+                          homeController.share(currentStoryId);
+                          Share.share(
+                            'Check this out: https://jakuan8080.syedbipul.me/api/v1/story/story/$currentStoryId',
+                            subject: controller.isVideo.value ? 'Share Video' : 'Share Audio',
+                          );
+                        }
+                      },
+                      child: SvgPicture.asset(
+                        "assets/icons/share.svg",
+                        width: 24.w,
+                        height: 24.h,
+                        color: AppColors.textColorC2C2C2,
                       ),
                     ),
+
                     SizedBox(width: 8.w),
-                    Container(
-                      width: 104.w,
-                      height: 30.h,
-                      decoration: BoxDecoration(
-                        color: AppColors.textColor323539,
-                        borderRadius: BorderRadius.circular(16.r),
-                      ),
-                      padding: EdgeInsets.symmetric(horizontal: 6.w),
-                      child: Row(
-                        children: [
-                          Assets.icons.downloadSimple.svg(
-                            color: AppColors.textColorFFFFFF,
-                            width: 16.w,
-                            height: 16.h,
-                          ),
-                          SizedBox(width: 4.w),
-                          CustomText(
-                            text: "DOWNLOAD",
-                            color: AppColors.textColorFFFFFF,
-                            fontsize: 12.sp,
-                            fontWeight: FontWeight.w400,
-                          ),
-                        ],
+
+                    /// ========================================>  Download  ===================================>
+
+                    // Inside your GestureDetector for the main DOWNLOAD button
+                    GestureDetector(
+                      onTap: () async {
+                        final story = controllers.libraryStoryData.first;
+                        final mediaUrl = story.mediaUrl?.first;
+
+                        if (mediaUrl == null || mediaUrl.isEmpty) {
+                          ToastMessageHelper.showToastMessage('success');
+                          return;
+                        }
+
+                        // Extract file name from URL (e.g., "story123.mp3")
+                        final fileName = mediaUrl.split('/').last;
+
+                        // Start download
+                        final filePath = await DownloadHelper.downloadFile(mediaUrl, fileName);
+
+                        if (filePath != null) {
+                          // Optional: store path to show "Downloaded" badge
+                          setState(() {
+                            _isDownloaded = true;
+                          });
+
+                        }
+                      },
+                      child: Container(
+                        width: 104.w,
+                        height: 30.h,
+                        decoration: BoxDecoration(
+                          color: AppColors.textColor323539,
+                          borderRadius: BorderRadius.circular(16.r),
+                        ),
+                        padding: EdgeInsets.symmetric(horizontal: 6.w),
+                        child: Row(
+                          children: [
+                            Assets.icons.downloadSimple.svg(
+                              color: AppColors.textColorFFFFFF,
+                              width: 16.w,
+                              height: 16.h,
+                            ),
+                            SizedBox(width: 4.w),
+                            CustomText(
+                              text: "DOWNLOAD",
+                              color: AppColors.textColorFFFFFF,
+                              fontsize: 12.sp,
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ],
+                        ),
                       ),
                     ),
+
+
+
                   ],
                 ),
               ],
@@ -334,7 +357,7 @@ class _CustomAudioProgressBarState extends State<CustomAudioProgressBar> {
           ),
           CustomText(
             textAlign: TextAlign.start,
-            text: 'Story Description',
+            text:  controllers.libraryStoryData.first.caption ?? 'N/A',
             color: AppColors.textColorFFFFFF,
             fontsize: 16.sp,
             fontWeight: FontWeight.w400,

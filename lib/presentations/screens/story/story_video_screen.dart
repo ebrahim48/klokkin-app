@@ -81,8 +81,7 @@ class _StoryVideoScreenState extends State<StoryVideoScreen> {
                         imagePath: libraryData.mediaUrl != null && libraryData.mediaUrl!.isNotEmpty
                             ? libraryData.mediaUrl!.first
                             : "https://templates.joomla-monster.com/joomla30/jm-news-portal/components/com_djclassifieds/assets/images/default_profile.png",
-                        timestamp: "4h ago",
-                        readingTime: "21m read",
+                        timestamp: libraryData.duration ?? 'N/A',
                         videoPath: libraryData.mediaUrl != null && libraryData.mediaUrl!.isNotEmpty
                             ? libraryData.mediaUrl!.first
                             : "",
@@ -94,8 +93,10 @@ class _StoryVideoScreenState extends State<StoryVideoScreen> {
                                 extra: {
                                   "videoUrl": libraryData.mediaUrl!.first,
                                   "title": libraryData.caption ?? 'N/A',
-                                  "timestamp": "4h ago",
-                                  "readingTime": "21m read",
+                                  "duration": libraryData.duration ?? 'N/A',
+                                  "imagePath": libraryData.mediaUrl != null && libraryData.mediaUrl!.isNotEmpty
+                                      ? libraryData.mediaUrl!.first
+                                      : "https://templates.joomla-monster.com/joomla30/jm-news-portal/components/com_djclassifieds/assets/images/default_profile.png",
                                 }
                             );
                           }
@@ -129,13 +130,15 @@ class _StoryVideoScreenState extends State<StoryVideoScreen> {
                       return VideoListCard(
                         title: libraryData.caption ?? 'N/A',
                         subtitle: libraryData.description ?? 'N/A',
-                        meta: "4h ago • 21m read",
+                        meta: libraryData.duration ?? 'N/A',
                         hashtags: (libraryData.tags is List)
                             ? (libraryData.tags as List).join(", ")
                             : (libraryData.tags?.toString() ?? 'N/A'),
-                        imagePath: "assets/images/imagelist.png",
+                        imagePath: libraryData.mediaUrl != null && libraryData.mediaUrl!.isNotEmpty
+                            ? libraryData.mediaUrl!.first
+                            : "https://templates.joomla-monster.com/joomla30/jm-news-portal/components/com_djclassifieds/assets/images/default_profile.png",
                         onTap: () {
-                          // context.pushNamed(AppRoutes.storyAudioScreen);
+
                         },
                       );
                     },

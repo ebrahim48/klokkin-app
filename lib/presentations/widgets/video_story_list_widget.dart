@@ -1,10 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
-import 'package:get/get_state_manager/src/rx_flutter/rx_obx_widget.dart';
-import 'package:video_player/video_player.dart';
-import '../../controllers/work_controller.dart';
 import '../../core/constants/app_colors.dart';
 import '../../global/custom_assets/assets.gen.dart';
 import 'custom_network_image.dart';
@@ -14,7 +9,6 @@ class VideoStoryCard extends StatelessWidget {
   final String title;
   final String imagePath;
   final String timestamp;
-  final String readingTime;
   final VoidCallback? onTap;
   final String videoPath;
 
@@ -23,7 +17,6 @@ class VideoStoryCard extends StatelessWidget {
     required this.title,
     required this.imagePath,
     required this.timestamp,
-    required this.readingTime,
     required this.videoPath,
     this.onTap,
   });
@@ -100,12 +93,6 @@ class VideoStoryCard extends StatelessWidget {
                             color: AppColors.textColor919191,
                           ),
                           SizedBox(width: 8.w),
-                          CustomText(
-                            text: '• $readingTime',
-                            fontsize: 12.sp,
-                            fontWeight: FontWeight.w300,
-                            color: AppColors.textColor919191,
-                          ),
                           const Spacer(),
                           Assets.icons.downloadSimple.svg(
                             color: AppColors.primaryColorC79235,

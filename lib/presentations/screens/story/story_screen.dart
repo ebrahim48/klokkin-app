@@ -26,7 +26,10 @@ class _StoryScreenState extends State<StoryScreen> {
 
   void initState() {
     super.initState();
-    controller.getLibraryStoryData();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      controller.getLibraryStoryData();
+    });
+
   }
 
   @override
