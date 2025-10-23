@@ -1,15 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
+import 'package:go_router/go_router.dart';
 import 'package:klokkin_app/core/constants/app_colors.dart';
 import 'package:klokkin_app/presentations/widgets/custom_app_bar.dart';
 import 'package:klokkin_app/presentations/widgets/custom_text.dart';
 import '../../../controllers/home_controller.dart';
 import '../../../global/custom_assets/assets.gen.dart';
 import '../../widgets/custom_image_details_widget.dart';
-import '../../widgets/custom_imagedetails_progressbar_widget.dart';
-import '../../widgets/custom_profile_image.dart';
+import '../../widgets/custom_network_image.dart';
 import '../../widgets/custom_video_details_widget.dart';
 
 
@@ -34,6 +33,7 @@ class _StoryVideoDetailsScreenState extends State<StoryVideoDetailsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    Map routeData = GoRouterState.of(context).extra as Map;
     return Scaffold(
       appBar: const CustomAppBar(),
       body: SingleChildScrollView(
@@ -88,12 +88,11 @@ class _StoryVideoDetailsScreenState extends State<StoryVideoDetailsScreen> {
               /// ============================================ Image ====================================>
               SizedBox(height: 40.h),
               Positioned.fill(
-                child: Image.asset(
-                  "assets/images/imageStory.png",
-                  height: 200,
-                  width: 400,
-                  fit: BoxFit.cover,
-                ),
+                child: CustomNetworkImage(
+                    imageUrl: "${routeData["imagePath"]}",
+                  boxShape: BoxShape.rectangle,
+                  height: 200.h,
+                  width: double.infinity),
               ),
               SizedBox(height: 16.h),
               /// ============================================ line ====================================>

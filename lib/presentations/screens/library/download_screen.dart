@@ -27,7 +27,9 @@ class _DownloadScreenState extends State<DownloadScreen> {
   @override
   void initState() {
     super.initState();
-    controller.getLibraryStoryData();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      controller.getLibraryStoryData();
+    });
   }
 
 
