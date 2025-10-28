@@ -22,8 +22,8 @@ void main() async {
   runApp(
     DevicePreview(
 
-      enabled:false, // Disable in release mode
-      builder: (context) => MyApp(), // Wrap your app
+      enabled:false,
+      builder: (context) => MyApp(), 
     ),
   );
 }
@@ -42,10 +42,8 @@ class MyApp extends StatelessWidget {
               title: 'Klokkin App',
               theme: Themes().lightTheme,
               darkTheme: Themes().lightTheme,
-              // builder: DevicePreview.appBuilder, // <== Required for layout simulation
-              useInheritedMediaQuery: true,      // <== Required for responsive behavior
-              locale: DevicePreview.locale(context), // <== Optional: test different locales
-              // darkTheme: ThemeData.dark(),
+              useInheritedMediaQuery: true,
+              locale: DevicePreview.locale(context),
               themeMode: Get.find<ThemeController>().themeMode.value,
               routeInformationParser: AppRoutes.goRouter.routeInformationParser,
               routeInformationProvider:

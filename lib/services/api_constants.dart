@@ -28,6 +28,7 @@ class ApiConstants{
   static  String getMyStoryEndPoint(String page) =>  "/story/stories?page=$page";
   static  String getStoryLibraryEndPoint = "/story/libraryData";
   static  String bookMarkEndPoint = "/story/bookmark";
+  static  String deleteBookMarkEndPoint = "/story/bookmark";
   static  String shareEndPoint = "/share_story/share/";
   static  String userProfileEndPoint = "/user/profile";
   static  String userUpdateProfileEndPoint = "/user/profile";

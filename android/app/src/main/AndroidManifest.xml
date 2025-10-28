@@ -10,7 +10,7 @@
 
 
     <application
-        android:label="klokkin_app"
+        android:label="Klokk-in"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
