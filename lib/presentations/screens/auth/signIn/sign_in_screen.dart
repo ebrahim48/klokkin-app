@@ -80,50 +80,50 @@ class LoginScreen extends StatelessWidget {
 
                 SizedBox(height: 22.h),
                 /// ===================================> Divider =============================>
-                Row(
-                  children: [
-                    Expanded(
-                      child: Container(
-                        height: 1,
-                        margin: EdgeInsets.only(left: 7.w),
-                        decoration:  const BoxDecoration(
-                          color: AppColors.textColorCFCFCF
-                        ),
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 8.w),
-                      child: CustomText(
-                        text: 'Or',
-                        color: AppColors.textColor8B8B8B,
-                        fontsize: 20.sp,
-                        fontWeight: FontWeight.w400,
-                      ),
-                    ),
-                    Expanded(
-                      child: Container(
-                        height: 1,
-                        margin: EdgeInsets.only(right: 7.w),
-                        decoration: const BoxDecoration(
-                            color: AppColors.textColorCFCFCF
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+                // Row(
+                //   children: [
+                //     Expanded(
+                //       child: Container(
+                //         height: 1,
+                //         margin: EdgeInsets.only(left: 7.w),
+                //         decoration:  const BoxDecoration(
+                //           color: AppColors.textColorCFCFCF
+                //         ),
+                //       ),
+                //     ),
+                //     Padding(
+                //       padding: EdgeInsets.symmetric(horizontal: 8.w),
+                //       child: CustomText(
+                //         text: 'Or',
+                //         color: AppColors.textColor8B8B8B,
+                //         fontsize: 20.sp,
+                //         fontWeight: FontWeight.w400,
+                //       ),
+                //     ),
+                //     Expanded(
+                //       child: Container(
+                //         height: 1,
+                //         margin: EdgeInsets.only(right: 7.w),
+                //         decoration: const BoxDecoration(
+                //             color: AppColors.textColorCFCFCF
+                //         ),
+                //       ),
+                //     ),
+                //   ],
+                // ),
 
 
                 /// =================================> Social Icon ===========================>
-                SizedBox(height: 90.h),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    // Assets.icons.facebook.svg(width: 54.w, height: 50.h),
-                    SizedBox(width: 30.h),
-                    Assets.icons.google.svg(width: 54.w, height: 50.h),
-                  ],
-                ),
+                // SizedBox(height: 90.h),
+                // Row(
+                //   mainAxisAlignment: MainAxisAlignment.center,
+                //   crossAxisAlignment: CrossAxisAlignment.center,
+                //   children: [
+                //     // Assets.icons.facebook.svg(width: 54.w, height: 50.h),
+                //     SizedBox(width: 30.h),
+                //     Assets.icons.google.svg(width: 54.w, height: 50.h),
+                //   ],
+                // ),
 
 
 

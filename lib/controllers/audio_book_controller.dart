@@ -130,6 +130,34 @@ class AudioBookController extends GetxController {
 
 
 
+
+  var deleteBookMarkLoading = false.obs;
+  deleteBookMark(String bookmarkId) async {
+
+    var body = {
+      'bookmarkId':bookmarkId,
+    };
+    deleteBookMarkLoading(true);
+    var response = await ApiClient.postData(
+        ApiConstants.deleteBookMarkEndPoint,
+        jsonEncode(body));
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      ToastMessageHelper.showToastMessage("${response.body["message"]}");
+    } else {
+
+    }
+    deleteBookMarkLoading(false);
+
+  }
+
+
+
+
+
+
+
+
+
   var currentPlayingIndex = (-1).obs; // -1 means nothing is playing
 
   void togglePlayPause(int index) {
@@ -141,6 +169,13 @@ class AudioBookController extends GetxController {
       currentPlayingIndex.value = index;
     }
   }
+
+
+
+
+
+
+
 
 
 
