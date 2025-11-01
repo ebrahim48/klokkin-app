@@ -64,7 +64,8 @@ class AuthController extends GetxController {
           "token": token,
         },
       );
-      ToastMessageHelper.showToastMessage("User created successfully, please verify your email");
+      ToastMessageHelper.showToastMessage(
+          "User created successfully, please verify your email");
       signUpLoading(false);
     } else {
       // ToastMessageHelper.showToastMessage(
@@ -160,8 +161,9 @@ class AuthController extends GetxController {
 
 
       logger.d("token  .....");
+
       /// Access token save
-      var token=response.body["data"]['attributes']["tokens"]["accessToken"];
+      var token = response.body["data"]['attributes']["tokens"]["accessToken"];
       logger.d("token   .... ======>> $token");
       await PrefsHelper.setString(AppConstants.bearerToken, token,
       );
@@ -177,14 +179,17 @@ class AuthController extends GetxController {
       if (role == "user") {
         await PrefsHelper.setBool(AppConstants.isLogged, true);
         context.go(AppRoutes.bottomNavbarScreen);
-        ToastMessageHelper.showToastMessage("You are logged in",title: 'Success');
+        ToastMessageHelper.showToastMessage(
+            "You are logged in", title: 'Success');
       } else {
         final message = response.body["message"];
 
         if (message == "Email not verified. Please verify your email.") {
-          final verificationToken = response.body["data"]['attributes']["tokens"]["accessToken"];
+          final verificationToken = response
+              .body["data"]['attributes']["tokens"]["accessToken"];
 
-          await PrefsHelper.setString(AppConstants.bearerToken, verificationToken);
+          await PrefsHelper.setString(
+              AppConstants.bearerToken, verificationToken);
 
           ToastMessageHelper.showToastMessage(
             "We've sent an OTP to your email. Please verify your email.",
@@ -198,7 +203,6 @@ class AuthController extends GetxController {
           );
         }
       }
-
     }
   }
 
@@ -244,8 +248,7 @@ class AuthController extends GetxController {
 
   RxBool setPasswordLoading = false.obs;
 
-  setPassword(
-      String password,
+  setPassword(String password,
       String confirmpassword,
       {required BuildContext context}) async {
     setPasswordLoading(true);
@@ -259,7 +262,8 @@ class AuthController extends GetxController {
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       context.pushNamed(AppRoutes.logInScreen);
-      ToastMessageHelper.showToastMessage('${response.body["message"]}',title: 'success');
+      ToastMessageHelper.showToastMessage(
+          '${response.body["message"]}', title: 'success');
       print("======>>> successful");
       setPasswordLoading(false);
     } else if (response.statusCode == 1) {
@@ -272,6 +276,8 @@ class AuthController extends GetxController {
     }
   }
 
+
+  ///===============Resend================<>
 
   ///===============Resend================<>
 
@@ -345,6 +351,7 @@ class AuthController extends GetxController {
   }
 
 
+
 ///===============Change Password================<>
 
 // RxBool changePasswordLoading = false.obs;
@@ -372,7 +379,7 @@ class AuthController extends GetxController {
 //   }
 // }
 
-///=============== Delete Account ================<>
+  ///=============== Delete Account ================<>
 
 
 // var deleteLoading = false.obs;
@@ -390,5 +397,6 @@ class AuthController extends GetxController {
 //
 // }
 
-}
 
+
+}

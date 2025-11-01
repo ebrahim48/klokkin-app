@@ -2,10 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:klokkin_app/core/constants/app_colors.dart';
 import 'package:klokkin_app/presentations/widgets/custom_text.dart';
+import 'package:klokkin_app/services/download_service.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:toastification/toastification.dart';
 import '../../global/custom_assets/assets.gen.dart';
 import 'custom_network_image.dart';
 
-class ImageListCard extends StatelessWidget {
+class ImageListCard extends StatefulWidget {
   final String title;
   final String subtitle;
   final String meta;
@@ -26,9 +29,64 @@ class ImageListCard extends StatelessWidget {
   });
 
   @override
+  State<ImageListCard> createState() => _ImageListCardState();
+}
+
+class _ImageListCardState extends State<ImageListCard> {
+  bool _isDownloading = false;
+
+  Future<void> _downloadImage() async {
+    if (_isDownloading) return; // Prevent multiple simultaneous downloads
+    
+    setState(() {
+      _isDownloading = true;
+    });
+
+    try {
+      final downloadService = DownloadService();
+      bool success = await downloadService.downloadImage(
+        widget.imagePath,
+        title: widget.title,
+        subtitle: widget.subtitle,
+        meta: widget.meta,
+        hashtags: widget.hashtags,
+      );
+      
+      if (success) {
+        toastification.show(
+          context: context,
+          type: ToastificationType.success,
+          title: const Text('Download Complete'),
+          description: const Text('Image has been saved to your device'),
+        );
+      } else {
+        toastification.show(
+          context: context,
+          type: ToastificationType.error,
+          title: const Text('Download Failed'),
+          description: const Text('Could not save image to device'),
+        );
+      }
+    } catch (e) {
+      toastification.show(
+        context: context,
+        type: ToastificationType.error,
+        title: const Text('Download Error'),
+        description: Text('Error: $e'),
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isDownloading = false;
+        });
+      }
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onTap,
+      onTap: widget.onTap,
       child: Column(
         children: [
           Row(
@@ -46,7 +104,7 @@ class ImageListCard extends StatelessWidget {
                     ),
                     clipBehavior: Clip.hardEdge,
                     child: CustomNetworkImage(
-                      imageUrl: imagePath,
+                      imageUrl: widget.imagePath,
                     ),
                   ),
 
@@ -60,7 +118,7 @@ class ImageListCard extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         CustomText(
-                          text: title,
+                          text: widget.title,
                           color: AppColors.textColorDCDCDC,
                           fontsize: 14.sp,
                           fontWeight: FontWeight.w500,
@@ -68,7 +126,7 @@ class ImageListCard extends StatelessWidget {
                         SizedBox(height: 4.h),
                         CustomText(
                           textAlign: TextAlign.start,
-                          text: subtitle,
+                          text: widget.subtitle,
                           color: AppColors.textColor919191,
                           fontsize: 12.sp,
                           fontWeight: FontWeight.w400,
@@ -78,20 +136,35 @@ class ImageListCard extends StatelessWidget {
                         Row(
                           children: [
                             CustomText(
-                              text: meta,
+                              text: widget.meta,
                               color: AppColors.textColor8C8C8C,
                               fontsize: 11.sp,
                               fontWeight: FontWeight.w300,
                             ),
                             const Spacer(),
-                            Assets.icons.downloadSimple.svg(
-                              color: AppColors.primaryColorC79235,
+                            GestureDetector(
+                              onTap: _downloadImage,
+                              child: Container(
+                                padding: EdgeInsets.all(4.r),
+                                decoration: BoxDecoration(
+                                  color: AppColors.primaryColorC79235.withOpacity(0.2),
+                                  borderRadius: BorderRadius.circular(4.r),
+                                ),
+                                child: _isDownloading
+                                    ? SpinKitCircle(
+                                        size: 16.sp,
+                                        color: AppColors.primaryColorC79235,
+                                      )
+                                    : Assets.icons.downloadSimple.svg(
+                                        color: AppColors.primaryColorC79235,
+                                      ),
+                              ),
                             )
                           ],
                         ),
                         SizedBox(height: 4.h),
                         CustomText(
-                          text: hashtags,
+                          text: widget.hashtags,
                           color: AppColors.textColor2165DF,
                           fontsize: 11.sp,
                           fontWeight: FontWeight.w400,

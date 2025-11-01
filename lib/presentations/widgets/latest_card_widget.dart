@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:klokkin_app/services/download_service.dart';
+import 'package:toastification/toastification.dart';
 import '../../core/constants/app_colors.dart';
 import 'custom_text.dart';
 import 'custom_network_image.dart';
 
-class LatestCard extends StatelessWidget {
+class LatestCard extends StatefulWidget {
   final String title;
   final String caption;
   final String imagePath;
@@ -20,9 +22,64 @@ class LatestCard extends StatelessWidget {
   });
 
   @override
+  State<LatestCard> createState() => _LatestCardState();
+}
+
+class _LatestCardState extends State<LatestCard> {
+  bool _isDownloading = false;
+
+  Future<void> _downloadImage() async {
+    if (_isDownloading) return; // Prevent multiple simultaneous downloads
+    
+    setState(() {
+      _isDownloading = true;
+    });
+
+    try {
+      final downloadService = DownloadService();
+      bool success = await downloadService.downloadMedia(
+        widget.imagePath,
+        title: widget.title,
+        subtitle: widget.caption,
+        meta: 'Latest Image',
+        hashtags: 'Latest',
+      );
+      
+      if (success) {
+        toastification.show(
+          context: context,
+          type: ToastificationType.success,
+          title: const Text('Download Complete'),
+          description: const Text('Image has been saved to your device'),
+        );
+      } else {
+        toastification.show(
+          context: context,
+          type: ToastificationType.error,
+          title: const Text('Download Failed'),
+          description: const Text('Could not save image to device'),
+        );
+      }
+    } catch (e) {
+      toastification.show(
+        context: context,
+        type: ToastificationType.error,
+        title: const Text('Download Error'),
+        description: Text('Error: $e'),
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isDownloading = false;
+        });
+      }
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onTap,
+      onTap: widget.onTap,
       child: Container(
         width: 140.w,
         decoration: BoxDecoration(
@@ -40,7 +97,7 @@ class LatestCard extends StatelessWidget {
                   children: [
                     Positioned.fill(
                       child: CustomNetworkImage(
-                        imageUrl: imagePath,
+                        imageUrl: widget.imagePath,
                         borderRadius: BorderRadius.zero,
                       ),
                     ),
@@ -60,17 +117,26 @@ class LatestCard extends StatelessWidget {
                             Expanded(
                               child: CustomText(
                                 textAlign: TextAlign.start,
-                                text: title,
+                                text: widget.title,
                                 color: AppColors.textColorFFFFFF,
                                 fontsize: 12.sp,
                                 fontWeight: FontWeight.w500,
                               ),
                             ),
-                            SvgPicture.asset(
-                              "assets/icons/downloadSimple.svg",
-                              width: 16.w,
-                              height: 16.h,
-                              color: AppColors.textColorFFFFFF,
+                            GestureDetector(
+                              onTap: _downloadImage,
+                              child: _isDownloading
+                                  ? Icon(
+                                      Icons.downloading,
+                                      color: AppColors.textColorFFFFFF,
+                                      size: 16.w,
+                                    )
+                                  : SvgPicture.asset(
+                                      "assets/icons/downloadSimple.svg",
+                                      width: 16.w,
+                                      height: 16.h,
+                                      color: AppColors.textColorFFFFFF,
+                                    ),
                             ),
                           ],
                         ),
@@ -87,7 +153,7 @@ class LatestCard extends StatelessWidget {
                 padding: EdgeInsets.all(6.w),
                 color: AppColors.textColorFFFFFF,
                 child: CustomText(
-                  text: caption,
+                  text: widget.caption,
                   fontsize: 12.sp,
                   fontWeight: FontWeight.w400,
                   color: AppColors.textColor000000,

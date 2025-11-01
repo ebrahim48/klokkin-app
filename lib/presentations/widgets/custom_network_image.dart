@@ -13,60 +13,74 @@ class CustomNetworkImage extends StatelessWidget {
   final Widget? child;
   final ColorFilter? colorFilter;
 
-  const CustomNetworkImage(
-      {super.key,
-      this.child,
-      this.colorFilter,
-      required this.imageUrl,
-      this.backgroundColor,
-       this.height,
-       this.width,
-      this.border,
-      this.borderRadius,
-      this.boxShape = BoxShape.rectangle});
+  const CustomNetworkImage({
+    super.key,
+    this.child,
+    this.colorFilter,
+    required this.imageUrl,
+    this.backgroundColor,
+    this.height,
+    this.width,
+    this.border,
+    this.borderRadius,
+    this.boxShape = BoxShape.rectangle,
+  });
 
   @override
   Widget build(BuildContext context) {
     return CachedNetworkImage(
-        imageUrl: imageUrl,
-        imageBuilder: (context, imageProvider) => Container(
-              height: height,
-              width: width,
-              decoration: BoxDecoration(
-                border: border,
-                borderRadius: borderRadius,
-                shape: boxShape,
-                color: backgroundColor,
-                image: DecorationImage(
-                    image: imageProvider,
-                    fit: BoxFit.cover,
-                    colorFilter: colorFilter),
-              ),
-              child: child,
-            ),
-        placeholder: (context, url) => Shimmer.fromColors(
-            baseColor: Colors.grey.withOpacity(0.6),
-            highlightColor: Colors.grey.withOpacity(0.3),
-            child: Container(
-              height: height,
-              width: width,
-              decoration: BoxDecoration(
-                border: border,
-                color: Colors.grey.withOpacity(0.6),
-                borderRadius: borderRadius,
-                shape: boxShape,
-              ),
-            )),
-        errorWidget: (context, url, error) => Container(
-              height: height,
-              width: width,
-              decoration: BoxDecoration(
-                border: border,
-                color: Colors.grey.withOpacity(0.6),
-                borderRadius: borderRadius,
-                shape: boxShape,
-              ),
-              child: const Icon(Icons.error),
-            ));
+      imageUrl: imageUrl,
+      imageBuilder: (context, imageProvider) => Container(
+        height: height,
+        width: width,
+        decoration: BoxDecoration(
+          border: border,
+          borderRadius: borderRadius,
+          shape: boxShape,
+          color: backgroundColor,
+          image: DecorationImage(
+            image: imageProvider,
+            fit: BoxFit.cover,
+            colorFilter: colorFilter,
+          ),
+        ),
+        child: child,
+      ),
+      placeholder: (context, url) => Shimmer.fromColors(
+        baseColor: Colors.grey.withOpacity(0.6),
+        highlightColor: Colors.grey.withOpacity(0.3),
+        child: Container(
+          height: height,
+          width: width,
+          decoration: BoxDecoration(
+            border: border,
+            color: Colors.grey.withOpacity(0.6),
+            borderRadius: borderRadius,
+            shape: boxShape,
+          ),
+        ),
+      ),
+      errorWidget: (context, url, error) => Container(
+        height: height,
+        width: width,
+        decoration: BoxDecoration(
+          border: border,
+          color: Colors.grey.withOpacity(0.6),
+          borderRadius: borderRadius,
+          shape: boxShape,
+        ),
+        child: const Icon(
+          Icons.broken_image,
+          color: Colors.grey,
+        ),
+      ),
+      errorListener: (error) {
+        // Log the error for debugging purposes
+        debugPrint('CachedNetworkImage error: $error');
+      },
+      httpHeaders: const {},
+      maxHeightDiskCache: 1000,
+      maxWidthDiskCache: 1000,
+    );
   }
 }

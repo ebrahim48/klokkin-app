@@ -50,7 +50,7 @@ class VerifyScreen extends StatelessWidget {
                     children: [
                       CustomText(
                         textAlign: TextAlign.center,
-                          text: 'If you don’t receive a code? ',
+                        text: 'If you don’t receive a code? ',
                         color: AppColors.textColorFFFFFF,
                         fontWeight: FontWeight.w500,
 
