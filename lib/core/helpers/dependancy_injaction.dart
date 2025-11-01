@@ -1,5 +1,9 @@
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:klokkin_app/controllers/home_controller.dart';
+
+import '../../controllers/profile_controller.dart';
+import '../../presentations/controller/auth_controller.dart';
 
 
 class DependencyInjection implements Bindings {
@@ -8,13 +12,10 @@ class DependencyInjection implements Bindings {
 
   @override
   void dependencies() {
-    // Get.lazyPut(() => AuthController(), fenix: true);
-    // Get.lazyPut(() => CustomerHomeController(), fenix: true);
-    // Get.lazyPut(() => CustomerBookingController(), fenix: true);
-    // Get.lazyPut(() => MechanicJobController(), fenix: true);
-    // Get.lazyPut(() => CurrentLocationController(), fenix: true);
-    // Get.lazyPut(() => LiveLocationChangeController(), fenix: true);
-    // Get.lazyPut(() => ChatController(), fenix: true);
+    Get.lazyPut(() => AuthController(), fenix: true);
+    Get.lazyPut(() => HomeController(), fenix: true);
+    Get.lazyPut(() => ProfileController(), fenix: true);
+
   }
 
   void lockDevicePortrait() {

@@ -3,13 +3,15 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
+import 'package:klokkin_app/services/download_service.dart';
+import 'package:toastification/toastification.dart';
 import '../../controllers/audio_book_controller.dart';
 import '../../core/constants/app_colors.dart';
 import '../../global/custom_assets/assets.gen.dart';
 import 'custom_network_image.dart';
 import 'custom_text.dart';
 
-class BookmarkFactoryCard extends StatelessWidget {
+class BookmarkFactoryCard extends StatefulWidget {
   final String title;
   final String id;
   final String caption;
@@ -24,11 +26,67 @@ class BookmarkFactoryCard extends StatelessWidget {
     required this.imagePath,
     this.onTap,
   });
+
+  @override
+  State<BookmarkFactoryCard> createState() => _BookmarkFactoryCardState();
+}
+
+class _BookmarkFactoryCardState extends State<BookmarkFactoryCard> {
   final AudioBookController controller = Get.put(AudioBookController());
+  bool _isDownloading = false;
+
+  Future<void> _downloadImage() async {
+    if (_isDownloading) return; // Prevent multiple simultaneous downloads
+    
+    setState(() {
+      _isDownloading = true;
+    });
+
+    try {
+      final downloadService = DownloadService();
+      bool success = await downloadService.downloadMedia(
+        widget.imagePath,
+        title: widget.title,
+        subtitle: widget.caption,
+        meta: 'Bookmark Image',
+        hashtags: 'Bookmark',
+      );
+      
+      if (success) {
+        toastification.show(
+          context: context,
+          type: ToastificationType.success,
+          title: const Text('Download Complete'),
+          description: const Text('Image has been saved to your device'),
+        );
+      } else {
+        toastification.show(
+          context: context,
+          type: ToastificationType.error,
+          title: const Text('Download Failed'),
+          description: const Text('Could not save image to device'),
+        );
+      }
+    } catch (e) {
+      toastification.show(
+        context: context,
+        type: ToastificationType.error,
+        title: const Text('Download Error'),
+        description: Text('Error: $e'),
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isDownloading = false;
+        });
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onTap,
+      onTap: widget.onTap,
       child: Container(
         width: 140.w,
         decoration: BoxDecoration(
@@ -46,7 +104,7 @@ class BookmarkFactoryCard extends StatelessWidget {
                   children: [
                     Positioned.fill(
                       child: CustomNetworkImage(
-                        imageUrl: imagePath,
+                        imageUrl: widget.imagePath,
 
                       ),
                     ),
@@ -66,7 +124,7 @@ class BookmarkFactoryCard extends StatelessWidget {
                             // Make the text flexible
                             Expanded(
                               child: CustomText(
-                                text: title,
+                                text: widget.title,
                                 color: AppColors.textColorFFFFFF,
                                 fontsize: 12.sp,
                                 fontWeight: FontWeight.w500,
@@ -77,11 +135,20 @@ class BookmarkFactoryCard extends StatelessWidget {
 
                             SizedBox(width: 8.w), // spacing between text and icon
 
-                            SvgPicture.asset(
-                              "assets/icons/downloadSimple.svg",
-                              width: 16.w,
-                              height: 16.h,
-                              color: AppColors.textColorFFFFFF,
+                            GestureDetector(
+                              onTap: _downloadImage,
+                              child: _isDownloading
+                                  ? Icon(
+                                      Icons.downloading,
+                                      color: AppColors.textColorFFFFFF,
+                                      size: 16.w,
+                                    )
+                                  : SvgPicture.asset(
+                                      "assets/icons/downloadSimple.svg",
+                                      width: 16.w,
+                                      height: 16.h,
+                                      color: AppColors.textColorFFFFFF,
+                                    ),
                             ),
                           ],
                         ),
@@ -92,7 +159,7 @@ class BookmarkFactoryCard extends StatelessWidget {
                       right: 6.w,
                       child: GestureDetector(
                         onTap: () {
-                          controller.bookMark(id);
+                          controller.bookMark(widget.id);
                         },
                         child: Assets.icons.bookmarkSimple.svg(
                           width: 20.w,
@@ -115,7 +182,7 @@ class BookmarkFactoryCard extends StatelessWidget {
                 color: AppColors.textColorFFFFFF,
                 child: CustomText(
                   textAlign: TextAlign.start,
-                  text: caption,
+                  text: widget.caption,
                   fontsize: 12.sp,
                   maxline: 2,
                   fontWeight: FontWeight.w400,

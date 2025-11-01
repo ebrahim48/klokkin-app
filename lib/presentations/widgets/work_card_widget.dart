@@ -3,12 +3,14 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
 import 'package:video_player/video_player.dart';
+import 'package:klokkin_app/services/download_service.dart';
+import 'package:toastification/toastification.dart';
 import '../../controllers/work_controller.dart';
 import '../../core/constants/app_colors.dart';
 import 'custom_network_image.dart';
 import 'custom_text.dart';
 
-class WorkCard extends StatelessWidget {
+class WorkCard extends StatefulWidget {
   final int index;
   final String title;
   final String duration;
@@ -27,13 +29,68 @@ class WorkCard extends StatelessWidget {
   });
 
   @override
+  State<WorkCard> createState() => _WorkCardState();
+}
+
+class _WorkCardState extends State<WorkCard> {
+  bool _isDownloading = false;
+
+  Future<void> _downloadMedia() async {
+    if (_isDownloading) return; // Prevent multiple simultaneous downloads
+    
+    setState(() {
+      _isDownloading = true;
+    });
+
+    try {
+      final downloadService = DownloadService();
+      bool success = await downloadService.downloadMedia(
+        widget.videoPath, // Download the video
+        title: widget.title,
+        subtitle: 'Duration: ${widget.duration}',
+        meta: 'Work Video',
+        hashtags: 'Work,Video',
+      );
+      
+      if (success) {
+        toastification.show(
+          context: context,
+          type: ToastificationType.success,
+          title: const Text('Download Complete'),
+          description: const Text('Video has been saved to your device'),
+        );
+      } else {
+        toastification.show(
+          context: context,
+          type: ToastificationType.error,
+          title: const Text('Download Failed'),
+          description: const Text('Could not save video to device'),
+        );
+      }
+    } catch (e) {
+      toastification.show(
+        context: context,
+        type: ToastificationType.error,
+        title: const Text('Download Error'),
+        description: Text('Error: $e'),
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isDownloading = false;
+        });
+      }
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final controller = Get.find<WorkCardController>();
 
     return GestureDetector(
       onTap: () async {
-        await controller.setVideoPath(index, videoPath);
-        if (onTap != null) onTap!();
+        await controller.setVideoPath(widget.index, widget.videoPath);
+        if (widget.onTap != null) widget.onTap!();
       },
       child: Container(
         width: 140.w,
@@ -44,9 +101,9 @@ class WorkCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(6.r),
           child: GetBuilder<WorkCardController>(
             builder: (_) {
-              final videoCtrl = controller.getController(index);
-              final isInit = controller.isInitialized(index);
-              final isPlaying = controller.isPlaying(index);
+              final videoCtrl = controller.getController(widget.index);
+              final isInit = controller.isInitialized(widget.index);
+              final isPlaying = controller.isPlaying(widget.index);
 
               return Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -62,7 +119,7 @@ class WorkCard extends StatelessWidget {
                         else
                           Center(
                             child: CustomNetworkImage(
-                              imageUrl: imagePath,
+                              imageUrl: widget.imagePath,
                               borderRadius: BorderRadius.zero,
                             ),
                           ),
@@ -82,18 +139,27 @@ class WorkCard extends StatelessWidget {
                                 Expanded(
                                   child: CustomText(
                                     textAlign: TextAlign.start,
-                                    text: title,
+                                    text: widget.title,
                                     color: AppColors.textColorFFFFFF,
                                     fontsize: 12.sp,
                                     fontWeight: FontWeight.w900,
                                     maxline: 2,
                                   ),
                                 ),
-                                SvgPicture.asset(
-                                  "assets/icons/downloadSimple.svg",
-                                  width: 24.w,
-                                  height: 24.h,
-                                  color: AppColors.textColorFFFFFF,
+                                GestureDetector(
+                                  onTap: _downloadMedia,
+                                  child: _isDownloading
+                                      ? Icon(
+                                          Icons.downloading,
+                                          color: AppColors.textColorFFFFFF,
+                                          size: 24.w,
+                                        )
+                                      : SvgPicture.asset(
+                                          "assets/icons/downloadSimple.svg",
+                                          width: 24.w,
+                                          height: 24.h,
+                                          color: AppColors.textColorFFFFFF,
+                                        ),
                                 ),
                               ],
                             ),
@@ -113,7 +179,7 @@ class WorkCard extends StatelessWidget {
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 GestureDetector(
-                                  onTap: () => controller.togglePlayPause(index),
+                                  onTap: () => controller.togglePlayPause(widget.index),
                                   child: Container(
                                     width: 32.w,
                                     height: 32.w,
@@ -129,7 +195,7 @@ class WorkCard extends StatelessWidget {
                                   ),
                                 ),
                                 CustomText(
-                                  text: duration,
+                                  text: widget.duration,
                                   color: AppColors.textColorFFFFFF,
                                   fontsize: 14.sp,
                                   fontWeight: FontWeight.w500,

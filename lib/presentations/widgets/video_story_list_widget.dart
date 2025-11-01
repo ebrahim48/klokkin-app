@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:klokkin_app/services/download_service.dart';
+import 'package:toastification/toastification.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
 import '../../core/constants/app_colors.dart';
 import '../../global/custom_assets/assets.gen.dart';
 import 'custom_network_image.dart';
 import 'custom_text.dart';
 
-class VideoStoryCard extends StatelessWidget {
+class VideoStoryCard extends StatefulWidget {
   final String title;
   final String imagePath;
   final String timestamp;
@@ -22,9 +25,64 @@ class VideoStoryCard extends StatelessWidget {
   });
 
   @override
+  State<VideoStoryCard> createState() => _VideoStoryCardState();
+}
+
+class _VideoStoryCardState extends State<VideoStoryCard> {
+  bool _isDownloading = false;
+
+  Future<void> _downloadVideo() async {
+    if (_isDownloading) return; // Prevent multiple simultaneous downloads
+    
+    setState(() {
+      _isDownloading = true;
+    });
+
+    try {
+      final downloadService = DownloadService();
+      bool success = await downloadService.downloadMedia(
+        widget.videoPath,
+        title: widget.title,
+        subtitle: 'Duration: ${widget.timestamp}',
+        meta: 'Video Story',
+        hashtags: 'Video,Story',
+      );
+      
+      if (success) {
+        toastification.show(
+          context: context,
+          type: ToastificationType.success,
+          title: const Text('Download Complete'),
+          description: const Text('Video has been saved to your device'),
+        );
+      } else {
+        toastification.show(
+          context: context,
+          type: ToastificationType.error,
+          title: const Text('Download Failed'),
+          description: const Text('Could not save video to device'),
+        );
+      }
+    } catch (e) {
+      toastification.show(
+        context: context,
+        type: ToastificationType.error,
+        title: const Text('Download Error'),
+        description: Text('Error: $e'),
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isDownloading = false;
+        });
+      }
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onTap,
+      onTap: widget.onTap,
       child: Container(
         width: 268.w,
         height: 280.h,
@@ -45,7 +103,7 @@ class VideoStoryCard extends StatelessWidget {
                     width: 268.w,
                     height: 180.h,
                     child: CustomNetworkImage(
-                      imageUrl: imagePath,
+                      imageUrl: widget.imagePath,
                       borderRadius: BorderRadius.circular(6.r),
                     ),
                   ),
@@ -74,7 +132,7 @@ class VideoStoryCard extends StatelessWidget {
                   children: [
                     CustomText(
                       textAlign: TextAlign.start,
-                      text: title,
+                      text: widget.title,
                       fontsize: 14.sp,
                       fontWeight: FontWeight.w500,
                       color: AppColors.textColorDCDCDC,
@@ -87,15 +145,30 @@ class VideoStoryCard extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           CustomText(
-                            text: timestamp,
+                            text: widget.timestamp,
                             fontsize: 12.sp,
                             fontWeight: FontWeight.w300,
                             color: AppColors.textColor919191,
                           ),
                           SizedBox(width: 8.w),
                           const Spacer(),
-                          Assets.icons.downloadSimple.svg(
-                            color: AppColors.primaryColorC79235,
+                          GestureDetector(
+                            onTap: _downloadVideo,
+                            child: Container(
+                              padding: EdgeInsets.all(4.r),
+                              decoration: BoxDecoration(
+                                color: AppColors.primaryColorC79235.withOpacity(0.2),
+                                borderRadius: BorderRadius.circular(4.r),
+                              ),
+                              child: _isDownloading
+                                  ? SpinKitCircle(
+                                      size: 16.sp,
+                                      color: AppColors.primaryColorC79235,
+                                    )
+                                  : Assets.icons.downloadSimple.svg(
+                                      color: AppColors.primaryColorC79235,
+                                    ),
+                            ),
                           )
                         ],
                       ),

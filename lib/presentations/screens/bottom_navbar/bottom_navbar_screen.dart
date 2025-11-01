@@ -13,8 +13,6 @@ import '../../../global/custom_assets/assets.gen.dart';
 class BottomNavBar extends StatefulWidget {
    BottomNavBar({super.key});
 
-
-
   @override
   State<BottomNavBar> createState() => _BottomNavBarState();
 }
@@ -28,6 +26,13 @@ class _BottomNavBarState extends State<BottomNavBar> {
   ];
 
   int currentIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    // Always start at the home tab (index 0)
+    currentIndex = 0;
+  }
 
   @override
   Widget build(BuildContext context) {

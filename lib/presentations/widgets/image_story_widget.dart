@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:klokkin_app/services/download_service.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:toastification/toastification.dart';
 import '../../core/constants/app_colors.dart';
 import '../../global/custom_assets/assets.gen.dart';
 import 'custom_network_image.dart';
 import 'custom_text.dart';
 
-class ImageStoryCard extends StatelessWidget {
+class ImageStoryCard extends StatefulWidget {
   final String title;
   final String caption;
   final String imagePath;
@@ -23,9 +26,64 @@ class ImageStoryCard extends StatelessWidget {
   });
 
   @override
+  State<ImageStoryCard> createState() => _ImageStoryCardState();
+}
+
+class _ImageStoryCardState extends State<ImageStoryCard> {
+  bool _isDownloading = false;
+
+  Future<void> _downloadImage() async {
+    if (_isDownloading) return; // Prevent multiple simultaneous downloads
+    
+    setState(() {
+      _isDownloading = true;
+    });
+
+    try {
+      final downloadService = DownloadService();
+      bool success = await downloadService.downloadImage(
+        widget.imagePath,
+        title: widget.title,
+        subtitle: widget.caption, // Using caption as subtitle
+        meta: widget.timestamp, // Using timestamp as meta
+        hashtags: 'Image', // Default tags for story images
+      );
+      
+      if (success) {
+        toastification.show(
+          context: context,
+          type: ToastificationType.success,
+          title: const Text('Download Complete'),
+          description: const Text('Image has been saved to your device'),
+        );
+      } else {
+        toastification.show(
+          context: context,
+          type: ToastificationType.error,
+          title: const Text('Download Failed'),
+          description: const Text('Could not save image to device'),
+        );
+      }
+    } catch (e) {
+      toastification.show(
+        context: context,
+        type: ToastificationType.error,
+        title: const Text('Download Error'),
+        description: Text('Error: $e'),
+      );
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isDownloading = false;
+        });
+      }
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onTap,
+      onTap: widget.onTap,
       child: Container(
         width: 188.w,
         decoration: BoxDecoration(
@@ -43,7 +101,7 @@ class ImageStoryCard extends StatelessWidget {
                   width: 188.w,
                   height: 140.h,
                   child: CustomNetworkImage(
-                    imageUrl: imagePath,
+                    imageUrl: widget.imagePath,
                     borderRadius: BorderRadius.circular(6.r),
                   ),
                 ),
@@ -58,7 +116,7 @@ class ImageStoryCard extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       CustomText(
-                        text: title,
+                        text: widget.title,
                         fontsize: 14.sp,
                         fontWeight: FontWeight.w500,
                         color: AppColors.textColorDCDCDC,
@@ -66,7 +124,7 @@ class ImageStoryCard extends StatelessWidget {
                       SizedBox(height: 4.h),
                       CustomText(
                         textAlign: TextAlign.start,
-                        text: caption,
+                        text: widget.caption,
                         fontsize: 12.sp,
                         fontWeight: FontWeight.w400,
                         maxline: 2,
@@ -80,7 +138,7 @@ class ImageStoryCard extends StatelessWidget {
                         children: [
                           CustomText(
                             textAlign: TextAlign.start,
-                            text: timestamp,
+                            text: widget.timestamp,
                             fontsize: 12.sp,
                             fontWeight: FontWeight.w300,
                             color: AppColors.textColor919191,
@@ -92,9 +150,24 @@ class ImageStoryCard extends StatelessWidget {
                           //   fontWeight: FontWeight.w300,
                           //   color: AppColors.textColor919191,
                           // ),
-                          Spacer(),
-                          Assets.icons.downloadSimple.svg(
-                            color: AppColors.primaryColorC79235,
+                          const Spacer(),
+                          GestureDetector(
+                            onTap: _downloadImage,
+                            child: Container(
+                              padding: EdgeInsets.all(4.r),
+                              decoration: BoxDecoration(
+                                color: AppColors.primaryColorC79235.withOpacity(0.2),
+                                borderRadius: BorderRadius.circular(4.r),
+                              ),
+                              child: _isDownloading
+                                  ? SpinKitCircle(
+                                      size: 16.sp,
+                                      color: AppColors.primaryColorC79235,
+                                    )
+                                  : Assets.icons.downloadSimple.svg(
+                                      color: AppColors.primaryColorC79235,
+                                    ),
+                            ),
                           )
                         ],
                       ),

@@ -15,6 +15,7 @@ import '../../core/helpers/download_helper.dart';
 import '../../core/helpers/toast_message_helper.dart';
 import '../../global/custom_assets/assets.gen.dart';
 import 'package:intl/intl.dart';
+import '../../../services/download_service.dart';
 
 class CustomAudioProgressBar extends StatefulWidget {
    CustomAudioProgressBar({super.key});
@@ -43,6 +44,59 @@ class _CustomAudioProgressBarState extends State<CustomAudioProgressBar> {
   final HomeController homeController = Get.put(HomeController());
   String? storyId;
 
+  // Method to download current media to gallery using DownloadService
+  Future<void> _downloadCurrentMediaForGallery() async {
+    try {
+      // Get the current story data to download
+      if (controllers.libraryStoryData.isNotEmpty) {
+        final currentStory = controllers.libraryStoryData.first;
+        final mediaUrl = currentStory.mediaUrl?.isNotEmpty == true 
+            ? currentStory.mediaUrl!.first 
+            : null;
+        
+        if (mediaUrl != null) {
+          // Show loading indicator
+          Get.snackbar(
+            "Downloading...",
+            "Please wait while we download your media",
+            snackPosition: SnackPosition.BOTTOM,
+          );
+
+          // Use DownloadService to download the media to gallery
+          bool success = await DownloadService().downloadMedia(
+            mediaUrl,
+            title: currentStory.caption ?? 'Media',
+            subtitle: currentStory.description ?? 'Downloaded from Klokkin App',
+            meta: currentStory.duration ?? 'Media',
+            hashtags: currentStory.tags?.toString() ?? '',
+          );
+
+          if (success) {
+            Get.snackbar(
+              "Success!",
+              "Media downloaded successfully to your gallery",
+              backgroundColor: Colors.green,
+              snackPosition: SnackPosition.BOTTOM,
+            );
+          } else {
+            Get.snackbar(
+              "Download Failed",
+              "Could not save media to device",
+              backgroundColor: Colors.red,
+              snackPosition: SnackPosition.BOTTOM,
+            );
+          }
+        }
+      }
+    } catch (e) {
+      Get.snackbar(
+        "Download Error",
+        e.toString(),
+        backgroundColor: Colors.red,
+        snackPosition: SnackPosition.BOTTOM,
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -397,7 +451,8 @@ class _CustomAudioProgressBarState extends State<CustomAudioProgressBar> {
               ),
               GestureDetector(
                 onTap: () {
-
+                  // Download the current media using DownloadService (for saving to gallery)
+                  _downloadCurrentMediaForGallery();
                 },
                 child: Assets.icons.downloadSimple.svg(
                     color: AppColors.primaryColorC79235,
