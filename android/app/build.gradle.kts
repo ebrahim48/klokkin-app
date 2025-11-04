@@ -1,3 +1,6 @@
+import java.util.Properties
+import java.io.FileInputStream
+
 plugins {
     id("com.android.application")
     id("kotlin-android")
@@ -6,9 +9,9 @@ plugins {
 }
 
 android {
-    namespace = "com.example.klokkin_app"
+    namespace = "com.atomictractorltd.klookin"
     compileSdk = flutter.compileSdkVersion
-    ndkVersion =  "26.1.10909125"
+    ndkVersion = "27.0.12077973"
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
@@ -21,7 +24,7 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.example.klokkin_app"
+        applicationId = "com.atomictractorltd.klookin"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = 23
@@ -30,11 +33,45 @@ android {
         versionName = flutter.versionName
     }
 
+    signingConfigs {
+        // Create a debug signing config that can be used as fallback
+        getByName("debug") {
+            storeFile = file("${project.rootDir}/debug.keystore")
+            storePassword = "android"
+            keyAlias = "androiddebugkey"
+            keyPassword = "android"
+        }
+        
+        // Check if key.properties exists and has valid keystore file
+        val keystorePropertiesFile = rootProject.file("key.properties")
+        if (keystorePropertiesFile.exists()) {
+            val keystoreProperties = Properties()
+            keystoreProperties.load(FileInputStream(keystorePropertiesFile))
+            val storeFileFromProperties = keystoreProperties.getProperty("storeFile")
+            
+            // Only create release signing config if keystore file exists
+            if (file(storeFileFromProperties).exists()) {
+                create("release") {
+                    storeFile = file(storeFileFromProperties)
+                    storePassword = keystoreProperties.getProperty("storePassword")
+                    keyAlias = keystoreProperties.getProperty("keyAlias")
+                    keyPassword = keystoreProperties.getProperty("keyPassword")
+                }
+            }
+        }
+    }
+
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig = signingConfigs.getByName("debug")
+            // Use release signing if available, otherwise use debug signing
+            if (signingConfigs.findByName("release") != null) {
+                signingConfig = signingConfigs.getByName("release")
+            } else {
+                signingConfig = signingConfigs.getByName("debug")
+            }
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
     }
 }

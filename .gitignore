@@ -46,3 +46,9 @@ app.*.map.json
 
 # FVM Version Cache
 .fvm/
+
+# Keystore and signing configuration
+key.properties
+key.properties.example
+*.keystore
+*.jks
