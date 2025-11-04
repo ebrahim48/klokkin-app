@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 // import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:get/get.dart';
 import 'package:klokkin_app/core/constants/app_colors.dart';
@@ -52,21 +53,21 @@ class _AboutScreenState extends State<AboutScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // HtmlWidget(
-                      //     profileController.about.value,
-                      //     textStyle: TextStyle(
-                      //       fontWeight: FontWeight.w400,
-                      //       color: AppColors.textColorFFFFFF,
-                      //       fontSize: 14.h,
-                      //     )),
-                    CustomText(
-                        textAlign: TextAlign.start,
-                        text: profileController.about.value,
-                        fontsize: 16.sp,
-                        fontWeight: FontWeight.w500,
-                        color: AppColors.textColorFFFFFF,
-                        maxline: 10,
-                      ),
+                      HtmlWidget(
+                          profileController.about.value,
+                          textStyle: TextStyle(
+                            fontWeight: FontWeight.w400,
+                            color: AppColors.textColorFFFFFF,
+                            fontSize: 14.h,
+                          )),
+                    // CustomText(
+                    //     textAlign: TextAlign.start,
+                    //     text: profileController.about.value,
+                    //     fontsize: 16.sp,
+                    //     fontWeight: FontWeight.w500,
+                    //     color: AppColors.textColorFFFFFF,
+                    //     maxline: 10,
+                    //   ),
                       SizedBox(height: 15.h),
                     ],
                   ),

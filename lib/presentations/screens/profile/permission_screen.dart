@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:get/get.dart';
 import 'package:klokkin_app/core/constants/app_colors.dart';
 import '../../../controllers/profile_controller.dart';
@@ -56,22 +57,22 @@ class _PermissionScreenState extends State<PermissionScreen> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // HtmlWidget(
-                      //     profileController.value.value,
-                      //     textStyle: TextStyle(
-                      //       fontWeight: FontWeight.w400,
-                      //       color: AppColors.textColorFFFFFF,
-                      //       fontSize: 14.h,
-                      //     )),
+                      HtmlWidget(
+                          profileController.value.value,
+                          textStyle: TextStyle(
+                            fontWeight: FontWeight.w400,
+                            color: AppColors.textColorFFFFFF,
+                            fontSize: 14.h,
+                          )),
 
-                      CustomText(
-                        textAlign: TextAlign.start,
-                        text: profileController.value.value,
-                        fontsize: 16.sp,
-                        fontWeight: FontWeight.w500,
-                        color: AppColors.textColorFFFFFF,
-                        maxline: 10,
-                      ),
+                      // CustomText(
+                      //   textAlign: TextAlign.start,
+                      //   text: profileController.value.value,
+                      //   fontsize: 16.sp,
+                      //   fontWeight: FontWeight.w500,
+                      //   color: AppColors.textColorFFFFFF,
+                      //   maxline: 10,
+                      // ),
 
 
                       SizedBox(height: 15.h),

@@ -1,4 +1,4 @@
-package com.example.klokkin_app
+package com.atomictractorltd.klookin
 
 import io.flutter.embedding.android.FlutterActivity
 
