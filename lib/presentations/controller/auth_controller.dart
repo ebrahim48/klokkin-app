@@ -277,7 +277,7 @@ class AuthController extends GetxController {
   }
 
 
-  ///===============Resend================<>
+
 
   ///===============Resend================<>
 
