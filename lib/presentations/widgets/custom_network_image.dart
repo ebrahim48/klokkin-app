@@ -12,6 +12,7 @@ class CustomNetworkImage extends StatelessWidget {
   final Color? backgroundColor;
   final Widget? child;
   final ColorFilter? colorFilter;
+  final BoxFit fit;
 
   const CustomNetworkImage({
     super.key,
@@ -24,10 +25,16 @@ class CustomNetworkImage extends StatelessWidget {
     this.border,
     this.borderRadius,
     this.boxShape = BoxShape.rectangle,
+    this.fit = BoxFit.cover,
   });
 
   @override
   Widget build(BuildContext context) {
+    // Validate URL
+    if (imageUrl.isEmpty || !Uri.tryParse(imageUrl)!.isAbsolute) {
+      return _buildErrorWidget();
+    }
+
     return CachedNetworkImage(
       imageUrl: imageUrl,
       imageBuilder: (context, imageProvider) => Container(
@@ -40,47 +47,76 @@ class CustomNetworkImage extends StatelessWidget {
           color: backgroundColor,
           image: DecorationImage(
             image: imageProvider,
-            fit: BoxFit.cover,
+            fit: fit,
             colorFilter: colorFilter,
           ),
         ),
         child: child,
       ),
-      placeholder: (context, url) => Shimmer.fromColors(
-        baseColor: Colors.grey.withOpacity(0.6),
-        highlightColor: Colors.grey.withOpacity(0.3),
-        child: Container(
-          height: height,
-          width: width,
-          decoration: BoxDecoration(
-            border: border,
-            color: Colors.grey.withOpacity(0.6),
-            borderRadius: borderRadius,
-            shape: boxShape,
-          ),
-        ),
-      ),
-      errorWidget: (context, url, error) => Container(
+      placeholder: (context, url) => Container(
         height: height,
         width: width,
         decoration: BoxDecoration(
           border: border,
-          color: Colors.grey.withOpacity(0.6),
           borderRadius: borderRadius,
           shape: boxShape,
         ),
-        child: const Icon(
-          Icons.broken_image,
-          color: Colors.grey,
+        child: Shimmer.fromColors(
+          baseColor: Colors.grey[800]!,
+          highlightColor: Colors.grey[600]!,
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: borderRadius,
+              shape: boxShape,
+            ),
+          ),
         ),
       ),
+      errorWidget: (context, url, error) => _buildErrorWidget(),
       errorListener: (error) {
-        // Log the error for debugging purposes
-        debugPrint('CachedNetworkImage error: $error');
+        debugPrint('CachedNetworkImage error for $imageUrl: $error');
       },
       httpHeaders: const {},
       maxHeightDiskCache: 1000,
       maxWidthDiskCache: 1000,
+      fadeInDuration: const Duration(milliseconds: 300),
+      fadeOutDuration: const Duration(milliseconds: 300),
+    );
+  }
+
+  Widget _buildErrorWidget() {
+    return Container(
+      height: height,
+      width: width,
+      decoration: BoxDecoration(
+        border: border,
+        color: Colors.grey[800],
+        borderRadius: borderRadius,
+        shape: boxShape,
+      ),
+      child: Center(
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.image,
+                color: Colors.grey[400],
+                size: 40,
+              ),
+              // const SizedBox(height: 8),
+              // Text(
+              //   'Image unavailable',
+              //   style: TextStyle(
+              //     color: Colors.grey[400],
+              //     fontSize: 12,
+              //   ),
+              // ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }
