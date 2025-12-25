@@ -318,9 +318,11 @@ class HomeController extends GetxController {
       updateProfileLoading(false);
       context.pop();
       update();
-    } else {
+    }
+
+    else {
       updateProfileLoading(false);
-      ToastMessageHelper.showToastMessage("Failed Update data.");
+      // ToastMessageHelper.showToastMessage("Failed Update data.");
     }
   }
 

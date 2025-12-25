@@ -58,7 +58,6 @@ class BookmarkInnovationCard extends StatelessWidget {
 
                   /// Bookmark Icon Top Right
                   Positioned(
-                    top: 8.h,
                     right: 6.w,
                     child: GestureDetector(
                       onTap: () {
@@ -66,8 +65,8 @@ class BookmarkInnovationCard extends StatelessWidget {
                         );
                       },
                       child: Assets.icons.bookmarkSimple.svg(
-                        width: 20.w,
-                        height: 20.h,
+                        width: 22.w,
+                        height: 22.h,
                         colorFilter: const ColorFilter.mode(
                           Color(0xFFC79235),
                           BlendMode.srcIn,

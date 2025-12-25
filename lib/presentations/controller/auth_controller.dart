@@ -176,7 +176,7 @@ class AuthController extends GetxController {
       var role = data['role'];
       print("========================================= role : $role");
 
-      if (role == "user") {
+      if (role == "user" || role == "admin") {
         await PrefsHelper.setBool(AppConstants.isLogged, true);
         context.go(AppRoutes.bottomNavbarScreen);
         ToastMessageHelper.showToastMessage(

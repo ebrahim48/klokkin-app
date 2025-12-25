@@ -18,7 +18,7 @@ class BookmarkFactoryCard extends StatefulWidget {
   final String imagePath;
   final VoidCallback? onTap;
 
-   BookmarkFactoryCard({
+   const BookmarkFactoryCard({
     super.key,
     required this.id,
     required this.title,
@@ -155,15 +155,14 @@ class _BookmarkFactoryCardState extends State<BookmarkFactoryCard> {
                       ),
                     ),
                     Positioned(
-                      top: 8.h,
-                      right: 6.w,
+                      right: 8.w,
                       child: GestureDetector(
                         onTap: () {
                           controller.bookMark(widget.id);
                         },
                         child: Assets.icons.bookmarkSimple.svg(
-                          width: 20.w,
-                          height: 20.h,
+                          width: 22.w,
+                          height: 22.h,
                           colorFilter: const ColorFilter.mode(
                             Color(0xFFC79235),
                             BlendMode.srcIn,

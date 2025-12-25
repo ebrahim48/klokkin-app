@@ -1,8 +1,8 @@
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-import 'package:klokkin_app/presentations/widgets/custom_app_bar.dart';
 import 'package:klokkin_app/presentations/widgets/custom_text.dart';
 import 'package:klokkin_app/services/download_service.dart';
 import 'package:toastification/toastification.dart';
@@ -10,11 +10,9 @@ import '../../../controllers/audio_book_controller.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../global/custom_assets/assets.gen.dart';
 import '../../widgets/custom_loader.dart';
-import '../../widgets/image_story_list_widget.dart';
 import '../../widgets/local_image_list_card.dart';
 import 'package:intl/intl.dart';
-
-
+import 'package:shimmer/shimmer.dart';
 
 class DownloadScreen extends StatefulWidget {
   const DownloadScreen({super.key});
@@ -24,7 +22,6 @@ class DownloadScreen extends StatefulWidget {
 }
 
 class _DownloadScreenState extends State<DownloadScreen> {
-
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final AudioBookController controller = Get.put(AudioBookController());
   final DownloadService _downloadService = DownloadService();
@@ -62,277 +59,173 @@ class _DownloadScreenState extends State<DownloadScreen> {
     }
   }
 
+  void _showCreateFolderDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          backgroundColor: AppColors.backgColor20272E,
+          title: CustomText(
+            text: 'Create Folder',
+            color: AppColors.textColorFFFFFF,
+            fontsize: 20.sp,
+          ),
+          content: TextField(
+            style: TextStyle(color: AppColors.textColorFFFFFF),
+            decoration: InputDecoration(
+              hintText: 'Enter folder name',
+              hintStyle: TextStyle(color: AppColors.textColor919191),
+              enabledBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: AppColors.primaryColorC79235),
+              ),
+              focusedBorder: UnderlineInputBorder(
+                borderSide: BorderSide(color: AppColors.primaryColorC79235),
+              ),
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text('Cancel', style: TextStyle(color: AppColors.textColor919191)),
+            ),
+            TextButton(
+              onPressed: () {
+                // TODO: Implement folder creation
+                Navigator.pop(context);
+                toastification.show(
+                  context: context,
+                  type: ToastificationType.success,
+                  title: const Text('Folder Created'),
+                  description: const Text('New folder has been created'),
+                );
+              },
+              child: Text('Create', style: TextStyle(color: AppColors.primaryColorC79235)),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
+      backgroundColor: AppColors.backgColor20272E,
       resizeToAvoidBottomInset: true,
-      appBar: const CustomAppBar(),
+      appBar: AppBar(
+        backgroundColor: AppColors.backgColor20272E,
+        elevation: 0,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back, color: AppColors.textColorFFFFFF),
+          onPressed: () => Navigator.pop(context),
+        ),
+      ),
       body: SafeArea(
         child: Obx(() {
-          // Show loader if both server data and device downloads are loading
-          bool isLoading = controller.getLibraryStoryLoading.value || _isDeviceDownloadsLoading;
-          if (isLoading && controller.libraryStoryData.isEmpty && _downloadedContents.isEmpty) {
-            return const Center(child: CustomLoader());
-          }
-
           return RefreshIndicator(
             onRefresh: () async {
-              controller.getLibraryStoryData();
-              _loadDeviceDownloads();
+              await controller.getLibraryStoryData();
+              await _loadDeviceDownloads();
             },
             child: SingleChildScrollView(
+              physics: const AlwaysScrollableScrollPhysics(),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  SizedBox(height: 10.h),
+                  /// Downloading Section Header
                   Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16.w),
+                    padding: EdgeInsets.symmetric(horizontal: 20.w),
                     child: Row(
                       children: [
-                        /// =====================================> Downloading =====================================>
                         CustomText(
                           text: 'Downloading',
                           color: AppColors.primaryColorC79235,
                           fontsize: 24.sp,
-                          fontWeight: FontWeight.w500,
+                          fontWeight: FontWeight.w600,
                         ),
                         const Spacer(),
-
-                        SizedBox(
-                          width: 35.w,
-                          child: Assets.icons.dot.svg(width: 22.w, height: 22.h),
+                        IconButton(
+                          onPressed: _showCreateFolderDialog,
+                          icon: Icon(
+                            Icons.more_vert,
+                            color: AppColors.textColorFFFFFF,
+                            size: 24.sp,
+                          ),
                         ),
                       ],
                     ),
                   ),
-                  SizedBox(height: 14.h),
+
+                  SizedBox(height: 8.h),
+
                   Padding(
-                    padding: EdgeInsets.only(left: 20.w, right: 15.w),
+                    padding: EdgeInsets.symmetric(horizontal: 20.w),
                     child: Divider(
                       color: AppColors.secondary836531,
-                      height: 0.4.h,
-                      thickness: 0.6,
+                      height: 1.h,
+                      thickness: 0.5,
                     ),
                   ),
 
-                  // Ongoing downloads section from server data
-                  if (controller.libraryStoryData.isNotEmpty)
-                    SizedBox(
-                      height: 400.h,
-                      child: ListView.separated(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(), // Disable scrolling for this inner list
-                        padding: EdgeInsets.symmetric(horizontal: 20.w),
-                        itemCount: controller.libraryStoryData.length,
-                        separatorBuilder: (context, index) => SizedBox(height: 12.h),
-                        itemBuilder: (context, index) {
-                          final downloadData = controller.libraryStoryData[index];
-                          final createdAt = downloadData.createdAt;
-                          String formattedDate = 'N/A';
+                  SizedBox(height: 16.h),
 
-                          if (createdAt != null && createdAt is String) {
-                            final parsed = DateTime.tryParse(createdAt as String);
-                            if (parsed != null) {
-                              formattedDate = DateFormat("MMM d, yyyy • h:mm a").format(parsed);
-                            }
-                          }
-                          return ImageListCard(
-                            title: downloadData.caption ?? 'N/A',
-                            subtitle: downloadData.description ?? 'N/A',
-                            meta: formattedDate,
-                            hashtags: (downloadData.tags is List)
-                                ? (downloadData.tags as List).join(", ")
-                                : (downloadData.tags?.toString() ?? 'N/A'),
-                            imagePath: downloadData.mediaUrl != null && downloadData.mediaUrl!.isNotEmpty
-                                ? downloadData.mediaUrl!.first
-                                : "https://templates.joomla-monster.com/joomla30/jm-news-portal/components/com_djclassifieds/assets/images/default_profile.png",
-                            onTap: () async {
-                              // When tapping the card, also trigger download
-                              try {
-                                final downloadService = DownloadService();
-                                bool success = await downloadService.downloadImage(
-                                  downloadData.mediaUrl != null && downloadData.mediaUrl!.isNotEmpty
-                                      ? downloadData.mediaUrl!.first
-                                      : "https://templates.joomla-monster.com/joomla30/jm-news-portal/components/com_djclassifieds/assets/images/default_profile.png",
-                                  title: downloadData.caption ?? 'N/A',
-                                  subtitle: downloadData.description ?? 'N/A',
-                                  meta: formattedDate,
-                                  hashtags: (downloadData.tags is List)
-                                      ? (downloadData.tags as List).join(", ")
-                                      : (downloadData.tags?.toString() ?? 'N/A'),
-                                );
-                                
-                                if (success) {
-                                  toastification.show(
-                                    context: context,
-                                    type: ToastificationType.success,
-                                    title: const Text('Download Complete'),
-                                    description: const Text('Content has been saved to your device'),
-                                  );
-                                  // Refresh the downloads list
-                                  _loadDeviceDownloads();
-                                } else {
-                                  toastification.show(
-                                    context: context,
-                                    type: ToastificationType.error,
-                                    title: const Text('Download Failed'),
-                                    description: const Text('Could not save content to device'),
-                                  );
-                                }
-                              } catch (e) {
-                                toastification.show(
-                                  context: context,
-                                  type: ToastificationType.error,
-                                  title: const Text('Download Error'),
-                                  description: Text('Error: $e'),
-                                );
-                              }
-                            },
-                          );
-                        },
-                      ),
-                    )
+                  /// Downloading List
+                  if (controller.getLibraryStoryLoading.value)
+                    _buildShimmerList()
+                  else if (controller.libraryStoryData.isNotEmpty)
+                    _buildDownloadingList()
                   else
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
-                      child: CustomText(
-                        text: 'No ongoing downloads',
-                        color: AppColors.textColor919191,
-                        fontsize: 16.sp,
-                      ),
-                    ),
+                    _buildEmptyState('No ongoing downloads'),
 
-                  SizedBox(height: 20.h),
+                  SizedBox(height: 24.h),
+
+                  /// My Downloads Section Header
                   Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16.w),
+                    padding: EdgeInsets.symmetric(horizontal: 20.w),
                     child: Row(
                       children: [
-                        /// =====================================> My Downloads =====================================>
                         CustomText(
                           text: 'My Downloads',
                           color: AppColors.primaryColorC79235,
                           fontsize: 24.sp,
-                          fontWeight: FontWeight.w500,
+                          fontWeight: FontWeight.w600,
                         ),
                         const Spacer(),
-
-                        SizedBox(
-                          width: 35.w,
-                          child: Assets.icons.dot.svg(width: 22.w, height: 22.h),
+                        IconButton(
+                          onPressed: _showCreateFolderDialog,
+                          icon: Icon(
+                            Icons.more_vert,
+                            color: AppColors.textColorFFFFFF,
+                            size: 24.sp,
+                          ),
                         ),
                       ],
                     ),
                   ),
 
+                  SizedBox(height: 8.h),
+
                   Padding(
-                    padding: EdgeInsets.only(left: 20.w, right: 15.w),
+                    padding: EdgeInsets.symmetric(horizontal: 20.w),
                     child: Divider(
                       color: AppColors.secondary836531,
-                      height: 0.4.h,
-                      thickness: 0.6,
+                      height: 1.h,
+                      thickness: 0.5,
                     ),
                   ),
 
-                  SizedBox(height: 11.h),
+                  SizedBox(height: 16.h),
 
-                  // Actual downloaded content from device storage
-                  if (!_isDeviceDownloadsLoading && _downloadedContents.isNotEmpty)
-                    SizedBox(
-                      height: 400.h,
-                      child: ListView.separated(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(), // Disable scrolling for this inner list
-                        padding: EdgeInsets.symmetric(horizontal: 20.w),
-                        itemCount: _downloadedContents.length,
-                        separatorBuilder: (context, index) => SizedBox(height: 12.h),
-                        itemBuilder: (context, index) {
-                          final content = _downloadedContents[index];
-                          return LocalImageListCard(
-                            title: content.title,
-                            subtitle: content.subtitle,
-                            meta: content.meta,
-                            hashtags: content.hashtags,
-                            imagePath: content.filePath, // Use file path from content
-                            isLocalFile: true, // Indicate this is a local file
-                            onTap: () {
-                              // Option to view the downloaded image
-                            },
-                            onDelete: () async {
-                              bool? confirm = await showDialog<bool>(
-                                context: context,
-                                builder: (BuildContext context) {
-                                  return AlertDialog(
-                                    backgroundColor: AppColors.backgColor20272E,
-                                    title:  CustomText(text: 'Delete Download',color: AppColors.textColorFFFFFF,fontsize: 24.sp,),
-                                    content: CustomText(
-                                        text: 'Are you sure you want to delete "${content.title}"?',
-                                      color: AppColors.textColorFFFFFF,
-                                    ),
-                                    actions: [
-                                      TextButton(
-                                        onPressed: () => Navigator.of(context).pop(false),
-                                        child: const Text('Cancel'),
-                                      ),
-                                      TextButton(
-                                        onPressed: () => Navigator.of(context).pop(true),
-                                        child: const Text('Delete'),
-                                      ),
-                                    ],
-                                  );
-                                },
-                              );
-
-                              if (confirm == true) {
-                                try {
-                                  bool success = await _downloadService.deleteDownloadedContentByObject(content);
-                                  if (success) {
-                                    toastification.show(
-                                      context: context,
-                                      type: ToastificationType.success,
-                                      title: const Text('File Deleted'),
-                                      description: const Text('The downloaded file has been successfully deleted'),
-                                    );
-                                    _loadDeviceDownloads(); // Refresh the list
-                                  } else {
-                                    toastification.show(
-                                      context: context,
-                                      type: ToastificationType.error,
-                                      title: const Text('Delete Failed'),
-                                      description: const Text('Could not delete the file'),
-                                    );
-                                  }
-                                } catch (e) {
-                                  toastification.show(
-                                    context: context,
-                                    type: ToastificationType.error,
-                                    title: const Text('Delete Error'),
-                                    description: Text('Error: $e'),
-                                  );
-                                }
-                              }
-                            },
-                          );
-                        },
-                      ),
-                    )
-                  else if (_isDeviceDownloadsLoading)
-                    // Show loading indicator for device downloads
-                    Container(
-                      height: 400.h,
-                      child: const Center(child: CustomLoader()),
-                    )
+                  /// My Downloads List
+                  if (_isDeviceDownloadsLoading)
+                    _buildShimmerList()
+                  else if (_downloadedContents.isNotEmpty)
+                    _buildMyDownloadsList()
                   else
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
-                      child: CustomText(
-                        text: 'No downloaded files yet',
-                        color: AppColors.textColor919191,
-                        fontsize: 16.sp,
-                      ),
-                    ),
+                    _buildEmptyState('No downloaded files yet'),
 
-                  SizedBox(height: 10.h),
+                  SizedBox(height: 24.h),
                 ],
               ),
             ),
@@ -342,13 +235,499 @@ class _DownloadScreenState extends State<DownloadScreen> {
     );
   }
 
-  String _formatFileSize(int bytes) {
-    if (bytes < 1024) return '${bytes} B';
-    if (bytes < 1024 * 1024) return '${(bytes / 1024).round()} KB';
-    if (bytes < 1024 * 1024 * 1024) return '${(bytes / (1024 * 1024)).round()} MB';
-    return '${(bytes / (1024 * 1024 * 1024)).round()} GB';
+  /// Build Downloading List
+  Widget _buildDownloadingList() {
+    return ListView.separated(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      padding: EdgeInsets.symmetric(horizontal: 20.w),
+      itemCount: controller.libraryStoryData.length,
+      separatorBuilder: (context, index) => SizedBox(height: 16.h),
+      itemBuilder: (context, index) {
+        final downloadData = controller.libraryStoryData[index];
+        final createdAt = downloadData.createdAt;
+        String formattedDate = 'N/A';
+
+        if (createdAt != null) {
+          formattedDate = DateFormat("h:mm a • d MMM").format(createdAt);
+        }
+
+        // For video: use thumbnail, for image: use mediaUrl
+        final isVideo = downloadData.type == 'video';
+        final displayUrl = isVideo
+            ? (downloadData.thumbnail ?? "https://via.placeholder.com/150")
+            : (downloadData.mediaUrl != null && downloadData.mediaUrl!.isNotEmpty
+            ? downloadData.mediaUrl!.first
+            : "https://via.placeholder.com/150");
+
+        // Download URL should be mediaUrl for both
+        final downloadUrl = downloadData.mediaUrl != null && downloadData.mediaUrl!.isNotEmpty
+            ? downloadData.mediaUrl!.first
+            : "";
+
+        return _buildMediaCard(
+          imageUrl: displayUrl,
+          title: downloadData.caption ?? 'Untitled',
+          subtitle: downloadData.description ?? 'No description',
+          meta: formattedDate,
+          hashtags: (downloadData.tags is List)
+              ? (downloadData.tags as List).join(" ")
+              : (downloadData.tags?.toString() ?? ''),
+          isVideo: isVideo,
+          onDownload: () async {
+            try {
+              bool success = await _downloadService.downloadMedia(
+                downloadUrl,
+                title: downloadData.caption ?? 'Untitled',
+                subtitle: downloadData.description ?? '',
+                meta: formattedDate,
+                hashtags: (downloadData.tags is List)
+                    ? (downloadData.tags as List).join(" ")
+                    : '',
+              );
+
+              if (success && mounted) {
+                toastification.show(
+                  context: context,
+                  type: ToastificationType.success,
+                  title: const Text('Download Complete'),
+                  description: const Text('Content saved to device'),
+                );
+                _loadDeviceDownloads();
+              }
+            } catch (e) {
+              if (mounted) {
+                toastification.show(
+                  context: context,
+                  type: ToastificationType.error,
+                  title: const Text('Download Failed'),
+                  description: Text('Error: $e'),
+                );
+              }
+            }
+          },
+        );
+      },
+    );
+  }
+
+  /// Build My Downloads List
+  Widget _buildMyDownloadsList() {
+    return ListView.separated(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      padding: EdgeInsets.symmetric(horizontal: 20.w),
+      itemCount: _downloadedContents.length,
+      separatorBuilder: (context, index) => SizedBox(height: 16.h),
+      itemBuilder: (context, index) {
+        final content = _downloadedContents[index];
+
+        // Check if it's a video file
+        final isVideo = content.filePath.toLowerCase().endsWith('.mp4') ||
+            content.filePath.toLowerCase().endsWith('.mov') ||
+            content.filePath.toLowerCase().endsWith('.avi') ||
+            content.filePath.toLowerCase().endsWith('.mkv') ||
+            content.filePath.toLowerCase().endsWith('.m3u8');
+
+        return _buildDownloadedMediaCard(
+          filePath: content.filePath,
+          title: content.title,
+          subtitle: content.subtitle,
+          meta: content.meta,
+          hashtags: content.hashtags,
+          isVideo: isVideo,
+          onDelete: () async {
+            bool? confirm = await showDialog<bool>(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  backgroundColor: AppColors.backgColor20272E,
+                  title: CustomText(
+                    text: 'Delete Download',
+                    color: AppColors.textColorFFFFFF,
+                    fontsize: 20.sp,
+                  ),
+                  content: CustomText(
+                    text: 'Delete "${content.title}"?',
+                    color: AppColors.textColorFFFFFF,
+                  ),
+                  actions: [
+                    TextButton(
+                      onPressed: () => Navigator.pop(context, false),
+                      child: Text('Cancel',
+                          style: TextStyle(color: AppColors.textColor919191)),
+                    ),
+                    TextButton(
+                      onPressed: () => Navigator.pop(context, true),
+                      child: Text('Delete',
+                          style: TextStyle(color: Colors.red)),
+                    ),
+                  ],
+                );
+              },
+            );
+
+            if (confirm == true) {
+              try {
+                bool success = await _downloadService.deleteDownloadedContentByObject(content);
+                if (success && mounted) {
+                  toastification.show(
+                    context: context,
+                    type: ToastificationType.success,
+                    title: const Text('Deleted'),
+                    description: const Text('File deleted successfully'),
+                  );
+                  _loadDeviceDownloads();
+                }
+              } catch (e) {
+                if (mounted) {
+                  toastification.show(
+                    context: context,
+                    type: ToastificationType.error,
+                    title: const Text('Delete Failed'),
+                    description: Text('Error: $e'),
+                  );
+                }
+              }
+            }
+          },
+        );
+      },
+    );
+  }
+
+  /// Build Media Card
+  Widget _buildMediaCard({
+    required String imageUrl,
+    required String title,
+    required String subtitle,
+    required String meta,
+    required String hashtags,
+    required VoidCallback onDownload,
+    bool isVideo = false,
+  }) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        /// Image/Thumbnail with Video Indicator
+        Stack(
+          children: [
+            Container(
+              width: 82.w,
+              height: 82.w,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(8.r),
+                color: AppColors.textColor919191.withOpacity(0.2),
+              ),
+              clipBehavior: Clip.hardEdge,
+              child: Image.network(
+                imageUrl,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  return Icon(
+                    Icons.broken_image,
+                    color: AppColors.textColor919191,
+                    size: 32.sp,
+                  );
+                },
+              ),
+            ),
+
+            // Video play icon overlay
+            if (isVideo)
+              Positioned.fill(
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8.r),
+                    color: Colors.black.withOpacity(0.3),
+                  ),
+                  child: Center(
+                    child: Icon(
+                      Icons.play_circle_outline,
+                      color: Colors.white,
+                      size: 32.sp,
+                    ),
+                  ),
+                ),
+              ),
+          ],
+        ),
+
+        SizedBox(width: 12.w),
+
+        /// Content
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              /// Title
+              CustomText(
+                text: title,
+                color: AppColors.textColorFFFFFF,
+                fontsize: 16.sp,
+                fontWeight: FontWeight.w500,
+                maxline: 2,
+              ),
+
+              SizedBox(height: 4.h),
+
+              /// Subtitle
+              CustomText(
+                text: subtitle,
+                color: AppColors.textColor919191,
+                fontsize: 13.sp,
+                maxline: 2,
+              ),
+
+              SizedBox(height: 8.h),
+
+              /// Meta and Download Button
+              Row(
+                children: [
+                  CustomText(
+                    text: meta,
+                    color: AppColors.textColor8C8C8C,
+                    fontsize: 12.sp,
+                  ),
+                  const Spacer(),
+                  GestureDetector(
+                    onTap: onDownload,
+                    child: Container(
+                      padding: EdgeInsets.all(6.r),
+                      decoration: BoxDecoration(
+                        color: AppColors.primaryColorC79235.withOpacity(0.15),
+                        borderRadius: BorderRadius.circular(4.r),
+                      ),
+                      child: Icon(
+                        Icons.download,
+                        color: AppColors.primaryColorC79235,
+                        size: 18.sp,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+
+              SizedBox(height: 4.h),
+
+              /// Hashtags
+              if (hashtags.isNotEmpty)
+                CustomText(
+                  text: hashtags,
+                  color: AppColors.textColor2165DF,
+                  fontsize: 12.sp,
+                  maxline: 1,
+                ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+
+  /// Build Shimmer Loading
+  Widget _buildShimmerList() {
+    return ListView.separated(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      padding: EdgeInsets.symmetric(horizontal: 20.w),
+      itemCount: 3,
+      separatorBuilder: (context, index) => SizedBox(height: 16.h),
+      itemBuilder: (context, index) {
+        return Shimmer.fromColors(
+          baseColor: AppColors.textColor919191.withOpacity(0.2),
+          highlightColor: AppColors.textColor919191.withOpacity(0.1),
+          child: Row(
+            children: [
+              Container(
+                width: 82.w,
+                height: 82.w,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(8.r),
+                ),
+              ),
+              SizedBox(width: 12.w),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      height: 16.h,
+                      width: double.infinity,
+                      color: Colors.white,
+                    ),
+                    SizedBox(height: 8.h),
+                    Container(
+                      height: 14.h,
+                      width: 200.w,
+                      color: Colors.white,
+                    ),
+                    SizedBox(height: 8.h),
+                    Container(
+                      height: 12.h,
+                      width: 100.w,
+                      color: Colors.white,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  /// Build Empty State
+  Widget _buildEmptyState(String message) {
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 40.h),
+      child: Center(
+        child: CustomText(
+          text: message,
+          color: AppColors.textColor919191,
+          fontsize: 16.sp,
+        ),
+      ),
+    );
+  }
+
+  /// Build Downloaded Media Card (for My Downloads section)
+  Widget _buildDownloadedMediaCard({
+    required String filePath,
+    required String title,
+    required String subtitle,
+    required String meta,
+    required String hashtags,
+    required bool isVideo,
+    required VoidCallback onDelete,
+  }) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        /// Media Preview with Video Indicator
+        Stack(
+          children: [
+            Container(
+              width: 82.w,
+              height: 82.w,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(8.r),
+                color: AppColors.textColor919191.withOpacity(0.2),
+              ),
+              clipBehavior: Clip.hardEdge,
+              child: isVideo
+                  ? Container(
+                color: Colors.black,
+                child: Icon(
+                  Icons.videocam,
+                  color: AppColors.textColor919191,
+                  size: 32.sp,
+                ),
+              )
+                  : Image.file(
+                File(filePath),
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  return Icon(
+                    Icons.image,
+                    color: AppColors.textColor919191,
+                    size: 32.sp,
+                  );
+                },
+              ),
+            ),
+
+            // Video play icon overlay
+            if (isVideo)
+              Positioned.fill(
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8.r),
+                    color: Colors.black.withOpacity(0.3),
+                  ),
+                  child: Center(
+                    child: Icon(
+                      Icons.play_circle_filled,
+                      color: Colors.white,
+                      size: 32.sp,
+                    ),
+                  ),
+                ),
+              ),
+          ],
+        ),
+
+        SizedBox(width: 12.w),
+
+        /// Content
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              /// Title
+              CustomText(
+                text: title,
+                color: AppColors.textColorFFFFFF,
+                fontsize: 16.sp,
+                fontWeight: FontWeight.w500,
+                maxline: 2,
+              ),
+
+              SizedBox(height: 4.h),
+
+              /// Subtitle
+              CustomText(
+                text: subtitle,
+                color: AppColors.textColor919191,
+                fontsize: 13.sp,
+                maxline: 2,
+              ),
+
+              SizedBox(height: 8.h),
+
+              /// Meta and Delete Button
+              Row(
+                children: [
+                  CustomText(
+                    text: meta,
+                    color: AppColors.textColor8C8C8C,
+                    fontsize: 12.sp,
+                  ),
+                  const Spacer(),
+                  GestureDetector(
+                    onTap: onDelete,
+                    child: Container(
+                      padding: EdgeInsets.all(6.r),
+                      decoration: BoxDecoration(
+                        color: Colors.red.withOpacity(0.15),
+                        borderRadius: BorderRadius.circular(4.r),
+                      ),
+                      child: Icon(
+                        Icons.delete_outline,
+                        color: Colors.red,
+                        size: 18.sp,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+
+              SizedBox(height: 4.h),
+
+              /// Hashtags
+              if (hashtags.isNotEmpty)
+                CustomText(
+                  text: hashtags,
+                  color: AppColors.textColor2165DF,
+                  fontsize: 12.sp,
+                  maxline: 1,
+                ),
+            ],
+          ),
+        ),
+      ],
+    );
   }
 }
-
-
-
