@@ -74,8 +74,8 @@ class _StoryAudioScreenState extends State<StoryAudioScreen> {
               SizedBox(height: 35.h),
               /// ==============================> progress ===================================>
 
-              Padding(
-                padding: const EdgeInsets.only(left: 20,right: 20),
+              const Padding(
+                padding: EdgeInsets.only(left: 20,right: 20),
                 child: CustomAudioProgressBar(),
               ),
 

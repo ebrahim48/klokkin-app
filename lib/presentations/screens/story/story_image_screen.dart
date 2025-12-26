@@ -37,6 +37,8 @@ class _StoryImageScreenState extends State<StoryImageScreen> {
 
 
 
+  /// In StoryImageScreen, filter only image type stories:
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -45,15 +47,20 @@ class _StoryImageScreenState extends State<StoryImageScreen> {
       resizeToAvoidBottomInset: true,
       appBar: const CustomAppBar(),
       body: SafeArea(
-        child: Obx((){
+        child: Obx(() {
           if (controller.getLibraryStoryLoading.value) {
             return const Center(child: CustomLoader());
           }
 
-          if (controller.libraryStoryData.isEmpty) {
+          // Filter only image type stories
+          final imageStories = controller.libraryStoryData
+              .where((story) => story.type?.toLowerCase() == 'image')
+              .toList();
+
+          if (imageStories.isEmpty) {
             return Center(
               child: CustomText(
-                text: "Data Unavailable",
+                text: "No Image Stories Available",
                 textAlign: TextAlign.center,
                 color: AppColors.textColorC2C2C2,
               ),
@@ -64,36 +71,35 @@ class _StoryImageScreenState extends State<StoryImageScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-
+                /// Top Horizontal List
                 SizedBox(
                   height: 250.h,
                   child: ListView.separated(
                     scrollDirection: Axis.horizontal,
                     padding: EdgeInsets.symmetric(horizontal: 20.w),
-                    itemCount: controller.libraryStoryData.length,
+                    itemCount: imageStories.length,
                     separatorBuilder: (context, index) => SizedBox(width: 12.w),
                     itemBuilder: (context, index) {
-                      final libraryData = controller.libraryStoryData[index];
+                      final libraryData = imageStories[index];
                       return ImageStoryCard(
                         title: libraryData.caption ?? 'N/A',
                         caption: libraryData.description ?? 'N/A',
                         imagePath: libraryData.mediaUrl != null && libraryData.mediaUrl!.isNotEmpty
                             ? libraryData.mediaUrl!.first
                             : "https://templates.joomla-monster.com/joomla30/jm-news-portal/components/com_djclassifieds/assets/images/default_profile.png",
-                        timestamp: libraryData.duration ?? 'N/A',
+                        createdAt: libraryData.createdAt,
+                        duration: libraryData.duration,
                         onTap: () {
                           context.pushNamed(
-                              AppRoutes.storyImageDetailsScreen,
-                              extra: {
-                                "id": libraryData.id ?? "",
-                                "caption": libraryData.caption ??"",
-                                "description": libraryData.description ??"",
-                                "imagePath": libraryData.mediaUrl != null && libraryData.mediaUrl!.isNotEmpty
-                                    ? libraryData.mediaUrl!.first
-                                    : "https://templates.joomla-monster.com/joomla30/jm-news-portal/components/com_djclassifieds/assets/images/default_profile.png" ??"",
-
-
-                              }
+                            AppRoutes.storyImageDetailsScreen,
+                            extra: {
+                              "id": libraryData.id ?? "",
+                              "caption": libraryData.caption ?? "",
+                              "description": libraryData.description ?? "",
+                              "imagePath": libraryData.mediaUrl != null && libraryData.mediaUrl!.isNotEmpty
+                                  ? libraryData.mediaUrl!.first
+                                  : "https://templates.joomla-monster.com/joomla30/jm-news-portal/components/com_djclassifieds/assets/images/default_profile.png",
+                            },
                           );
                         },
                       );
@@ -102,7 +108,7 @@ class _StoryImageScreenState extends State<StoryImageScreen> {
                 ),
 
                 Padding(
-                  padding:  EdgeInsets.only(left: 20.w,right: 15.h),
+                  padding: EdgeInsets.only(left: 20.w, right: 15.h),
                   child: Divider(
                     color: AppColors.secondary836531,
                     height: 0.4.h,
@@ -112,18 +118,20 @@ class _StoryImageScreenState extends State<StoryImageScreen> {
 
                 SizedBox(height: 16.h),
 
+                /// Bottom Vertical List
                 SizedBox(
                   height: 400.h,
                   child: ListView.separated(
                     padding: EdgeInsets.symmetric(horizontal: 20.w),
-                    itemCount: controller.libraryStoryData.length,
+                    itemCount: imageStories.length,
                     separatorBuilder: (context, index) => SizedBox(height: 12.h),
                     itemBuilder: (context, index) {
-                      final libraryData = controller.libraryStoryData[index];
+                      final libraryData = imageStories[index];
                       return ImageListCard(
-                        title:  libraryData.caption ?? 'N/A',
-                        subtitle:  libraryData.description ?? 'N/A',
-                        meta: libraryData.duration ?? 'N/A',
+                        title: libraryData.caption ?? 'N/A',
+                        subtitle: libraryData.description ?? 'N/A',
+                        createdAt: libraryData.createdAt,
+                        duration: libraryData.duration,
                         hashtags: (libraryData.tags is List)
                             ? (libraryData.tags as List).join(", ")
                             : (libraryData.tags?.toString() ?? 'N/A'),
@@ -131,21 +139,28 @@ class _StoryImageScreenState extends State<StoryImageScreen> {
                             ? libraryData.mediaUrl!.first
                             : "https://templates.joomla-monster.com/joomla30/jm-news-portal/components/com_djclassifieds/assets/images/default_profile.png",
                         onTap: () {
-
+                          context.pushNamed(
+                            AppRoutes.storyImageDetailsScreen,
+                            extra: {
+                              "id": libraryData.id ?? "",
+                              "caption": libraryData.caption ?? "",
+                              "description": libraryData.description ?? "",
+                              "imagePath": libraryData.mediaUrl != null && libraryData.mediaUrl!.isNotEmpty
+                                  ? libraryData.mediaUrl!.first
+                                  : "https://templates.joomla-monster.com/joomla30/jm-news-portal/components/com_djclassifieds/assets/images/default_profile.png",
+                            },
+                          );
                         },
                       );
                     },
                   ),
                 ),
 
-
                 SizedBox(height: 10.h),
               ],
             ),
           );
-        }
-
-        ),
+        }),
       ),
     );
   }

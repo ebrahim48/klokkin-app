@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:klokkin_app/core/constants/app_colors.dart';
 import 'package:klokkin_app/presentations/widgets/custom_text.dart';
-
 import 'custom_network_image.dart';
 
 class AudioBookCard extends StatelessWidget {
@@ -10,7 +9,9 @@ class AudioBookCard extends StatelessWidget {
   final String subtitle;
   final String imagePath;
   final bool isPlaying;
+  final String? currentTime; // New: current playing time
   final VoidCallback? onTap;
+  final VoidCallback? onPlayPause;
 
   const AudioBookCard({
     super.key,
@@ -18,7 +19,9 @@ class AudioBookCard extends StatelessWidget {
     required this.subtitle,
     required this.imagePath,
     this.isPlaying = false,
+    this.currentTime,
     this.onTap,
+    this.onPlayPause,
   });
 
   @override
@@ -33,12 +36,12 @@ class AudioBookCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(12.r),
         ),
         padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
-        child: SingleChildScrollView(
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              /// ===============  Title  Subtitle ====================
-              Row(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            /// ===============  Title  Subtitle ====================
+            Expanded(
+              child: Row(
                 children: [
                   /// Circle Image
                   ClipRRect(
@@ -53,38 +56,45 @@ class AudioBookCard extends StatelessWidget {
                   SizedBox(width: 12.w),
 
                   /// Title + Subtitle
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      CustomText(
-                        text: title,
-                        color: AppColors.textColorFFFFFF,
-                        fontsize: 12.sp,
-                        fontWeight: FontWeight.w600,
-                        textOverflow: TextOverflow.ellipsis,
-                        maxline: 2,
-                      ),
-                      SizedBox(height: 4.h),
-                      CustomText(
-                        text: subtitle,
-                        color: AppColors.textColor8C8C8C,
-                        fontsize: 14.sp,
-                        fontWeight: FontWeight.w400,
-                      ),
-                    ],
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        CustomText(
+                          text: title,
+                          color: AppColors.textColorFFFFFF,
+                          fontsize: 12.sp,
+                          fontWeight: FontWeight.w600,
+                          textOverflow: TextOverflow.ellipsis,
+                          maxline: 2,
+                        ),
+                        SizedBox(height: 4.h),
+                        CustomText(
+                          text: currentTime ?? subtitle, // Show current time if playing
+                          color: isPlaying
+                              ? AppColors.primaryColorC79235
+                              : AppColors.textColor8C8C8C,
+                          fontsize: 14.sp,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ],
+                    ),
                   ),
                 ],
               ),
+            ),
 
-              /// ==== Right Side (Play / Pause Button) ====
-              Icon(
-                isPlaying ? Icons.pause_circle_filled : Icons.play_circle_fill,
+            /// ==== Right Side (Play / Pause Button) ====
+            GestureDetector(
+              onTap: onPlayPause,
+              child: Icon(
+                isPlaying ? Icons.pause_circle : Icons.play_circle,
                 size: 28.sp,
                 color: AppColors.primaryColorC79235,
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

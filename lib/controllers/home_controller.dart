@@ -214,8 +214,13 @@ class HomeController extends GetxController {
   RxBool getStorySingleLoading = false.obs;
   Rx<StorySingleModel> storySingle = StorySingleModel().obs;
   getStorySingle({String? id})async{
+    if (id == null || id.isEmpty) {
+      getStorySingleLoading(false);
+      return;
+    }
+
     getStorySingleLoading(true);
-    var response = await ApiClient.getData(ApiConstants.getStorySingleEndPoint(id!));
+    var response = await ApiClient.getData(ApiConstants.getStorySingleEndPoint(id));
     if(response.statusCode == 200){
       storySingle.value = StorySingleModel.fromJson(response.body['data']['attributes']);
       update();

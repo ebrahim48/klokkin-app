@@ -37,6 +37,7 @@ import '../../../presentations/screens/profile/question_help_screen.dart';
 import '../../../presentations/screens/splash/splash_screen.dart';
 import '../../../presentations/screens/story/story_audio_book_screen.dart';
 import '../../../presentations/screens/story/story_audio_screen.dart';
+import '../../../presentations/screens/story/story_edit_screen.dart';
 import '../../../presentations/screens/story/story_image_details_screen.dart';
 import '../../../presentations/screens/story/story_image_screen.dart';
 import '../../../presentations/screens/story/story_screen.dart';
@@ -72,6 +73,7 @@ class AppRoutes {
   static const String storyScreen = "/storyScreen";
   static const String createPostStoryScreen = "/createPostStoryScreen";
   static const String storyAudioScreen = "/storyAudioScreen";
+  static const String storyEditScreen = '/story-edit';
   static const String storyAudioBookScreen = "/storyAudioBookScreen";
   static const String storyImageScreen = "/storyImageScreen";
   static const String storyImageDetailsScreen = "/storyImageDetailsScreen";
@@ -327,6 +329,13 @@ class AppRoutes {
             (context, state) =>
                 _customTransitionPage(StoryAudioScreen(), state),
       ),
+
+      GoRoute(
+        path: AppRoutes.storyEditScreen,
+        name: AppRoutes.storyEditScreen,
+        builder: (context, state) =>  StoryEditScreen(),
+      ),
+
       //<<<=============>>>  Story Audio Book Screen  <<<===============>>>
       GoRoute(
         path: storyAudioBookScreen,
