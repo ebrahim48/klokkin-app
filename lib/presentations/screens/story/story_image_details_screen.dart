@@ -15,7 +15,7 @@ import '../../widgets/custom_network_image.dart';
 
 
 class StoryImageDetailsScreen extends StatefulWidget {
-  StoryImageDetailsScreen({super.key});
+  const StoryImageDetailsScreen({super.key});
 
   @override
   State<StoryImageDetailsScreen> createState() => _StoryImageDetailsScreenState();
@@ -176,9 +176,10 @@ class _StoryImageDetailsScreenState extends State<StoryImageDetailsScreen> {
                           SizedBox(width: 10.w),
                           GestureDetector(
                             onTap: () {
-                              
+                              _showDeleteConfirmation(context, storyId);
                             },
-                              child: Assets.icons.deleteimage.svg())
+                            child: Assets.icons.deleteimage.svg(),
+                          ),
                         ],
                       ),
                       CustomText(
@@ -214,7 +215,7 @@ class _StoryImageDetailsScreenState extends State<StoryImageDetailsScreen> {
 
               SizedBox(height: 16.h),
               /// ============================================ line ====================================>
-              CustomImageDetailsProgressBar(),
+              const CustomImageDetailsProgressBar(),
 
 
 
@@ -231,7 +232,153 @@ class _StoryImageDetailsScreenState extends State<StoryImageDetailsScreen> {
     );
   }
 
+  void _showDeleteConfirmation(BuildContext context, String storyId) {
+    if (storyId.isEmpty) {
+      Get.snackbar(
+        "Error",
+        "Story ID not found",
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
+      return;
+    }
 
+    showDialog(
+      context: context,
+      barrierColor: Colors.black.withOpacity(0.7),
+      builder: (BuildContext dialogContext) {
+        return AlertDialog(
+          backgroundColor: AppColors.backgColor20272E,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20.r),
+          ),
+          title: CustomText(
+            text: "Delete Story",
+            color: AppColors.textColorFFFFFF,
+            fontsize: 20.sp,
+            fontWeight: FontWeight.w600,
+            textAlign: TextAlign.center,
+          ),
+          content: CustomText(
+            text: "Are you sure you want to delete this story?",
+            color: AppColors.textColorC2C2C2,
+            fontsize: 16.sp,
+            fontWeight: FontWeight.w400,
+            textAlign: TextAlign.center,
+            maxline: 2,
+          ),
+          actions: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                /// Cancel Button
+                TextButton(
+                  onPressed: () => Navigator.pop(dialogContext),
+                  child: CustomText(
+                    text: "Cancel",
+                    color: Colors.grey,
+                    fontsize: 16.sp,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+
+                /// Delete Button
+                Obx(() => TextButton(
+                  onPressed: controller.deleteStoryLoading.value
+                      ? null
+                      : () async {
+                    // Close confirmation dialog
+                    Navigator.pop(dialogContext);
+
+                    // Delete the story
+                    await controller.deleteStory(storyId);
+
+                    // Show success dialog
+                    if (mounted) {
+                      _showDeleteSuccessDialog(context);
+                    }
+                  },
+                  child: controller.deleteStoryLoading.value
+                      ? SizedBox(
+                    width: 20.w,
+                    height: 20.h,
+                    child: const CircularProgressIndicator(
+                      strokeWidth: 2,
+                      color: Colors.red,
+                    ),
+                  )
+                      : CustomText(
+                    text: "Delete",
+                    color: Colors.red,
+                    fontsize: 16.sp,
+                    fontWeight: FontWeight.w600,
+                  ),
+                )),
+              ],
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _showDeleteSuccessDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      barrierColor: Colors.black.withOpacity(0.7),
+      barrierDismissible: false,
+      builder: (BuildContext dialogContext) {
+        return AlertDialog(
+          backgroundColor: AppColors.backgColor20272E,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20.r),
+          ),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 59.w,
+                height: 59.h,
+                decoration: const BoxDecoration(
+                  color: AppColors.primaryColorC79235,
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  Icons.check,
+                  size: 30.sp,
+                  color: Colors.white,
+                ),
+              ),
+              SizedBox(height: 16.h),
+              CustomText(
+                text: "Delete successfully!",
+                color: AppColors.textColorFFFFFF,
+                fontsize: 16.sp,
+                fontWeight: FontWeight.w500,
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
+        );
+      },
+    ).then((_) {
+      // After dialog closes, go back to previous screen
+      if (mounted) {
+        Future.delayed(const Duration(milliseconds: 500), () {
+          if (mounted) {
+            context.pop();
+          }
+        });
+      }
+    });
+
+    // Auto close dialog after 2 seconds
+    Future.delayed(const Duration(seconds: 2), () {
+      if (mounted && Navigator.canPop(context)) {
+        Navigator.of(context, rootNavigator: true).pop();
+      }
+    });
+  }
 }
 
 

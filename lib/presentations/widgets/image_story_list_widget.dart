@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:klokkin_app/core/constants/app_colors.dart';
+import 'package:klokkin_app/core/helpers/time_helper.dart'; // Import helper
 import 'package:klokkin_app/presentations/widgets/custom_text.dart';
 import 'package:klokkin_app/services/download_service.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
@@ -11,20 +12,20 @@ import 'custom_network_image.dart';
 class ImageListCard extends StatefulWidget {
   final String title;
   final String subtitle;
-  final String meta;
+  final DateTime? createdAt; // Changed
+  final String? duration; // Changed
   final String hashtags;
   final String imagePath;
-  final bool isPlaying;
   final VoidCallback? onTap;
 
   const ImageListCard({
     super.key,
     required this.title,
     required this.subtitle,
-    required this.meta,
+    this.createdAt,
+    this.duration,
     required this.hashtags,
     required this.imagePath,
-    this.isPlaying = false,
     this.onTap,
   });
 
@@ -36,8 +37,8 @@ class _ImageListCardState extends State<ImageListCard> {
   bool _isDownloading = false;
 
   Future<void> _downloadImage() async {
-    if (_isDownloading) return; // Prevent multiple simultaneous downloads
-    
+    if (_isDownloading) return;
+
     setState(() {
       _isDownloading = true;
     });
@@ -48,10 +49,10 @@ class _ImageListCardState extends State<ImageListCard> {
         widget.imagePath,
         title: widget.title,
         subtitle: widget.subtitle,
-        meta: widget.meta,
+        meta: widget.duration ?? '',
         hashtags: widget.hashtags,
       );
-      
+
       if (success) {
         toastification.show(
           context: context,
@@ -85,94 +86,111 @@ class _ImageListCardState extends State<ImageListCard> {
 
   @override
   Widget build(BuildContext context) {
+    final timeAgo = TimeHelper.getTimeAgo(widget.createdAt);
+    final readingTime = TimeHelper.getReadingTime(widget.duration);
+
     return GestureDetector(
       onTap: widget.onTap,
       child: Column(
         children: [
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
+              /// Image
+              Container(
+                width: 124.w,
+                height: 90.h,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(4.r),
+                ),
+                clipBehavior: Clip.hardEdge,
+                child: CustomNetworkImage(
+                  imageUrl: widget.imagePath,
+                ),
+              ),
 
-              Row(
-                children: [
-                  /// Image
-                  Container(
-                    width: 124.w,
-                    height: 90.h,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(4.r),
+              SizedBox(width: 12.w),
+
+              /// Content
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    CustomText(
+                      text: widget.title,
+                      color: AppColors.textColorDCDCDC,
+                      fontsize: 14.sp,
+                      fontWeight: FontWeight.w500,
+                      maxline: 1,
+                      textOverflow: TextOverflow.ellipsis,
                     ),
-                    clipBehavior: Clip.hardEdge,
-                    child: CustomNetworkImage(
-                      imageUrl: widget.imagePath,
+                    SizedBox(height: 4.h),
+                    CustomText(
+                      textAlign: TextAlign.start,
+                      text: widget.subtitle,
+                      color: AppColors.textColor919191,
+                      fontsize: 12.sp,
+                      fontWeight: FontWeight.w400,
+                      maxline: 2,
                     ),
-                  ),
+                    SizedBox(height: 10.h),
 
-                  SizedBox(width: 12.w),
-
-                  /// Texts
-                  SizedBox(
-                    width: 210.w,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisAlignment: MainAxisAlignment.center,
+                    /// Time Info Row
+                    Row(
                       children: [
-                        CustomText(
-                          text: widget.title,
-                          color: AppColors.textColorDCDCDC,
-                          fontsize: 14.sp,
-                          fontWeight: FontWeight.w500,
-                        ),
-                        SizedBox(height: 4.h),
-                        CustomText(
-                          textAlign: TextAlign.start,
-                          text: widget.subtitle,
-                          color: AppColors.textColor919191,
-                          fontsize: 12.sp,
-                          fontWeight: FontWeight.w400,
-                          maxline: 2,
-                        ),
-                        SizedBox(height: 10.h),
-                        Row(
-                          children: [
-                            CustomText(
-                              text: widget.meta,
-                              color: AppColors.textColor8C8C8C,
-                              fontsize: 11.sp,
-                              fontWeight: FontWeight.w300,
-                            ),
-                            const Spacer(),
-                            GestureDetector(
-                              onTap: _downloadImage,
-                              child: Container(
-                                padding: EdgeInsets.all(4.r),
-                                decoration: BoxDecoration(
-                                  color: AppColors.primaryColorC79235.withOpacity(0.2),
-                                  borderRadius: BorderRadius.circular(4.r),
-                                ),
-                                child: _isDownloading
-                                    ? SpinKitCircle(
-                                        size: 16.sp,
-                                        color: AppColors.primaryColorC79235,
-                                      )
-                                    : Assets.icons.downloadSimple.svg(
-                                        color: AppColors.primaryColorC79235,
-                                      ),
+                        Expanded(
+                          child: Row(
+                            children: [
+                              CustomText(
+                                text: timeAgo,
+                                color: AppColors.textColor8C8C8C,
+                                fontsize: 11.sp,
+                                fontWeight: FontWeight.w300,
                               ),
-                            )
-                          ],
+                              if (readingTime.isNotEmpty) ...[
+                                SizedBox(width: 4.w),
+                                CustomText(
+                                  text: '• $readingTime',
+                                  fontsize: 11.sp,
+                                  fontWeight: FontWeight.w300,
+                                  color: AppColors.textColor8C8C8C,
+                                ),
+                              ],
+                            ],
+                          ),
                         ),
-                        SizedBox(height: 4.h),
-                        CustomText(
-                          text: widget.hashtags,
-                          color: AppColors.textColor2165DF,
-                          fontsize: 11.sp,
-                          fontWeight: FontWeight.w400,
+                        GestureDetector(
+                          onTap: _downloadImage,
+                          child: Container(
+                            padding: EdgeInsets.all(4.r),
+                            decoration: BoxDecoration(
+                              color: AppColors.primaryColorC79235.withOpacity(0.2),
+                              borderRadius: BorderRadius.circular(4.r),
+                            ),
+                            child: _isDownloading
+                                ? SpinKitCircle(
+                              size: 16.sp,
+                              color: AppColors.primaryColorC79235,
+                            )
+                                : Assets.icons.downloadSimple.svg(
+                              color: AppColors.primaryColorC79235,
+                              width: 16.w,
+                              height: 16.h,
+                            ),
+                          ),
                         ),
                       ],
                     ),
-                  ),
-                ],
+                    SizedBox(height: 4.h),
+                    CustomText(
+                      text: widget.hashtags,
+                      color: AppColors.textColor2165DF,
+                      fontsize: 11.sp,
+                      fontWeight: FontWeight.w400,
+                      maxline: 1,
+                      textOverflow: TextOverflow.ellipsis,
+                    ),
+                  ],
+                ),
               ),
             ],
           ),
@@ -184,8 +202,6 @@ class _ImageListCardState extends State<ImageListCard> {
             height: 0.4.h,
             thickness: 0.6,
           ),
-
-
         ],
       ),
     );

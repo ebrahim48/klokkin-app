@@ -146,20 +146,23 @@ class _WorkCardState extends State<WorkCard> {
                                     maxline: 2,
                                   ),
                                 ),
-                                GestureDetector(
-                                  onTap: _downloadMedia,
-                                  child: _isDownloading
-                                      ? Icon(
-                                          Icons.downloading,
-                                          color: AppColors.textColorFFFFFF,
-                                          size: 24.w,
-                                        )
-                                      : SvgPicture.asset(
-                                          "assets/icons/downloadSimple.svg",
-                                          width: 24.w,
-                                          height: 24.h,
-                                          color: AppColors.textColorFFFFFF,
-                                        ),
+                                Container(
+                                  margin: EdgeInsets.only(left: 4.w), // Add some spacing
+                                  child: GestureDetector(
+                                    onTap: _downloadMedia,
+                                    child: _isDownloading
+                                        ? Icon(
+                                            Icons.downloading,
+                                            color: AppColors.textColorFFFFFF,
+                                            size: 24.w,
+                                          )
+                                        : SvgPicture.asset(
+                                            "assets/icons/downloadSimple.svg",
+                                            width: 24.w,
+                                            height: 24.h,
+                                            color: AppColors.textColorFFFFFF,
+                                          ),
+                                  ),
                                 ),
                               ],
                             ),

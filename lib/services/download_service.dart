@@ -6,6 +6,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:path/path.dart' as path;
 import 'package:permission_handler/permission_handler.dart';
 import 'package:image_gallery_saver_plus/image_gallery_saver_plus.dart';
+import '../core/helpers/prefs_helper.dart';
 
 // Class to represent downloaded content with metadata
 class DownloadedContent {
@@ -53,6 +54,17 @@ class DownloadService {
   static final DownloadService _instance = DownloadService._internal();
   factory DownloadService() => _instance;
   DownloadService._internal();
+
+  // Helper method to get the auth token
+  Future<String> _getAuthToken() async {
+    try {
+      final token = await PrefsHelper.getString('bearerToken');
+      return 'Bearer $token';
+    } catch (e) {
+      print('Error getting auth token: $e');
+      return ''; // Return empty string if no token available
+    }
+  }
 
   // Directory for downloaded images
   Future<Directory> _getDownloadDirectory() async {
@@ -113,9 +125,13 @@ class DownloadService {
         throw Exception('Storage permission not granted');
       }
 
-      // Create HTTP client and download media
-      final response = await http.get(Uri.parse(mediaUrl));
+      // Create HTTP client and download media with authorization headers
+      final headers = {
+        'Authorization': await _getAuthToken(),
+      };
+      final response = await http.get(Uri.parse(mediaUrl), headers: headers);
       if (response.statusCode != 200) {
+        print('Failed to download media: ${response.statusCode} - ${response.body}');
         throw Exception('Failed to download media: ${response.statusCode}');
       }
 

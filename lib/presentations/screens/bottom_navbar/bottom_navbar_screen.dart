@@ -119,20 +119,22 @@ class _BottomNavBarState extends State<BottomNavBar> {
       },
       child: SizedBox(
         height: 60.h,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            icons[index],
-            SizedBox(height: 4.h),
-            CustomText(
-              text: label,
-              color: isSelected
-                  ? AppColors.bottomColorE9A431
-                  : AppColors.textColor000000,
-              fontsize: 12.sp,
-              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-            ),
-          ],
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              icons[index],
+              SizedBox(height: 4.h),
+              CustomText(
+                text: label,
+                color: isSelected
+                    ? AppColors.bottomColorE9A431
+                    : AppColors.textColor000000,
+                fontsize: 12.sp,
+                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+              ),
+            ],
+          ),
         ),
       ),
     );
