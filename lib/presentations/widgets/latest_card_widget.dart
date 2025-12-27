@@ -28,9 +28,16 @@ class LatestCard extends StatefulWidget {
 class _LatestCardState extends State<LatestCard> {
   bool _isDownloading = false;
 
+  // Check if URL is a video
+  bool _isVideoUrl(String url) {
+    return url.contains('.m3u8') ||
+        url.contains('.mp4') ||
+        url.contains('/video/');
+  }
+
   Future<void> _downloadImage() async {
-    if (_isDownloading) return; // Prevent multiple simultaneous downloads
-    
+    if (_isDownloading) return;
+
     setState(() {
       _isDownloading = true;
     });
@@ -44,7 +51,7 @@ class _LatestCardState extends State<LatestCard> {
         meta: 'Latest Image',
         hashtags: 'Latest',
       );
-      
+
       if (success) {
         toastification.show(
           context: context,
@@ -78,38 +85,51 @@ class _LatestCardState extends State<LatestCard> {
 
   @override
   Widget build(BuildContext context) {
+    // Use placeholder for video URLs
+    final displayImage = _isVideoUrl(widget.imagePath)
+        ? "https://via.placeholder.com/140x180/20272E/FFFFFF?text=Video"
+        : widget.imagePath;
+
     return GestureDetector(
       onTap: widget.onTap,
       child: Container(
         width: 140.w,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(6.r),
-          color: AppColors.textColorFFFFFF,
+          color: AppColors.backgColor20272E,
         ),
         child: ClipRRect(
           borderRadius: BorderRadius.circular(6.r),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              /// =============================> Image with overlay ========================>
+              /// Image Section
               Expanded(
                 child: Stack(
                   children: [
-                    Positioned.fill(
+                    Container(
+                      width: double.infinity,
+                      height: double.infinity,
                       child: CustomNetworkImage(
-                        imageUrl: widget.imagePath,
+                        imageUrl: displayImage,
                         borderRadius: BorderRadius.zero,
+                        fit: BoxFit.cover,
                       ),
                     ),
+
+                    // Title Overlay
                     Positioned(
-                      top: 16,
-                      left: 8,
-                      right: 8,
+                      top: 8.h,
+                      left: 8.w,
+                      right: 8.w,
                       child: Container(
-                        height: 24.h,
-                        padding: EdgeInsets.symmetric(horizontal: 6.w),
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 6.w,
+                          vertical: 4.h,
+                        ),
                         decoration: BoxDecoration(
-                          color: AppColors.textColorFFFFFF.withOpacity(0.1),
+                          color: Colors.black.withOpacity(0.6),
+                          borderRadius: BorderRadius.circular(4.r),
                         ),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -119,24 +139,29 @@ class _LatestCardState extends State<LatestCard> {
                                 textAlign: TextAlign.start,
                                 text: widget.title,
                                 color: AppColors.textColorFFFFFF,
-                                fontsize: 12.sp,
+                                fontsize: 11.sp,
                                 fontWeight: FontWeight.w500,
+                                maxline: 1,
                               ),
                             ),
+                            SizedBox(width: 4.w),
                             GestureDetector(
                               onTap: _downloadImage,
                               child: _isDownloading
-                                  ? Icon(
-                                      Icons.downloading,
-                                      color: AppColors.textColorFFFFFF,
-                                      size: 16.w,
-                                    )
+                                  ? SizedBox(
+                                width: 14.w,
+                                height: 14.h,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                  color: AppColors.textColorFFFFFF,
+                                ),
+                              )
                                   : SvgPicture.asset(
-                                      "assets/icons/downloadSimple.svg",
-                                      width: 16.w,
-                                      height: 16.h,
-                                      color: AppColors.textColorFFFFFF,
-                                    ),
+                                "assets/icons/downloadSimple.svg",
+                                width: 14.w,
+                                height: 14.h,
+                                color: AppColors.textColorFFFFFF,
+                              ),
                             ),
                           ],
                         ),
@@ -145,21 +170,29 @@ class _LatestCardState extends State<LatestCard> {
                   ],
                 ),
               ),
-              SizedBox(height: 6.h),
 
-              // Bottom caption
+              // Caption Section
               Container(
                 width: double.infinity,
-                padding: EdgeInsets.all(6.w),
-                color: AppColors.textColorFFFFFF,
+                padding: EdgeInsets.all(8.w),
+                decoration: BoxDecoration(
+                  color: AppColors.backgColor20272E,
+                  border: Border(
+                    top: BorderSide(
+                      color: AppColors.primaryColorC79235.withOpacity(0.3),
+                      width: 1,
+                    ),
+                  ),
+                ),
                 child: CustomText(
                   text: widget.caption,
-                  fontsize: 12.sp,
+                  fontsize: 11.sp,
                   fontWeight: FontWeight.w400,
-                  color: AppColors.textColor000000,
+                  color: AppColors.textColorC2C2C2,
+                  maxline: 2,
+                  textAlign: TextAlign.start,
                 ),
               ),
-              SizedBox(height: 14.h),
             ],
           ),
         ),

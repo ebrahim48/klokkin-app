@@ -27,9 +27,12 @@ class _AudioRecordAddPostDetailsScreenState extends State<AudioRecordAddPostDeta
   final UploadCreateStoryController controller = Get.put(UploadCreateStoryController());
   RxSet<String> selectedTags = <String>{}.obs;
 
+  @override
   void initState() {
     super.initState();
-    homeController.getAllTags();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      homeController.getAllTags();
+    });
   }
 
   @override

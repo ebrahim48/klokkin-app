@@ -61,7 +61,12 @@ class _EveryStoryScreenState extends State<EveryStoryScreen> {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      CustomText(text: 'Ebrahim',color: AppColors.textColorFFFFFF,fontsize: 20.sp,fontWeight: FontWeight.w500),
+                      CustomText(
+                        text: homeController.profile.value.profile?.nickname ?? 'N/A',
+                        color: AppColors.textColorFFFFFF,
+                        fontsize: 20.sp,
+                        fontWeight: FontWeight.w500,
+                      ),
                       CustomText(
                           text: 'Bangladesh',
                           color: AppColors.textColorC2C2C2,

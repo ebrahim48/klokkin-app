@@ -8,9 +8,6 @@ import 'package:klokkin_app/services/download_service.dart';
 import 'package:toastification/toastification.dart';
 import '../../../controllers/audio_book_controller.dart';
 import '../../../core/constants/app_colors.dart';
-import '../../../global/custom_assets/assets.gen.dart';
-import '../../widgets/custom_loader.dart';
-import '../../widgets/local_image_list_card.dart';
 import 'package:intl/intl.dart';
 import 'package:shimmer/shimmer.dart';
 
@@ -70,7 +67,7 @@ class _DownloadScreenState extends State<DownloadScreen> {
             color: AppColors.textColorFFFFFF,
             fontsize: 20.sp,
           ),
-          content: TextField(
+          content: const TextField(
             style: TextStyle(color: AppColors.textColorFFFFFF),
             decoration: InputDecoration(
               hintText: 'Enter folder name',
@@ -86,7 +83,7 @@ class _DownloadScreenState extends State<DownloadScreen> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context),
-              child: Text('Cancel', style: TextStyle(color: AppColors.textColor919191)),
+              child: const Text('Cancel', style: TextStyle(color: AppColors.textColor919191)),
             ),
             TextButton(
               onPressed: () {
@@ -99,7 +96,7 @@ class _DownloadScreenState extends State<DownloadScreen> {
                   description: const Text('New folder has been created'),
                 );
               },
-              child: Text('Create', style: TextStyle(color: AppColors.primaryColorC79235)),
+              child: const Text('Create', style: TextStyle(color: AppColors.primaryColorC79235)),
             ),
           ],
         );
@@ -117,7 +114,7 @@ class _DownloadScreenState extends State<DownloadScreen> {
         backgroundColor: AppColors.backgColor20272E,
         elevation: 0,
         leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: AppColors.textColorFFFFFF),
+          icon: const Icon(Icons.arrow_back, color: AppColors.textColorFFFFFF),
           onPressed: () => Navigator.pop(context),
         ),
       ),
