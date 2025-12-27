@@ -9,7 +9,6 @@ import 'package:shimmer/shimmer.dart';
 import '../../../controllers/home_controller.dart';
 import '../../../controllers/work_controller.dart';
 import '../../../core/constants/app_colors.dart';
-import '../../../global/custom_assets/assets.gen.dart';
 import '../../widgets/border_button.dart';
 import '../../widgets/custom_network_image.dart';
 
@@ -48,11 +47,14 @@ class _LibraryScreenState extends State<LibraryScreen> {
     });
   }
 
-  void _initializeVideos() {
+  void _initializeVideos() async {
     if (homeController.workingDays.isEmpty) return;
 
     // Check if controller exists and is not disposed
-    if (!Get.isRegistered<WorkCardController>()) return;
+    if (!Get.isRegistered<WorkCardController>()) {
+      print("⚠️ WorkCardController not registered");
+      return;
+    }
 
     final controller = Get.find<WorkCardController>();
 
@@ -63,9 +65,13 @@ class _LibraryScreenState extends State<LibraryScreen> {
     for (var pos in positions) {
       if (pos < homeController.workingDays.length) {
         final item = homeController.workingDays[pos];
-        if (item.type == 'video' && item.mediaUrl != null && item.mediaUrl!.isNotEmpty) {
+        if (item.type == 'video' &&
+            item.mediaUrl != null &&
+            item.mediaUrl!.isNotEmpty) {
           print("🎥 Initializing video[$pos]: ${item.mediaUrl!.first}");
-          controller.setVideoPath(pos, item.mediaUrl!.first);
+          await controller.setVideoPath(pos, item.mediaUrl!.first);
+          // Add small delay between initializations
+          await Future.delayed(const Duration(milliseconds: 200));
         }
       }
     }
@@ -300,127 +306,187 @@ class _LibraryScreenState extends State<LibraryScreen> {
 
   // Video with thumbnail background and player overlay
   Widget _buildVideoWithThumbnail(int index, double height) {
-    return Obx(() {
-      // Check if controller is available
-      if (!Get.isRegistered<WorkCardController>()) {
-        return _buildMediaItem(_getWorkingDaysMedia(index), height);
-      }
+    return GetBuilder<WorkCardController>(
+      builder: (controller) {
+        final isInitialized = controller.isInitialized(index);
+        final isPlaying = controller.isPlaying(index);
+        final videoController = controller.getController(index);
 
-      final controller = Get.find<WorkCardController>();
-      final isInitialized = controller.isInitialized(index);
-      final isPlaying = controller.isPlaying(index);
-      final videoController = controller.getController(index);
+        return GestureDetector(
+          onTap: () {
+            // First tap will start playing, subsequent taps will toggle
+            if (isInitialized) {
+              controller.togglePlayPause(index);
+            }
+          },
+          child: Container(
+            height: height,
+            width: double.infinity,
+            child: Stack(
+              children: [
+                // Background: Thumbnail (visible when NOT playing)
+                if (!isPlaying)
+                  Positioned.fill(
+                    child: _buildMediaItem(_getWorkingDaysMedia(index), height),
+                  ),
 
-      return Container(
-        height: height,
-        width: double.infinity,
-        child: Stack(
-          children: [
-            // Background: Thumbnail (always visible)
-            Positioned.fill(
-              child: _buildMediaItem(_getWorkingDaysMedia(index), height),
-            ),
-
-            // Video Player Overlay (visible when playing)
-            if (isInitialized && isPlaying && videoController != null)
-              Positioned.fill(
-                child: ClipRRect(
-                  borderRadius: BorderRadius.circular(8.r),
-                  child: Container(
-                    color: Colors.black,
-                    child: Center(
-                      child: AspectRatio(
-                        aspectRatio: videoController.value.aspectRatio,
-                        child: VideoPlayer(videoController),
+                // Video Player (visible ONLY when playing)
+                if (isInitialized && isPlaying && videoController != null)
+                  Positioned.fill(
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(8.r),
+                      child: Container(
+                        color: Colors.black,
+                        child: Center(
+                          child: AspectRatio(
+                            aspectRatio: videoController.value.aspectRatio,
+                            child: VideoPlayer(videoController),
+                          ),
+                        ),
                       ),
                     ),
                   ),
-                ),
-              ),
 
-            // Loading Indicator
-            if (isInitialized && isPlaying && videoController != null && videoController.value.isBuffering)
-              Positioned.fill(
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.black45,
-                    borderRadius: BorderRadius.circular(8.r),
-                  ),
-                  child: Center(
-                    child: CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFDF9E2F)),
-                      strokeWidth: 3,
+                // Loading/Buffering Indicator (when video is playing but buffering)
+                if (isInitialized &&
+                    isPlaying &&
+                    videoController != null &&
+                    videoController.value.isBuffering)
+                  Positioned.fill(
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: Colors.black45,
+                        borderRadius: BorderRadius.circular(8.r),
+                      ),
+                      child: const Center(
+                        child: CircularProgressIndicator(
+                          valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFDF9E2F)),
+                          strokeWidth: 3,
+                        ),
+                      ),
                     ),
                   ),
-                ),
-              ),
 
-            // Gradient overlay for button visibility
-            Positioned(
-              bottom: 0,
-              left: 0,
-              right: 0,
-              height: 60.h,
-              child: Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.bottomCenter,
-                    end: Alignment.topCenter,
-                    colors: [
-                      Colors.black.withOpacity(0.5),
-                      Colors.transparent,
-                    ],
-                  ),
-                  borderRadius: BorderRadius.only(
-                    bottomLeft: Radius.circular(8.r),
-                    bottomRight: Radius.circular(8.r),
-                  ),
-                ),
-              ),
-            ),
-
-            // Play/Pause Button
-            Positioned(
-              bottom: 8.h,
-              right: 8.w,
-              child: GestureDetector(
-                onTap: () {
-                  if (!Get.isRegistered<WorkCardController>()) return;
-
-                  final ctrl = Get.find<WorkCardController>();
-                  if (ctrl.isInitialized(index)) {
-                    print("🎬 Toggle play/pause for index $index");
-                    ctrl.togglePlayPause(index);
-                  } else {
-                    print("⚠️ Video not initialized yet for index $index");
-                  }
-                },
-                child: Container(
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Colors.black.withOpacity(0.7),
-                    boxShadow: [
-                      BoxShadow(
+                // Initializing indicator (first time load, shown over thumbnail)
+                if (!isInitialized)
+                  Positioned.fill(
+                    child: Container(
+                      decoration: BoxDecoration(
                         color: Colors.black26,
-                        blurRadius: 8,
-                        offset: Offset(0, 2),
+                        borderRadius: BorderRadius.circular(8.r),
                       ),
-                    ],
+                      child: const Center(
+                        child: CircularProgressIndicator(
+                          valueColor: AlwaysStoppedAnimation<Color>(Color(0xFFDF9E2F)),
+                          strokeWidth: 3,
+                        ),
+                      ),
+                    ),
                   ),
-                  padding: EdgeInsets.all(10.r),
-                  child: Icon(
-                    isPlaying ? Icons.pause : Icons.play_arrow,
-                    size: 24.r,
-                    color: Colors.white,
+
+                // Gradient overlay for button visibility
+                Positioned(
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                  height: 60.h,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        begin: Alignment.bottomCenter,
+                        end: Alignment.topCenter,
+                        colors: [
+                          Colors.black.withOpacity(0.6),
+                          Colors.transparent,
+                        ],
+                      ),
+                      borderRadius: BorderRadius.only(
+                        bottomLeft: Radius.circular(8.r),
+                        bottomRight: Radius.circular(8.r),
+                      ),
+                    ),
                   ),
                 ),
-              ),
+
+                // Play/Pause Button
+                Positioned(
+                  bottom: 8.h,
+                  right: 8.w,
+                  child: GestureDetector(
+                    onTap: () {
+                      if (isInitialized) {
+                        print("🎬 Toggle play/pause for index $index");
+                        controller.togglePlayPause(index);
+                      } else {
+                        print("⚠️ Video not initialized yet for index $index");
+                      }
+                    },
+                    child: Container(
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color: Colors.black.withOpacity(0.7),
+                        boxShadow: const [
+                          BoxShadow(
+                            color: Colors.black26,
+                            blurRadius: 8,
+                            offset: Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      padding: EdgeInsets.all(10.r),
+                      child: Icon(
+                        isPlaying ? Icons.pause : Icons.play_arrow,
+                        size: 24.r,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
+
+                // Video duration/position indicator (only when playing)
+                if (isInitialized && isPlaying && videoController != null)
+                  Positioned(
+                    bottom: 8.h,
+                    left: 8.w,
+                    child: Container(
+                      padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 4.h),
+                      decoration: BoxDecoration(
+                        color: Colors.black.withOpacity(0.7),
+                        borderRadius: BorderRadius.circular(4.r),
+                      ),
+                      child: ValueListenableBuilder(
+                        valueListenable: videoController,
+                        builder: (context, VideoPlayerValue value, child) {
+                          final position = value.position;
+                          final duration = value.duration;
+                          return Text(
+                            '${_formatDuration(position)} / ${_formatDuration(duration)}',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 10.sp,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                  ),
+              ],
             ),
-          ],
-        ),
-      );
-    });
+          ),
+        );
+      },
+    );
   }
+
+// Helper method to format duration
+  String _formatDuration(Duration duration) {
+    String twoDigits(int n) => n.toString().padLeft(2, '0');
+    final minutes = twoDigits(duration.inMinutes.remainder(60));
+    final seconds = twoDigits(duration.inSeconds.remainder(60));
+    return '$minutes:$seconds';
+  }
+
 
   // Media Item Widget
   Widget _buildMediaItem(String imageUrl, double height) {
@@ -478,7 +544,14 @@ class _LibraryScreenState extends State<LibraryScreen> {
   @override
   void dispose() {
     _searchController.dispose();
-    // Don't dispose WorkCardController here - it's managed globally
+    if (Get.isRegistered<WorkCardController>()) {
+      final controller = Get.find<WorkCardController>();
+      controller.pauseAll();
+    }
+
     super.dispose();
   }
+
+
+
 }

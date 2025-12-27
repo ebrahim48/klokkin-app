@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:shimmer/shimmer.dart';
+
+import '../../core/constants/app_colors.dart';
 
 class CustomNetworkImage extends StatelessWidget {
   final String imageUrl;
@@ -87,34 +90,12 @@ class CustomNetworkImage extends StatelessWidget {
 
   Widget _buildErrorWidget() {
     return Container(
-      height: height,
-      width: width,
-      decoration: BoxDecoration(
-        border: border,
-        color: Colors.grey[800],
-        borderRadius: borderRadius,
-        shape: boxShape,
-      ),
+      color: AppColors.backgColor20272E,
       child: Center(
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                Icons.image,
-                color: Colors.grey[400],
-                size: 40,
-              ),
-              // const SizedBox(height: 8),
-              // Text(
-              //   'Image unavailable',
-              //   style: TextStyle(
-              //     color: Colors.grey[400],
-              //     fontSize: 12,
-              //   ),
-              // ),
-            ],
-          ),
+        child: Icon(
+          Icons.image_not_supported,
+          color: AppColors.textColor6B6B6B,
+          size: 40.sp,
         ),
       ),
     );

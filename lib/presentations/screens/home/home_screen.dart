@@ -334,20 +334,27 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
               SizedBox(height: 11.h),
-              Obx((){
+              Obx(() {
                 if (homeController.getLatestFormLoading.value) {
-                  return const Center(child: CustomLoader());
+                  return SizedBox(
+                    height: 180.h,
+                    child: const Center(child: CustomLoader()),
+                  );
                 }
 
                 if (homeController.latestForm.isEmpty) {
-                  return Center(
-                    child: CustomText(
-                      text: "Latest Form Unavailable",
-                      textAlign: TextAlign.center,
-                      color: AppColors.textColorC2C2C2,
+                  return SizedBox(
+                    height: 180.h,
+                    child: Center(
+                      child: CustomText(
+                        text: "No Latest Stories Available",
+                        textAlign: TextAlign.center,
+                        color: AppColors.textColorC2C2C2,
+                      ),
                     ),
                   );
                 }
+
                 return SizedBox(
                   height: 180.h,
                   child: ListView.separated(
@@ -357,23 +364,36 @@ class _HomeScreenState extends State<HomeScreen> {
                     separatorBuilder: (context, index) => SizedBox(width: 12.w),
                     itemBuilder: (context, index) {
                       final latest = homeController.latestForm[index];
+
+                      // Get proper image URL
+                      String imageUrl;
+                      if (latest.mediaUrl != null && latest.mediaUrl!.isNotEmpty) {
+                        final url = latest.mediaUrl!.first;
+                        // Check if it's a video URL
+                        if (url.contains('.m3u8') || url.contains('/video/')) {
+                          imageUrl = "https://via.placeholder.com/140x180/20272E/C79235?text=Video";
+                        } else {
+                          imageUrl = url;
+                        }
+                      } else {
+                        imageUrl = "https://via.placeholder.com/140x180/20272E/C79235?text=Image";
+                      }
+
                       return LatestCard(
                         title: latest.caption ?? 'N/A',
-                        caption:latest.description ?? 'N/A',
-                        imagePath: latest.mediaUrl != null && latest.mediaUrl!.isNotEmpty
-                            ? latest.mediaUrl!.first
-                            : "https://templates.joomla-monster.com/joomla30/jm-news-portal/components/com_djclassifieds/assets/images/default_profile.png",
+                        caption: latest.description ?? 'N/A',
+                        imagePath: imageUrl,
                         onTap: () {
-
+                          // Add navigation if needed
                         },
                       );
                     },
                   ),
                 );
               }),
-          
-              /// =====================================> Working Scroll =====================================>
 
+
+              /// =====================================> Working Scroll =====================================>
               SizedBox(height: 21.h),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 20.w),
@@ -385,46 +405,73 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
               SizedBox(height: 11.h),
-              Obx((){
+              Obx(() {
+                if (homeController.getWorkingLoading.value) {
+                  return SizedBox(
+                    height: 200.h,
+                    child: const Center(child: CustomLoader()),
+                  );
+                }
+
                 if (homeController.workingDays.isEmpty) {
-                  return Center(
-                    child: CustomText(
-                      text: "Working Days Unavailable",
-                      textAlign: TextAlign.center,
-                      color: AppColors.textColorC2C2C2,
+                  return SizedBox(
+                    height: 200.h,
+                    child: Center(
+                      child: CustomText(
+                        text: "No Working Stories Available",
+                        textAlign: TextAlign.center,
+                        color: AppColors.textColorC2C2C2,
+                      ),
                     ),
                   );
                 }
+
                 return SizedBox(
-                  height: 180.h,
+                  height: 200.h,
                   child: ListView.separated(
                     scrollDirection: Axis.horizontal,
                     padding: EdgeInsets.symmetric(horizontal: 20.w),
                     itemCount: homeController.workingDays.length,
-                    separatorBuilder: (context, index) => SizedBox(width: 12.w),
+                    separatorBuilder: (context, index) => SizedBox(width: 16.w),
                     itemBuilder: (context, index) {
                       final workingDaysStories = homeController.workingDays[index];
+
+                      // Get proper image/thumbnail URL
+                      String imageUrl = workingDaysStories.thumbnail?.isNotEmpty == true
+                          ? workingDaysStories.thumbnail!
+                          : (workingDaysStories.mediaUrl?.isNotEmpty == true
+                          ? workingDaysStories.mediaUrl!.first
+                          : "https://via.placeholder.com/160x180/20272E/C79235?text=Video");
+
+                      // Get video URL
+                      String videoUrl = workingDaysStories.mediaUrl?.isNotEmpty == true
+                          ? workingDaysStories.mediaUrl!.first
+                          : "";
+
+                      // Initialize video controller for this index if URL exists
+                      if (videoUrl.isNotEmpty) {
+                        // Check if controller doesn't exist yet
+                        if (workCardController.getController(index) == null) {
+                          WidgetsBinding.instance.addPostFrameCallback((_) {
+                            workCardController.setVideoPath(index, videoUrl);
+                          });
+                        }
+                      }
+
                       return WorkCard(
                         index: index,
                         title: workingDaysStories.caption ?? 'N/A',
                         duration: workingDaysStories.duration ?? 'N/A',
-                        imagePath: workingDaysStories.mediaUrl != null &&
-                            workingDaysStories.mediaUrl!.isNotEmpty
-                            ? workingDaysStories.mediaUrl!.first
-                            : "https://templates.joomla-monster.com/joomla30/jm-news-portal/components/com_djclassifieds/assets/images/default_profile.png",
-                        videoPath: workingDaysStories.mediaUrl!.first,
+                        imagePath: imageUrl,
+                        videoPath: videoUrl,
                         onTap: () {},
-
-
                       );
                     },
                   ),
                 );
               }),
-
               /// =====================================> Every story begins =====================================>
-
-              SizedBox(height: 5.h),
+              SizedBox(height: 25.h),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 20.w),
                 child: CustomText(
@@ -437,41 +484,72 @@ class _HomeScreenState extends State<HomeScreen> {
               SizedBox(height: 16.h),
 
               Obx(() {
+                if (homeController.getStoryStepsLoading.value) {
+                  return SizedBox(
+                    height: 200.h,
+                    child: const Center(child: CustomLoader()),
+                  );
+                }
+
                 if (homeController.storySteps.isEmpty) {
-                  return Center(
-                    child: CustomText(
-                      text: "Story Steps Unavailable",
-                      textAlign: TextAlign.center,
-                      color: AppColors.textColorC2C2C2,
+                  return SizedBox(
+                    height: 200.h,
+                    child: Center(
+                      child: CustomText(
+                        text: "No Story Steps Available",
+                        textAlign: TextAlign.center,
+                        color: AppColors.textColorC2C2C2,
+                      ),
                     ),
                   );
                 }
+
                 return SizedBox(
-                  height: 179.h,
+                  height: 200.h,
                   child: ListView.separated(
                     scrollDirection: Axis.horizontal,
                     padding: EdgeInsets.symmetric(horizontal: 20.w),
                     itemCount: homeController.storySteps.length,
-                    separatorBuilder: (context, index) => SizedBox(width: 12.w),
+                    separatorBuilder: (context, index) => SizedBox(width: 16.w),
                     itemBuilder: (context, index) {
                       final storyStartSteps = homeController.storySteps[index];
+
+                      // Get story ID
+                      final storyId = storyStartSteps.id ?? "";
+
+                      // Get proper image/thumbnail URL
+                      String imageUrl = storyStartSteps.thumbnail?.isNotEmpty == true
+                          ? storyStartSteps.thumbnail!
+                          : (storyStartSteps.mediaUrl?.isNotEmpty == true
+                          ? storyStartSteps.mediaUrl!.first
+                          : "https://via.placeholder.com/235x150/20272E/C79235?text=Story");
+
+                      // Initialize video if this is a video URL and ID exists
+                      if (storyId.isNotEmpty &&
+                          storyStartSteps.mediaUrl?.isNotEmpty == true) {
+                        final mediaUrl = storyStartSteps.mediaUrl!.first;
+
+                        // Only initialize if not already initialized
+                        if (homeController.isInitializedStates[storyId] != true) {
+                          WidgetsBinding.instance.addPostFrameCallback((_) {
+                            homeController.setVideoPath(storyId, mediaUrl);
+                          });
+                        }
+                      }
+
                       return EveryStoryCard(
                         caption: storyStartSteps.description ?? "N/A",
-                        imagePath: storyStartSteps.mediaUrl != null && storyStartSteps.mediaUrl!.isNotEmpty
-                            ? storyStartSteps.mediaUrl!.first
-                            : "https://templates.joomla-monster.com/joomla30/jm-news-portal/components/com_djclassifieds/assets/images/default_profile.png",
-                        storyId: storyStartSteps.id.toString(),
+                        imagePath: imageUrl,
+                        storyId: storyId,
                         onTap: () {
-                          if (storyStartSteps.mediaUrl != null && storyStartSteps.mediaUrl!.isNotEmpty) {
-                            homeController.setVideoPath(
-                                storyStartSteps.id.toString(),
-                                storyStartSteps.mediaUrl!.first
-                            );
+                          if (storyStartSteps.mediaUrl?.isNotEmpty == true &&
+                              storyId.isNotEmpty) {
+                            homeController.setVideoPath(storyId, storyStartSteps.mediaUrl!.first);
                             context.pushNamed(
                                 AppRoutes.everyStoryScreen,
                                 extra: {
-                                  "title": "Every story beings with a step",
-                                  "storyId": storyStartSteps.id,
+                                  "title": "Every story begins with a step",
+                                  "storyId": storyId,
                                 }
                             );
                           }
@@ -481,7 +559,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 );
               }),
-              SizedBox(height: 10.h),
+              SizedBox(height: 20.h),
+
             ],
           ),
         ),

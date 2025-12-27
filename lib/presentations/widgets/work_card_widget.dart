@@ -36,8 +36,8 @@ class _WorkCardState extends State<WorkCard> {
   bool _isDownloading = false;
 
   Future<void> _downloadMedia() async {
-    if (_isDownloading) return; // Prevent multiple simultaneous downloads
-    
+    if (_isDownloading) return;
+
     setState(() {
       _isDownloading = true;
     });
@@ -45,13 +45,13 @@ class _WorkCardState extends State<WorkCard> {
     try {
       final downloadService = DownloadService();
       bool success = await downloadService.downloadMedia(
-        widget.videoPath, // Download the video
+        widget.videoPath,
         title: widget.title,
         subtitle: 'Duration: ${widget.duration}',
         meta: 'Work Video',
         hashtags: 'Work,Video',
       );
-      
+
       if (success) {
         toastification.show(
           context: context,
@@ -93,124 +93,155 @@ class _WorkCardState extends State<WorkCard> {
         if (widget.onTap != null) widget.onTap!();
       },
       child: Container(
-        width: 140.w,
+        width: 160.w,
+        height: 180.h,
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(6.r),
+          borderRadius: BorderRadius.circular(8.r),
+          color: AppColors.backgColor20272E,
         ),
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(6.r),
+          borderRadius: BorderRadius.circular(8.r),
           child: GetBuilder<WorkCardController>(
             builder: (_) {
               final videoCtrl = controller.getController(widget.index);
               final isInit = controller.isInitialized(widget.index);
               final isPlaying = controller.isPlaying(widget.index);
 
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+              return Stack(
                 children: [
-                  Expanded(
-                    child: Stack(
-                      children: [
-                        if (isInit && videoCtrl != null)
-                          AspectRatio(
-                            aspectRatio: videoCtrl.value.aspectRatio,
-                            child: VideoPlayer(videoCtrl),
-                          )
-                        else
-                          Center(
-                            child: CustomNetworkImage(
-                              imageUrl: widget.imagePath,
-                              borderRadius: BorderRadius.zero,
-                            ),
-                          ),
+                  // Video or Thumbnail
+                  Positioned.fill(
+                    child: isInit && videoCtrl != null
+                        ? VideoPlayer(videoCtrl)
+                        : CustomNetworkImage(
+                      imageUrl: widget.imagePath,
+                      borderRadius: BorderRadius.zero,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
 
-                        // Title Overlay
-                        Positioned(
-                          top: 16,
-                          left: 8,
-                          right: 8,
-                          child: Container(
-                            height: 50.h,
-                            padding: EdgeInsets.symmetric(horizontal: 6.w),
-                            color: AppColors.textColor000000.withOpacity(0.2),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                Expanded(
-                                  child: CustomText(
-                                    textAlign: TextAlign.start,
-                                    text: widget.title,
-                                    color: AppColors.textColorFFFFFF,
-                                    fontsize: 12.sp,
-                                    fontWeight: FontWeight.w900,
-                                    maxline: 2,
-                                  ),
-                                ),
-                                Container(
-                                  margin: EdgeInsets.only(left: 4.w), // Add some spacing
-                                  child: GestureDetector(
-                                    onTap: _downloadMedia,
-                                    child: _isDownloading
-                                        ? Icon(
-                                            Icons.downloading,
-                                            color: AppColors.textColorFFFFFF,
-                                            size: 24.w,
-                                          )
-                                        : SvgPicture.asset(
-                                            "assets/icons/downloadSimple.svg",
-                                            width: 24.w,
-                                            height: 24.h,
-                                            color: AppColors.textColorFFFFFF,
-                                          ),
-                                  ),
-                                ),
-                              ],
-                            ),
+                  // Dark Gradient Overlay
+                  Positioned.fill(
+                    child: Container(
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            Colors.black.withOpacity(0.3),
+                            Colors.black.withOpacity(0.7),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+
+                  // Title & Download Overlay
+                  Positioned(
+                    top: 12.h,
+                    left: 12.w,
+                    right: 12.w,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Expanded(
+                          child: CustomText(
+                            textAlign: TextAlign.start,
+                            text: widget.title,
+                            color: AppColors.textColorFFFFFF,
+                            fontsize: 13.sp,
+                            fontWeight: FontWeight.w600,
+                            maxline: 2,
                           ),
                         ),
-
-                        // Play & Duration Overlay
-                        Positioned(
-                          bottom: 8.h,
-                          left: 8.w,
-                          right: 8.w,
+                        SizedBox(width: 8.w),
+                        GestureDetector(
+                          onTap: _downloadMedia,
                           child: Container(
-                            height: 34.h,
-                            padding: EdgeInsets.symmetric(horizontal: 8.w),
-                            color: AppColors.textColor000000.withOpacity(0.1),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                GestureDetector(
-                                  onTap: () => controller.togglePlayPause(widget.index),
-                                  child: Container(
-                                    width: 32.w,
-                                    height: 32.w,
-                                    decoration: BoxDecoration(
-                                      color: AppColors.textColorFFFFFF,
-                                      borderRadius: BorderRadius.circular(50.r),
-                                    ),
-                                    child: Icon(
-                                      isPlaying ? Icons.pause : Icons.play_arrow,
-                                      color: Colors.orange,
-                                      size: 20.sp,
-                                    ),
-                                  ),
-                                ),
-                                CustomText(
-                                  text: widget.duration,
-                                  color: AppColors.textColorFFFFFF,
-                                  fontsize: 14.sp,
-                                  fontWeight: FontWeight.w500,
-                                ),
-                              ],
+                            padding: EdgeInsets.all(6.r),
+                            decoration: BoxDecoration(
+                              color: AppColors.primaryColorC79235,
+                              shape: BoxShape.circle,
+                            ),
+                            child: _isDownloading
+                                ? SizedBox(
+                              width: 12.w,
+                              height: 12.h,
+                              child: CircularProgressIndicator(
+                                strokeWidth: 2,
+                                color: Colors.white,
+                              ),
+                            )
+                                : Icon(
+                              Icons.download,
+                              size: 16.sp,
+                              color: Colors.white,
                             ),
                           ),
                         ),
                       ],
                     ),
                   ),
-                  SizedBox(height: 10.h),
+
+                  // Play Button & Duration
+                  Positioned(
+                    bottom: 12.h,
+                    left: 12.w,
+                    right: 12.w,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        // Play/Pause Button - ALWAYS VISIBLE
+                        GestureDetector(
+                          onTap: () async {
+                            // Initialize video if not already done
+                            if (!isInit) {
+                              await controller.setVideoPath(widget.index, widget.videoPath);
+                            }
+                            controller.togglePlayPause(widget.index);
+                          },
+                          child: Container(
+                            width: 40.w,
+                            height: 40.w,
+                            decoration: BoxDecoration(
+                              color: AppColors.primaryColorC79235,
+                              shape: BoxShape.circle,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.3),
+                                  blurRadius: 8,
+                                  offset: Offset(0, 2),
+                                ),
+                              ],
+                            ),
+                            child: Icon(
+                              isPlaying ? Icons.pause : Icons.play_arrow,
+                              color: Colors.white,
+                              size: 24.sp,
+                            ),
+                          ),
+                        ),
+
+                        // Duration Badge
+                        Container(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 10.w,
+                            vertical: 6.h,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.black.withOpacity(0.7),
+                            borderRadius: BorderRadius.circular(12.r),
+                          ),
+                          child: CustomText(
+                            text: widget.duration,
+                            color: AppColors.textColorFFFFFF,
+                            fontsize: 12.sp,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                 ],
               );
             },
