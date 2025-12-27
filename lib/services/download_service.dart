@@ -66,6 +66,14 @@ class DownloadService {
     }
   }
 
+  // Helper method to check if URL is an S3 URL
+  bool _isS3Url(String url) {
+    return url.contains('.s3.') ||
+           url.contains('s3.amazonaws.com') ||
+           url.contains('s3-') ||
+           url.contains('story-telling-bucket-s3');
+  }
+
   // Directory for downloaded images
   Future<Directory> _getDownloadDirectory() async {
     Directory? directory;
@@ -125,11 +133,26 @@ class DownloadService {
         throw Exception('Storage permission not granted');
       }
 
-      // Create HTTP client and download media with authorization headers
-      final headers = {
-        'Authorization': await _getAuthToken(),
-      };
-      final response = await http.get(Uri.parse(mediaUrl), headers: headers);
+      // For S3 URLs, we should try both with and without auth headers
+      // First, try without auth headers (for presigned URLs)
+      Map<String, String> headers = {};
+      http.Response response;
+
+      if (_isS3Url(mediaUrl)) {
+        // Try without auth first (for presigned URLs)
+        response = await http.get(Uri.parse(mediaUrl), headers: headers);
+
+        // If that fails with 403, try with auth token
+        if (response.statusCode == 403) {
+          headers['Authorization'] = await _getAuthToken();
+          response = await http.get(Uri.parse(mediaUrl), headers: headers);
+        }
+      } else {
+        // For non-S3 URLs, use auth token
+        headers['Authorization'] = await _getAuthToken();
+        response = await http.get(Uri.parse(mediaUrl), headers: headers);
+      }
+
       if (response.statusCode != 200) {
         print('Failed to download media: ${response.statusCode} - ${response.body}');
         throw Exception('Failed to download media: ${response.statusCode}');

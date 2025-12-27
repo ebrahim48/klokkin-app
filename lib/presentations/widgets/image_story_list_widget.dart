@@ -45,7 +45,7 @@ class _ImageListCardState extends State<ImageListCard> {
 
     try {
       final downloadService = DownloadService();
-      bool success = await downloadService.downloadImage(
+      bool success = await downloadService.downloadMedia(
         widget.imagePath,
         title: widget.title,
         subtitle: widget.subtitle,
