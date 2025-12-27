@@ -50,7 +50,13 @@ class _LocalImageListCardState extends State<LocalImageListCard> {
 
     try {
       final downloadService = DownloadService();
-      bool success = await downloadService.downloadImage(widget.imagePath);
+      bool success = await downloadService.downloadMedia(
+        widget.imagePath,
+        title: widget.title,
+        subtitle: widget.subtitle,
+        meta: widget.meta,
+        hashtags: widget.hashtags,
+      );
       
       if (success) {
         toastification.show(

@@ -12,10 +12,6 @@ import '../../widgets/custom_text.dart';
 import '../../widgets/video_list_widget.dart';
 import '../../widgets/video_story_list_widget.dart';
 
-
-
-
-
 class StoryVideoScreen extends StatefulWidget {
   const StoryVideoScreen({super.key});
 
@@ -24,9 +20,7 @@ class StoryVideoScreen extends StatefulWidget {
 }
 
 class _StoryVideoScreenState extends State<StoryVideoScreen> {
-
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-
   final AudioBookController controller = Get.put(AudioBookController());
   WorkCardController workCardController = Get.put(WorkCardController());
 
@@ -36,7 +30,6 @@ class _StoryVideoScreenState extends State<StoryVideoScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       controller.getLibraryStoryData();
     });
-
   }
 
   @override
@@ -47,57 +40,62 @@ class _StoryVideoScreenState extends State<StoryVideoScreen> {
       resizeToAvoidBottomInset: true,
       appBar: const CustomAppBar(),
       body: SafeArea(
-        child: Obx((){
+        child: Obx(() {
           if (controller.getLibraryStoryLoading.value) {
             return const Center(child: CustomLoader());
           }
 
-          if (controller.libraryStoryData.isEmpty) {
+          final videoStories = controller.libraryStoryData
+              .where((story) => story.type?.toLowerCase() == 'video')
+              .toList();
+
+          if (videoStories.isEmpty) {
             return Center(
               child: CustomText(
-                text: "Data Unavailable",
+                text: "No Video Stories Available",
                 textAlign: TextAlign.center,
                 color: AppColors.textColorC2C2C2,
               ),
             );
           }
 
-         return SingleChildScrollView(
+          return SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-
+                /// Top Horizontal List
                 SizedBox(
                   height: 250.h,
                   child: ListView.separated(
                     scrollDirection: Axis.horizontal,
                     padding: EdgeInsets.symmetric(horizontal: 20.w),
-                    itemCount: controller.libraryStoryData.length,
+                    itemCount: videoStories.length,
                     separatorBuilder: (context, index) => SizedBox(width: 12.w),
                     itemBuilder: (context, index) {
-                      final libraryData = controller.libraryStoryData[index];
+                      final libraryData = videoStories[index];
                       return VideoStoryCard(
                         title: libraryData.caption ?? 'N/A',
-                        imagePath: libraryData.mediaUrl != null && libraryData.mediaUrl!.isNotEmpty
-                            ? libraryData.mediaUrl!.first
-                            : "https://templates.joomla-monster.com/joomla30/jm-news-portal/components/com_djclassifieds/assets/images/default_profile.png",
-                        timestamp: libraryData.duration ?? 'N/A',
-                        videoPath: libraryData.mediaUrl != null && libraryData.mediaUrl!.isNotEmpty
-                            ? libraryData.mediaUrl!.first
-                            : "",
+                        imagePath: libraryData.thumbnail ??
+                            libraryData.mediaUrl?.first ??
+                            "https://templates.joomla-monster.com/joomla30/jm-news-portal/components/com_djclassifieds/assets/images/default_profile.png",
+                        createdAt: libraryData.createdAt,
+                        duration: libraryData.duration,
+                        videoPath: libraryData.mediaUrl?.first ?? "",
                         onTap: () {
-
-                          if (libraryData.mediaUrl != null && libraryData.mediaUrl!.isNotEmpty) {
+                          if (libraryData.mediaUrl != null &&
+                              libraryData.mediaUrl!.isNotEmpty) {
                             context.pushNamed(
-                                AppRoutes.storyVideoDetailsScreen,
-                                extra: {
-                                  "videoUrl": libraryData.mediaUrl!.first,
-                                  "title": libraryData.caption ?? 'N/A',
-                                  "duration": libraryData.duration ?? 'N/A',
-                                  "imagePath": libraryData.mediaUrl != null && libraryData.mediaUrl!.isNotEmpty
-                                      ? libraryData.mediaUrl!.first
-                                      : "https://templates.joomla-monster.com/joomla30/jm-news-portal/components/com_djclassifieds/assets/images/default_profile.png",
-                                }
+                              AppRoutes.storyVideoDetailsScreen,
+                              extra: {
+                                "videoUrl": libraryData.mediaUrl!.first,
+                                "storyId": libraryData.id ?? "",
+                                "title": libraryData.caption ?? 'N/A',
+                                "duration": libraryData.duration ?? 'N/A',
+                                "imagePath": libraryData.thumbnail ??
+                                    libraryData.mediaUrl!.first,
+                                "description": libraryData.description ?? 'N/A',
+                                "tags": libraryData.tags ?? [],
+                              },
                             );
                           }
                         },
@@ -106,10 +104,10 @@ class _StoryVideoScreenState extends State<StoryVideoScreen> {
                   ),
                 ),
 
-                SizedBox(height: 12.h,),
+                SizedBox(height: 12.h),
 
                 Padding(
-                  padding:  EdgeInsets.only(left: 20.w,right: 15.h),
+                  padding: EdgeInsets.only(left: 20.w, right: 15.h),
                   child: Divider(
                     color: AppColors.secondary836531,
                     height: 0.4.h,
@@ -119,46 +117,54 @@ class _StoryVideoScreenState extends State<StoryVideoScreen> {
 
                 SizedBox(height: 16.h),
 
+                /// Bottom Vertical List
                 SizedBox(
                   height: 400.h,
                   child: ListView.separated(
                     padding: EdgeInsets.symmetric(horizontal: 20.w),
-                    itemCount: controller.libraryStoryData.length,
+                    itemCount: videoStories.length,
                     separatorBuilder: (context, index) => SizedBox(height: 12.h),
                     itemBuilder: (context, index) {
-                      final libraryData = controller.libraryStoryData[index];
+                      final libraryData = videoStories[index];
                       return VideoListCard(
                         title: libraryData.caption ?? 'N/A',
                         subtitle: libraryData.description ?? 'N/A',
-                        meta: libraryData.duration ?? 'N/A',
-                        hashtags: (libraryData.tags is List)
-                            ? (libraryData.tags as List).join(", ")
-                            : (libraryData.tags?.toString() ?? 'N/A'),
-                        imagePath: libraryData.mediaUrl != null && libraryData.mediaUrl!.isNotEmpty
-                            ? libraryData.mediaUrl!.first
-                            : "https://templates.joomla-monster.com/joomla30/jm-news-portal/components/com_djclassifieds/assets/images/default_profile.png",
+                        createdAt: libraryData.createdAt,
+                        duration: libraryData.duration,
+                        hashtags: (libraryData.tags ?? []).join(", "),
+                        imagePath: libraryData.thumbnail ??
+                            libraryData.mediaUrl?.first ??
+                            "https://templates.joomla-monster.com/joomla30/jm-news-portal/components/com_djclassifieds/assets/images/default_profile.png",
+                        videoPath: libraryData.mediaUrl?.first ?? "",
                         onTap: () {
-
+                          if (libraryData.mediaUrl != null &&
+                              libraryData.mediaUrl!.isNotEmpty) {
+                            context.pushNamed(
+                              AppRoutes.storyVideoDetailsScreen,
+                              extra: {
+                                "videoUrl": libraryData.mediaUrl!.first,
+                                "storyId": libraryData.id ?? "",
+                                "title": libraryData.caption ?? 'N/A',
+                                "duration": libraryData.duration ?? 'N/A',
+                                "imagePath": libraryData.thumbnail ??
+                                    libraryData.mediaUrl!.first,
+                                "description": libraryData.description ?? 'N/A',
+                                "tags": libraryData.tags ?? [],
+                              },
+                            );
+                          }
                         },
                       );
                     },
                   ),
                 ),
 
-
                 SizedBox(height: 10.h),
               ],
             ),
           );
-        })
-
-
+        }),
       ),
     );
   }
-
-
 }
-
-
-

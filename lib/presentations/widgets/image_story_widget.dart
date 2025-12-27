@@ -44,7 +44,7 @@ class _ImageStoryCardState extends State<ImageStoryCard> {
 
     try {
       final downloadService = DownloadService();
-      bool success = await downloadService.downloadImage(
+      bool success = await downloadService.downloadMedia(
         widget.imagePath,
         title: widget.title,
         subtitle: widget.caption,

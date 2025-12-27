@@ -146,9 +146,16 @@ class _StoryImageDetailsScreenState extends State<StoryImageDetailsScreen> {
                                             captionController.text,
                                             descriptionController.text,
                                           );
+
+                                          // Update the local route data with new values
+                                          routeData["caption"] = captionController.text;
+                                          routeData["description"] = descriptionController.text;
+
                                           Navigator.of(context).pop();
                                           // Optionally reload data
                                           controller.getLibraryStoryData();
+                                          // Also refresh the single story data
+                                          homeController.getStorySingle(id: storyId);
 
                                           // Show feedback
                                           Get.snackbar(
@@ -215,7 +222,10 @@ class _StoryImageDetailsScreenState extends State<StoryImageDetailsScreen> {
 
               SizedBox(height: 16.h),
               /// ============================================ line ====================================>
-              const CustomImageDetailsProgressBar(),
+              CustomImageDetailsProgressBar(
+                caption: caption,
+                description: description,
+              ),
 
 
 
