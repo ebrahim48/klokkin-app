@@ -4,6 +4,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
 import 'package:klokkin_app/presentations/widgets/custom_text.dart';
+import 'package:klokkin_app/services/api_constants.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:video_player/video_player.dart';
 import '../../controllers/audio_book_controller.dart';
@@ -30,10 +31,12 @@ class CustomVideoDetailsProgressBar extends StatefulWidget {
   });
 
   @override
-  State<CustomVideoDetailsProgressBar> createState() => _CustomVideoDetailsProgressBarState();
+  State<CustomVideoDetailsProgressBar> createState() =>
+      _CustomVideoDetailsProgressBarState();
 }
 
-class _CustomVideoDetailsProgressBarState extends State<CustomVideoDetailsProgressBar> {
+class _CustomVideoDetailsProgressBarState
+    extends State<CustomVideoDetailsProgressBar> {
   final AudioBookController controllers = Get.put(AudioBookController());
   final HomeController homeController = Get.put(HomeController());
 
@@ -56,8 +59,10 @@ class _CustomVideoDetailsProgressBarState extends State<CustomVideoDetailsProgre
   void _videoListener() {
     if (widget.videoController != null && mounted) {
       setState(() {
-        _currentPosition = widget.videoController!.value.position.inSeconds.toDouble();
-        _totalDuration = widget.videoController!.value.duration.inSeconds.toDouble();
+        _currentPosition =
+            widget.videoController!.value.position.inSeconds.toDouble();
+        _totalDuration =
+            widget.videoController!.value.duration.inSeconds.toDouble();
         _isPlaying = widget.videoController!.value.isPlaying;
       });
     }
@@ -171,7 +176,9 @@ class _CustomVideoDetailsProgressBarState extends State<CustomVideoDetailsProgre
                   min: 0,
                   max: _totalDuration > 0 ? _totalDuration : 1,
                   onChanged: (value) {
-                    widget.videoController?.seekTo(Duration(seconds: value.toInt()));
+                    widget.videoController?.seekTo(
+                      Duration(seconds: value.toInt()),
+                    );
                   },
                 ),
               ),
@@ -185,7 +192,7 @@ class _CustomVideoDetailsProgressBarState extends State<CustomVideoDetailsProgre
                 if (widget.storyId.isNotEmpty) {
                   homeController.share(widget.storyId);
                   Share.share(
-                    'Check this out: https://jakuan8080.syedbipul.me/api/v1/story/story/${widget.storyId}',
+                    'Check this out: ${ApiConstants.baseUrl}/story/story/${widget.storyId}',
                     subject: 'Share Video',
                   );
                 }
@@ -255,14 +262,15 @@ class _CustomVideoDetailsProgressBarState extends State<CustomVideoDetailsProgre
             Expanded(
               child: Wrap(
                 spacing: 8.w,
-                children: widget.tags.map((tag) {
-                  return CustomText(
-                    text: tag,
-                    color: AppColors.textColor2165DF,
-                    fontsize: 14.sp,
-                    fontWeight: FontWeight.w400,
-                  );
-                }).toList(),
+                children:
+                    widget.tags.map((tag) {
+                      return CustomText(
+                        text: tag,
+                        color: AppColors.textColor2165DF,
+                        fontsize: 14.sp,
+                        fontWeight: FontWeight.w400,
+                      );
+                    }).toList(),
               ),
             ),
             GestureDetector(

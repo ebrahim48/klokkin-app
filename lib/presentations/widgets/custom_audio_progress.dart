@@ -17,6 +17,7 @@ import '../../core/helpers/toast_message_helper.dart';
 import '../../global/custom_assets/assets.gen.dart';
 import 'package:intl/intl.dart';
 import '../../../services/download_service.dart';
+import '../../services/api_constants.dart';
 
 class CustomAudioProgressBar extends StatefulWidget {
   const CustomAudioProgressBar({super.key});
@@ -60,9 +61,10 @@ class _CustomAudioProgressBarState extends State<CustomAudioProgressBar> {
     try {
       if (controllers.libraryStoryData.isNotEmpty) {
         final currentStory = controllers.libraryStoryData.first;
-        final mediaUrl = currentStory.mediaUrl?.isNotEmpty == true
-            ? currentStory.mediaUrl!.first
-            : null;
+        final mediaUrl =
+            currentStory.mediaUrl?.isNotEmpty == true
+                ? currentStory.mediaUrl!.first
+                : null;
 
         if (mediaUrl != null) {
           Get.snackbar(
@@ -124,7 +126,6 @@ class _CustomAudioProgressBarState extends State<CustomAudioProgressBar> {
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-
           Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
@@ -148,7 +149,7 @@ class _CustomAudioProgressBarState extends State<CustomAudioProgressBar> {
                 child: SizedBox(
                   width: 44.w,
                   height: 44.h,
-                  child: Assets.icons.editImage.svg()
+                  child: Assets.icons.editImage.svg(),
                 ),
               ),
               SizedBox(width: 12.w),
@@ -175,7 +176,9 @@ class _CustomAudioProgressBarState extends State<CustomAudioProgressBar> {
                 constraints: const BoxConstraints(),
                 onPressed: audioController.togglePlayPause,
                 icon: Icon(
-                  audioController.isPlaying.value ? Icons.pause : Icons.play_arrow,
+                  audioController.isPlaying.value
+                      ? Icons.pause
+                      : Icons.play_arrow,
                   size: 25,
                   color: AppColors.textColorC2C2C2,
                 ),
@@ -191,8 +194,10 @@ class _CustomAudioProgressBarState extends State<CustomAudioProgressBar> {
                     thumbShape: RoundSliderThumbShape(enabledThumbRadius: 6.r),
                   ),
                   child: Slider(
-                    value: audioController.currentTime.value
-                        .clamp(0, audioController.totalTime.value),
+                    value: audioController.currentTime.value.clamp(
+                      0,
+                      audioController.totalTime.value,
+                    ),
                     min: 0,
                     max: audioController.totalTime.value,
                     onChanged: audioController.seek,
@@ -200,10 +205,11 @@ class _CustomAudioProgressBarState extends State<CustomAudioProgressBar> {
                 ),
               ),
               CustomText(
-                text: controllers.libraryStoryData.isNotEmpty &&
-                    controllers.libraryStoryData.first.duration != null
-                    ? '${controllers.libraryStoryData.first.duration}'
-                    : '00:00',
+                text:
+                    controllers.libraryStoryData.isNotEmpty &&
+                            controllers.libraryStoryData.first.duration != null
+                        ? '${controllers.libraryStoryData.first.duration}'
+                        : '00:00',
                 color: AppColors.textColor919191,
               ),
               SizedBox(width: 15.w),
@@ -212,12 +218,11 @@ class _CustomAudioProgressBarState extends State<CustomAudioProgressBar> {
                 child: Assets.icons.settings.svg(
                   color: AppColors.textColorFFFFFF,
                 ),
-              )
+              ),
             ],
           ),
 
           SizedBox(height: 32.h),
-
 
           /// ---- Info Row ----
           Container(
@@ -233,19 +238,25 @@ class _CustomAudioProgressBarState extends State<CustomAudioProgressBar> {
                   children: [
                     CustomText(
                       textAlign: TextAlign.start,
-                      text: controllers.libraryStoryData.isNotEmpty &&
-                          controllers.libraryStoryData.first.createdAt != null
-                          ? 'Post: ${DateFormat("dd MMM yyyy").format(DateTime.parse('${controllers.libraryStoryData.first.createdAt}'))}'
-                          : 'Post: --',
+                      text:
+                          controllers.libraryStoryData.isNotEmpty &&
+                                  controllers
+                                          .libraryStoryData
+                                          .first
+                                          .createdAt !=
+                                      null
+                              ? 'Post: ${DateFormat("dd MMM yyyy").format(DateTime.parse('${controllers.libraryStoryData.first.createdAt}'))}'
+                              : 'Post: --',
                       color: AppColors.textColorFFFFFF,
                       fontsize: 14.sp,
                       fontWeight: FontWeight.w400,
                     ),
                     CustomText(
                       textAlign: TextAlign.start,
-                      text: controllers.libraryStoryData.isNotEmpty
-                          ? '${controllers.libraryStoryData.fold<int>(0, (sum, story) => sum + (story.view ?? 0))} views'
-                          : 'N/A',
+                      text:
+                          controllers.libraryStoryData.isNotEmpty
+                              ? '${controllers.libraryStoryData.fold<int>(0, (sum, story) => sum + (story.view ?? 0))} views'
+                              : 'N/A',
                       color: AppColors.textColor6B6B6B,
                       fontsize: 12.sp,
                       fontWeight: FontWeight.w400,
@@ -259,15 +270,20 @@ class _CustomAudioProgressBarState extends State<CustomAudioProgressBar> {
                     /// Share Button
                     GestureDetector(
                       onTap: () {
-                        final currentStoryId = controllers.libraryStoryData.isNotEmpty &&
-                            controllers.libraryStoryData.first.id != null
-                            ? controllers.libraryStoryData.first.id!
-                            : '';
+                        final currentStoryId =
+                            controllers.libraryStoryData.isNotEmpty &&
+                                    controllers.libraryStoryData.first.id !=
+                                        null
+                                ? controllers.libraryStoryData.first.id!
+                                : '';
                         if (currentStoryId.isNotEmpty) {
                           homeController.share(currentStoryId);
                           Share.share(
-                            'Check this out: https://jakuan8080.syedbipul.me/api/v1/story/story/$currentStoryId',
-                            subject: controller.isVideo.value ? 'Share Video' : 'Share Audio',
+                            'Check this out: ${ApiConstants.baseUrl}/story/story/$currentStoryId',
+                            subject:
+                                controller.isVideo.value
+                                    ? 'Share Video'
+                                    : 'Share Audio',
                           );
                         }
                       },
@@ -288,12 +304,17 @@ class _CustomAudioProgressBarState extends State<CustomAudioProgressBar> {
                           final mediaUrl = story.mediaUrl?.first;
 
                           if (mediaUrl == null || mediaUrl.isEmpty) {
-                            ToastMessageHelper.showToastMessage('No media available');
+                            ToastMessageHelper.showToastMessage(
+                              'No media available',
+                            );
                             return;
                           }
 
                           final fileName = mediaUrl.split('/').last;
-                          final filePath = await DownloadHelper.downloadFile(mediaUrl, fileName);
+                          final filePath = await DownloadHelper.downloadFile(
+                            mediaUrl,
+                            fileName,
+                          );
 
                           if (filePath != null) {
                             setState(() {
@@ -341,9 +362,10 @@ class _CustomAudioProgressBarState extends State<CustomAudioProgressBar> {
           /// Caption
           CustomText(
             textAlign: TextAlign.start,
-            text: controllers.libraryStoryData.isNotEmpty
-                ? controllers.libraryStoryData.first.caption ?? 'N/A'
-                : 'N/A',
+            text:
+                controllers.libraryStoryData.isNotEmpty
+                    ? controllers.libraryStoryData.first.caption ?? 'N/A'
+                    : 'N/A',
             color: AppColors.textColorFFFFFF,
             fontsize: 16.sp,
             fontWeight: FontWeight.w400,
@@ -353,9 +375,10 @@ class _CustomAudioProgressBarState extends State<CustomAudioProgressBar> {
           /// Description
           CustomText(
             textAlign: TextAlign.start,
-            text: controllers.libraryStoryData.isNotEmpty
-                ? controllers.libraryStoryData.first.description ?? 'N/A'
-                : 'N/A',
+            text:
+                controllers.libraryStoryData.isNotEmpty
+                    ? controllers.libraryStoryData.first.description ?? 'N/A'
+                    : 'N/A',
             color: AppColors.textColor8B8B8B,
             fontsize: 12.sp,
             fontWeight: FontWeight.w400,
@@ -381,11 +404,16 @@ class _CustomAudioProgressBarState extends State<CustomAudioProgressBar> {
               Expanded(
                 child: CustomText(
                   textAlign: TextAlign.start,
-                  text: controllers.libraryStoryData.isNotEmpty
-                      ? (controllers.libraryStoryData.first.tags is List)
-                      ? (controllers.libraryStoryData.first.tags as List).join(", ")
-                      : (controllers.libraryStoryData.first.tags?.toString() ?? 'N/A')
-                      : 'N/A',
+                  text:
+                      controllers.libraryStoryData.isNotEmpty
+                          ? (controllers.libraryStoryData.first.tags is List)
+                              ? (controllers.libraryStoryData.first.tags
+                                      as List)
+                                  .join(", ")
+                              : (controllers.libraryStoryData.first.tags
+                                      ?.toString() ??
+                                  'N/A')
+                          : 'N/A',
                   color: AppColors.textColor2165DF,
                   fontsize: 14.sp,
                   fontWeight: FontWeight.w400,
@@ -458,7 +486,7 @@ class _CustomAudioProgressBarState extends State<CustomAudioProgressBar> {
                           color: AppColors.textColor8B8B8B,
                         ),
                       ],
-                    )
+                    ),
                   ],
                 ),
               ),
@@ -630,15 +658,24 @@ class _CustomAudioProgressBarState extends State<CustomAudioProgressBar> {
       child: Container(
         padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 6.h),
         decoration: BoxDecoration(
-          color: playbackController.speed.value == value ? Colors.white24 : Colors.transparent,
+          color:
+              playbackController.speed.value == value
+                  ? Colors.white24
+                  : Colors.transparent,
           borderRadius: BorderRadius.circular(12.r),
           border: Border.all(
-            color: playbackController.speed.value == value ? Colors.white : Colors.grey,
+            color:
+                playbackController.speed.value == value
+                    ? Colors.white
+                    : Colors.grey,
           ),
         ),
         child: CustomText(
           text: text,
-          color: playbackController.speed.value == value ? Colors.white : Colors.grey,
+          color:
+              playbackController.speed.value == value
+                  ? Colors.white
+                  : Colors.grey,
           fontsize: 14.sp,
           fontWeight: FontWeight.w400,
         ),
@@ -701,54 +738,59 @@ class _CustomAudioProgressBarState extends State<CustomAudioProgressBar> {
                     ),
 
                     /// Delete Button
-                    Obx(() => GestureDetector(
-                      onTap: controllers.deleteStoryLoading.value
-                          ? null
-                          : () async {
-                        if (controllers.libraryStoryData.isNotEmpty) {
-                          final storyId = controllers.libraryStoryData.first.id;
-                          if (storyId != null) {
-                            // Close confirmation dialog first
-                            if (Navigator.canPop(dialogContext)) {
-                              Navigator.pop(dialogContext);
-                            }
+                    Obx(
+                      () => GestureDetector(
+                        onTap:
+                            controllers.deleteStoryLoading.value
+                                ? null
+                                : () async {
+                                  if (controllers.libraryStoryData.isNotEmpty) {
+                                    final storyId =
+                                        controllers.libraryStoryData.first.id;
+                                    if (storyId != null) {
+                                      // Close confirmation dialog first
+                                      if (Navigator.canPop(dialogContext)) {
+                                        Navigator.pop(dialogContext);
+                                      }
 
-                            // Delete the story
-                            await controllers.deleteStory(storyId);
+                                      // Delete the story
+                                      await controllers.deleteStory(storyId);
 
-                            // Show success dialog
-                            if (mounted) {
-                              _showDeleteSuccessDialog(context);
-                            }
-                          }
-                        }
-                      },
-                      child: Container(
-                        width: 100.w,
-                        height: 38.h,
-                        decoration: BoxDecoration(
-                          color: Colors.red,
-                          borderRadius: BorderRadius.circular(50.r),
-                        ),
-                        child: Center(
-                          child: controllers.deleteStoryLoading.value
-                              ? SizedBox(
-                            width: 20.w,
-                            height: 20.h,
-                            child: const CircularProgressIndicator(
-                              strokeWidth: 2,
-                              color: Colors.white,
-                            ),
-                          )
-                              : CustomText(
-                            text: "Delete",
-                            color: AppColors.textColorFFFFFF,
-                            fontsize: 14.sp,
-                            fontWeight: FontWeight.w500,
+                                      // Show success dialog
+                                      if (mounted) {
+                                        _showDeleteSuccessDialog(context);
+                                      }
+                                    }
+                                  }
+                                },
+                        child: Container(
+                          width: 100.w,
+                          height: 38.h,
+                          decoration: BoxDecoration(
+                            color: Colors.red,
+                            borderRadius: BorderRadius.circular(50.r),
+                          ),
+                          child: Center(
+                            child:
+                                controllers.deleteStoryLoading.value
+                                    ? SizedBox(
+                                      width: 20.w,
+                                      height: 20.h,
+                                      child: const CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                        color: Colors.white,
+                                      ),
+                                    )
+                                    : CustomText(
+                                      text: "Delete",
+                                      color: AppColors.textColorFFFFFF,
+                                      fontsize: 14.sp,
+                                      fontWeight: FontWeight.w500,
+                                    ),
                           ),
                         ),
                       ),
-                    )),
+                    ),
                   ],
                 ),
               ],
@@ -785,11 +827,7 @@ class _CustomAudioProgressBarState extends State<CustomAudioProgressBar> {
                     color: AppColors.primaryColorC79235,
                     shape: BoxShape.circle,
                   ),
-                  child: Icon(
-                    Icons.check,
-                    size: 30.sp,
-                    color: Colors.white,
-                  ),
+                  child: Icon(Icons.check, size: 30.sp, color: Colors.white),
                 ),
                 SizedBox(height: 10.h),
                 CustomText(
@@ -822,7 +860,4 @@ class _CustomAudioProgressBarState extends State<CustomAudioProgressBar> {
       }
     });
   }
-
-
-
 }

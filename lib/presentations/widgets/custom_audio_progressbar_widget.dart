@@ -3,6 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
+import 'package:klokkin_app/services/api_constants.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:video_player/video_player.dart';
 
@@ -21,8 +22,6 @@ class AudioProgressBar extends StatefulWidget {
 }
 
 class _AudioProgressBarState extends State<AudioProgressBar> {
-
-
   final controller = Get.put(AudioController());
   final HomeController homeController = Get.put(HomeController());
   String? storyId;
@@ -46,7 +45,6 @@ class _AudioProgressBarState extends State<AudioProgressBar> {
   @override
   Widget build(BuildContext context) {
     return Obx(() {
-
       final story = homeController.storySingle.value;
       if (homeController.getStorySingleLoading.value) {
         return const Center(child: CustomLoader());
@@ -74,20 +72,22 @@ class _AudioProgressBarState extends State<AudioProgressBar> {
                     return ClipRRect(
                       borderRadius: BorderRadius.circular(8.r),
                       child: AspectRatio(
-                        aspectRatio: controller.videoController.value.aspectRatio,
+                        aspectRatio:
+                            controller.videoController.value.aspectRatio,
                         child: VideoPlayer(controller.videoController),
                       ),
                     );
                   } else {
-                    return  const Center(child: CustomLoader());
+                    return const Center(child: CustomLoader());
                   }
                 } else {
                   return ClipRRect(
                     borderRadius: BorderRadius.circular(8.r),
                     child: CustomNetworkImage(
-                      imageUrl: (story.mediaUrl != null && story.mediaUrl!.isNotEmpty)
-                          ? story.mediaUrl!.first
-                          : "https://templates.joomla-monster.com/joomla30/jm-news-portal/components/com_djclassifieds/assets/images/default_profile.png",
+                      imageUrl:
+                          (story.mediaUrl != null && story.mediaUrl!.isNotEmpty)
+                              ? story.mediaUrl!.first
+                              : "https://templates.joomla-monster.com/joomla30/jm-news-portal/components/com_djclassifieds/assets/images/default_profile.png",
                       borderRadius: BorderRadius.circular(8.r),
                       height: 200.h,
                       width: double.infinity,
@@ -95,7 +95,6 @@ class _AudioProgressBarState extends State<AudioProgressBar> {
                   );
                 }
               }),
-
 
               // if (controller.isVideo.value)
               //   Align(
@@ -123,39 +122,51 @@ class _AudioProgressBarState extends State<AudioProgressBar> {
                 constraints: const BoxConstraints(),
                 onPressed: () {
                   if (story.mediaUrl != null && story.mediaUrl!.isNotEmpty) {
-                    bool isVideo = story.mediaUrl!.first.endsWith(".mp4") ||
+                    bool isVideo =
+                        story.mediaUrl!.first.endsWith(".mp4") ||
                         story.mediaUrl!.first.endsWith(".m3u8");
-                    controller.setMediaPath(story.mediaUrl!.first, video: isVideo);
+                    controller.setMediaPath(
+                      story.mediaUrl!.first,
+                      video: isVideo,
+                    );
                   }
                   controller.togglePlayPause();
                 },
-                icon: Obx(() => Icon(
-                  controller.isPlaying.value ? Icons.pause : Icons.play_arrow,
-                  size: 25,
-                  color: AppColors.textColorC2C2C2,
-                )),
+                icon: Obx(
+                  () => Icon(
+                    controller.isPlaying.value ? Icons.pause : Icons.play_arrow,
+                    size: 25,
+                    color: AppColors.textColorC2C2C2,
+                  ),
+                ),
               ),
               SizedBox(width: 5.w),
 
               /// ======================================> Speed ==================================>
-              Obx(() => CustomText(
-                text: controller.formatSpeed(controller.playbackSpeed.value),
-                color: AppColors.textColorFFFFFF,
-                fontsize: 16.sp,
-                fontWeight: FontWeight.w400,
-              )),
+              Obx(
+                () => CustomText(
+                  text: controller.formatSpeed(controller.playbackSpeed.value),
+                  color: AppColors.textColorFFFFFF,
+                  fontsize: 16.sp,
+                  fontWeight: FontWeight.w400,
+                ),
+              ),
               SizedBox(width: 10.w),
 
               // Slider
               Expanded(
                 child: Obx(() {
-                  double value = controller.isVideo.value && controller.isInitialized.value
-                      ? controller.videoController.value.position.inSeconds.toDouble()
-                      : controller.currentTime.value;
+                  double value =
+                      controller.isVideo.value && controller.isInitialized.value
+                          ? controller.videoController.value.position.inSeconds
+                              .toDouble()
+                          : controller.currentTime.value;
 
-                  double max = controller.isVideo.value && controller.isInitialized.value
-                      ? controller.videoController.value.duration.inSeconds.toDouble()
-                      : controller.totalTime.value;
+                  double max =
+                      controller.isVideo.value && controller.isInitialized.value
+                          ? controller.videoController.value.duration.inSeconds
+                              .toDouble()
+                          : controller.totalTime.value;
 
                   return SliderTheme(
                     data: SliderTheme.of(context).copyWith(
@@ -164,7 +175,9 @@ class _AudioProgressBarState extends State<AudioProgressBar> {
                       inactiveTrackColor: AppColors.textColor6B6B6B,
                       overlayShape: SliderComponentShape.noOverlay,
                       thumbColor: AppColors.buttonColorE8A533,
-                      thumbShape: RoundSliderThumbShape(enabledThumbRadius: 6.r),
+                      thumbShape: RoundSliderThumbShape(
+                        enabledThumbRadius: 6.r,
+                      ),
                     ),
                     child: Slider(
                       value: value.clamp(0, max),
@@ -184,8 +197,11 @@ class _AudioProgressBarState extends State<AudioProgressBar> {
                   if (currentStoryId.isNotEmpty) {
                     homeController.share(currentStoryId);
                     Share.share(
-                      'Check this out: https://jakuan8080.syedbipul.me/api/v1/story/story/$currentStoryId',
-                      subject: controller.isVideo.value ? 'Share Video' : 'Share Audio',
+                      'Check this out:\n ${ApiConstants.baseUrl}/story/story/$currentStoryId',
+                      subject:
+                          controller.isVideo.value
+                              ? 'Share Video'
+                              : 'Share Audio',
                     );
                   }
                 },
@@ -196,8 +212,6 @@ class _AudioProgressBarState extends State<AudioProgressBar> {
                   color: AppColors.textColorC2C2C2,
                 ),
               ),
-
-
             ],
           ),
 
@@ -249,25 +263,26 @@ class _AudioProgressBarState extends State<AudioProgressBar> {
               Expanded(
                 child: Wrap(
                   spacing: 8.w,
-                  children: (story.tags ?? [])
-                      .map((tag) => GestureDetector(
-                    onTap: () => print("$tag tapped"),
-                    child: CustomText(
-                      text: tag,
-                      color: AppColors.textColor2165DF,
-                      fontsize: 14.sp,
-                      fontWeight: FontWeight.w400,
-                    ),
-                  ))
-                      .toList(),
+                  children:
+                      (story.tags ?? [])
+                          .map(
+                            (tag) => GestureDetector(
+                              onTap: () => print("$tag tapped"),
+                              child: CustomText(
+                                text: tag,
+                                color: AppColors.textColor2165DF,
+                                fontsize: 14.sp,
+                                fontWeight: FontWeight.w400,
+                              ),
+                            ),
+                          )
+                          .toList(),
                 ),
               ),
 
               // Download Icon (optional functionality)
               GestureDetector(
-                onTap: () {
-
-                },
+                onTap: () {},
                 child: SvgPicture.asset(
                   "assets/icons/downloadSimple.svg",
                   width: 24.w,
