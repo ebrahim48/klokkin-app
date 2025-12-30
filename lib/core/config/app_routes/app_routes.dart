@@ -103,6 +103,7 @@ class AppRoutes {
         path: splashScreen,
         name: splashScreen,
         builder: (context, state) => const SplashScreen(),
+
         // redirect: (context, state) {
         //   Future.delayed(const Duration(seconds: 3), () async {
         //     var role = await PrefsHelper.getString(AppConstants.role);
@@ -120,6 +121,7 @@ class AppRoutes {
         //
         //   return;
         // },
+
       ),
 
       ///<<<=============>>> ONBOARDING SCREEN <<<===============>>>
