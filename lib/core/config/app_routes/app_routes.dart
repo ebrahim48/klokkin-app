@@ -103,23 +103,23 @@ class AppRoutes {
         path: splashScreen,
         name: splashScreen,
         builder: (context, state) => const SplashScreen(),
-        redirect: (context, state) {
-          Future.delayed(const Duration(seconds: 3), () async {
-            var role = await PrefsHelper.getString(AppConstants.role);
-            var token = await PrefsHelper.getString(AppConstants.bearerToken);
-            if (token != "") {
-              /// ===============Role Check =============>>>
-              if (role == "user") {
-                AppRoutes.goRouter.replaceNamed(AppRoutes.bottomNavbarScreen);
-              }
-            }
-            else {
-              AppRoutes.goRouter.replaceNamed(AppRoutes.onBoardingScreen);
-            }
-          });
-
-          return;
-        },
+        // redirect: (context, state) {
+        //   Future.delayed(const Duration(seconds: 3), () async {
+        //     var role = await PrefsHelper.getString(AppConstants.role);
+        //     var token = await PrefsHelper.getString(AppConstants.bearerToken);
+        //     if (token != "") {
+        //       /// ===============Role Check =============>>>
+        //       if (role == "user") {
+        //         AppRoutes.goRouter.replaceNamed(AppRoutes.bottomNavbarScreen);
+        //       }
+        //     }
+        //     else {
+        //       AppRoutes.goRouter.replaceNamed(AppRoutes.onBoardingScreen);
+        //     }
+        //   });
+        //
+        //   return;
+        // },
       ),
 
       ///<<<=============>>> ONBOARDING SCREEN <<<===============>>>

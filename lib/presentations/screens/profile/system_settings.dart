@@ -9,8 +9,10 @@ import 'package:klokkin_app/presentations/widgets/custom_button.dart';
 import 'package:klokkin_app/presentations/widgets/custom_text.dart';
 
 import '../../../controllers/home_controller.dart';
+import '../../../controllers/profile_controller.dart';
 import '../../../core/app_constants/app_constants.dart';
 import '../../../core/helpers/prefs_helper.dart';
+import '../../../core/helpers/toast_message_helper.dart';
 
 class SystemSettingScreen extends StatefulWidget {
   const SystemSettingScreen({super.key});
@@ -161,7 +163,14 @@ class _SystemSettingScreenState extends State<SystemSettingScreen> {
                     await PrefsHelper.remove(AppConstants.email);
                     await PrefsHelper.remove(AppConstants.phone);
                     await PrefsHelper.remove(AppConstants.emailValidator);
-                   context.pushNamed(AppRoutes.logInScreen);
+                    Get.delete<ProfileController>(force: true);
+                    if (context.mounted) {
+                      context.go(AppRoutes.logInScreen);
+                    }
+                    ToastMessageHelper.showToastMessage(
+                        'Logged out successfully',
+                        title: 'Success'
+                    );
                   },
                   child: CustomText(
                     text: 'Confirm',
