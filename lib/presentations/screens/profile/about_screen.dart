@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
-// import 'package:flutter_widget_from_html/flutter_widget_from_html.dart';
 import 'package:get/get.dart';
 import 'package:klokkin_app/core/constants/app_colors.dart';
 import '../../../controllers/profile_controller.dart';
@@ -22,6 +21,7 @@ class _AboutScreenState extends State<AboutScreen> {
     super.initState();
     profileController.aboutUs();
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -29,7 +29,7 @@ class _AboutScreenState extends State<AboutScreen> {
       appBar: AppBar(
         title: CustomText(
           text: 'About',
-          fontsize:24.sp,
+          fontsize: 24.sp,
           color: AppColors.primaryColorC79235,
           fontWeight: FontWeight.w400,
         ),
@@ -42,36 +42,42 @@ class _AboutScreenState extends State<AboutScreen> {
         child: Column(
           children: [
             SafeArea(
-              child: Obx(()=>
-              profileController.getAboutUsLoading.value
-                  ?  CustomLoader(top: 20.h)
-                  : profileController.about.isEmpty
-                  ? Center(child: CustomText(text: "No Data Found!", top: 600.h))
-                  :
-               Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      HtmlWidget(
-                          profileController.about.value,
-                          textStyle: TextStyle(
-                            fontWeight: FontWeight.w400,
-                            color: AppColors.textColorFFFFFF,
-                            fontSize: 14.h,
-                          )),
-                    // CustomText(
-                    //     textAlign: TextAlign.start,
-                    //     text: profileController.about.value,
-                    //     fontsize: 16.sp,
-                    //     fontWeight: FontWeight.w500,
-                    //     color: AppColors.textColorFFFFFF,
-                    //     maxline: 10,
-                    //   ),
-                      SizedBox(height: 15.h),
-                    ],
-                  ),
-                ),
+              child: Obx(
+                () =>
+                    profileController.getAboutUsLoading.value
+                        ? CustomLoader(top: 20.h)
+                        : profileController.about.isEmpty
+                        ? Center(
+                          child: CustomText(text: "No Data Found!", top: 600.h),
+                        )
+                        : Padding(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 20.w,
+                            vertical: 20.h,
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              HtmlWidget(
+                                profileController.about.value,
+                                textStyle: TextStyle(
+                                  fontWeight: FontWeight.w400,
+                                  color: AppColors.textColorFFFFFF,
+                                  fontSize: 14.h,
+                                ),
+                              ),
+                              // CustomText(
+                              //     textAlign: TextAlign.start,
+                              //     text: profileController.about.value,
+                              //     fontsize: 16.sp,
+                              //     fontWeight: FontWeight.w500,
+                              //     color: AppColors.textColorFFFFFF,
+                              //     maxline: 10,
+                              //   ),
+                              SizedBox(height: 15.h),
+                            ],
+                          ),
+                        ),
               ),
             ),
           ],
@@ -79,6 +85,4 @@ class _AboutScreenState extends State<AboutScreen> {
       ),
     );
   }
-
-
 }
