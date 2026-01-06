@@ -167,10 +167,6 @@ class _SystemSettingScreenState extends State<SystemSettingScreen> {
                     if (context.mounted) {
                       context.go(AppRoutes.logInScreen);
                     }
-                    ToastMessageHelper.showToastMessage(
-                        'Logged out successfully',
-                        title: 'Success'
-                    );
                   },
                   child: CustomText(
                     text: 'Confirm',

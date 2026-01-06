@@ -524,27 +524,20 @@ class _HomeScreenState extends State<HomeScreen> {
                           ? storyStartSteps.mediaUrl!.first
                           : "https://via.placeholder.com/235x150/20272E/C79235?text=Story");
 
-                      // Initialize video if this is a video URL and ID exists
-                      if (storyId.isNotEmpty &&
-                          storyStartSteps.mediaUrl?.isNotEmpty == true) {
-                        final mediaUrl = storyStartSteps.mediaUrl!.first;
-
-                        // Only initialize if not already initialized
-                        if (homeController.isInitializedStates[storyId] != true) {
-                          WidgetsBinding.instance.addPostFrameCallback((_) {
-                            homeController.setVideoPath(storyId, mediaUrl);
-                          });
-                        }
-                      }
+                      // Get video URL
+                      String videoUrl = storyStartSteps.mediaUrl?.isNotEmpty == true
+                          ? storyStartSteps.mediaUrl!.first
+                          : "";
 
                       return EveryStoryCard(
                         caption: storyStartSteps.description ?? "N/A",
                         imagePath: imageUrl,
                         storyId: storyId,
+                        videoUrl: videoUrl, // Pass video URL
                         onTap: () {
+                          // Optional: Handle card tap differently than play button
                           if (storyStartSteps.mediaUrl?.isNotEmpty == true &&
                               storyId.isNotEmpty) {
-                            homeController.setVideoPath(storyId, storyStartSteps.mediaUrl!.first);
                             context.pushNamed(
                                 AppRoutes.everyStoryScreen,
                                 extra: {
