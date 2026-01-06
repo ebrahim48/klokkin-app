@@ -23,6 +23,7 @@ import '../../../presentations/screens/home/createStory/record_video_list_page.d
 import '../../../presentations/screens/home/createStory/start_create_story.dart';
 import '../../../presentations/screens/home/createStory/upload_create_story.dart';
 import '../../../presentations/screens/home/createStory/video_create_story_screen.dart';
+import '../../../presentations/screens/home/createStory/video_play_screen.dart';
 import '../../../presentations/screens/home/createStory/video_record_add_post_details_screen.dart';
 import '../../../presentations/screens/library/bookmark_screen.dart';
 import '../../../presentations/screens/library/download_screen.dart';
@@ -95,6 +96,7 @@ class AppRoutes {
   static const String audioRecordAddPostDetailsScreen = "/audioRecordAddPostDetailsScreen";
   static const String videoRecordAddPostDetailsScreen = "/videoRecordAddPostDetailsScreen";
   static const String notificationsScreen = "/notificationsScreen";
+  static const String videoPlayerScreen = '/videoPlayerScreen';
 
   static final GoRouter goRouter = GoRouter(
     initialLocation: splashScreen,
@@ -270,7 +272,13 @@ class AppRoutes {
                 _customTransitionPage(RecordStoryScreen(), state),
       ),
 
-
+      GoRoute(
+        path: videoPlayerScreen,
+        name: videoPlayerScreen,
+        builder: (context, state) => VideoPlayerScreen(
+          videoData: state.extra as Map<String, dynamic>,
+        ),
+      ),
       //<<<=============>>> Record Story Screen  <<<===============>>>
 
       GoRoute(

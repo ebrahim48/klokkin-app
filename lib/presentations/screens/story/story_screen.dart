@@ -12,8 +12,6 @@ import '../../widgets/audio_book_card.dart';
 import '../../widgets/category_widget.dart';
 import '../../widgets/custom_loader.dart';
 
-
-
 class StoryScreen extends StatefulWidget {
   const StoryScreen({super.key});
 
@@ -24,13 +22,34 @@ class StoryScreen extends StatefulWidget {
 class _StoryScreenState extends State<StoryScreen> {
   final AudioBookController controller = Get.put(AudioBookController());
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  final ScrollController _scrollController = ScrollController();
 
+  @override
   void initState() {
     super.initState();
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       controller.getLibraryStoryData();
     });
 
+    // Add scroll listener for pagination
+    _scrollController.addListener(_onScroll);
+  }
+
+  void _onScroll() {
+    // Check if scrolled to bottom
+    if (_scrollController.position.pixels >= _scrollController.position.maxScrollExtent - 200) {
+      // Load more if available
+      if (controller.canLoadMoreAudio && !controller.loadingMoreAudio.value) {
+        controller.loadMoreAudioStories();
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
   }
 
   @override
@@ -40,6 +59,7 @@ class _StoryScreenState extends State<StoryScreen> {
       resizeToAvoidBottomInset: true,
       body: SafeArea(
         child: SingleChildScrollView(
+          controller: _scrollController,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -57,7 +77,7 @@ class _StoryScreenState extends State<StoryScreen> {
               ),
               SizedBox(height: 16.h),
               Padding(
-                padding:  EdgeInsets.symmetric(horizontal: 20.w),
+                padding: EdgeInsets.symmetric(horizontal: 20.w),
                 child: CustomText(
                   textAlign: TextAlign.center,
                   text: 'Every story holds a world within it, waiting to be discovered.Through stories, we live a thousand\n lives in one lifetime.',
@@ -71,7 +91,7 @@ class _StoryScreenState extends State<StoryScreen> {
               /// ==============================> Categories ===================================>
               SizedBox(height: 30.h),
               Padding(
-                padding:  EdgeInsets.symmetric(horizontal: 20.w),
+                padding: EdgeInsets.symmetric(horizontal: 20.w),
                 child: CustomText(
                   textAlign: TextAlign.start,
                   text: 'Categories of stories',
@@ -81,11 +101,9 @@ class _StoryScreenState extends State<StoryScreen> {
                 ),
               ),
 
-
               /// =====================================> Categories Scroll =====================================>
-
               SizedBox(height: 11.h),
-              Obx((){
+              Obx(() {
                 if (controller.getLibraryStoryLoading.value) {
                   return const Center(child: CustomLoader());
                 }
@@ -93,7 +111,7 @@ class _StoryScreenState extends State<StoryScreen> {
                   return Center(
                     child: CustomText(
                       text: "Library Story Data Unavailable",
-                       textAlign: TextAlign.center,
+                      textAlign: TextAlign.center,
                       color: AppColors.textColorC2C2C2,
                     ),
                   );
@@ -155,31 +173,37 @@ class _StoryScreenState extends State<StoryScreen> {
               }),
               SizedBox(height: 27.h),
 
-              /// =====================================> Audio Book Scroll =====================================>
-
+              /// =====================================> Audio Book Section =====================================>
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 20.w),
-                child: CustomText(
-                  text: 'Audio Book',
-                  fontsize: 20.sp,
-                  fontWeight: FontWeight.w500,
-                  color: AppColors.buttonColorE8A533,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    CustomText(
+                      text: 'Audio Book',
+                      fontsize: 20.sp,
+                      fontWeight: FontWeight.w500,
+                      color: AppColors.buttonColorE8A533,
+                    ),
+                    Obx(() {
+                      if (controller.audioMeta.value != null) {
+                        return CustomText(
+                          text: "${controller.audioStories.length} / ${controller.audioMeta.value?.total ?? 0}",
+                          fontsize: 14.sp,
+                          fontWeight: FontWeight.w400,
+                          color: AppColors.textColor919191,
+                        );
+                      }
+                      return const SizedBox.shrink();
+                    }),
+                  ],
                 ),
               ),
               SizedBox(height: 9.h),
-              Obx(() {
-                // Filter only audio type data and keep track of original indices
-                final audioBooks = <Map<String, dynamic>>[];
-                for (int i = 0; i < controller.libraryStoryData.length; i++) {
-                  if (controller.libraryStoryData[i].type?.toLowerCase() == 'audio') {
-                    audioBooks.add({
-                      'index': i,
-                      'data': controller.libraryStoryData[i]
-                    });
-                  }
-                }
 
-                if (audioBooks.isEmpty) {
+              /// Audio Book List
+              Obx(() {
+                if (controller.audioStories.isEmpty) {
                   return Center(
                     child: CustomText(
                       text: "Audio Book Data Unavailable",
@@ -188,68 +212,120 @@ class _StoryScreenState extends State<StoryScreen> {
                     ),
                   );
                 }
-                return SizedBox(
-                  height: 400.h,
-                  child: ListView.separated(
-                    padding: EdgeInsets.symmetric(horizontal: 20.w),
-                    itemCount: audioBooks.length,
-                    separatorBuilder: (context, index) => SizedBox(height: 12.h),
-                    itemBuilder: (context, index) {
-                      final item = audioBooks[index];
-                      final originalIndex = item['index'] as int;
-                      final audioBook = item['data'] as StoryLibraryDataModel;
 
-                      // Wrap each AudioBookCard in its own Obx to make it reactive to audio state changes
-                      return Obx(() {
-                        final isCurrentPlaying = controller.currentPlayingIndex.value == originalIndex;
+                return Column(
+                  children: [
+                    ListView.separated(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      padding: EdgeInsets.symmetric(horizontal: 20.w),
+                      itemCount: controller.audioStories.length,
+                      separatorBuilder: (context, index) => SizedBox(height: 12.h),
+                      itemBuilder: (context, index) {
+                        final audioBook = controller.audioStories[index];
 
-                        return AudioBookCard(
-                          title: audioBook.caption ?? 'N/A',
-                          subtitle: audioBook.duration ?? 'N/A',
-                          currentTime: isCurrentPlaying
-                              ? controller.formatDuration(controller.currentPosition.value)
-                              : null,
-                          imagePath: audioBook.thumbnail ??
-                              "https://templates.joomla-monster.com/joomla30/jm-news-portal/components/com_djclassifieds/assets/images/default_profile.png",
-                          isPlaying: isCurrentPlaying && controller.isPlaying.value,
-                          onPlayPause: () {
-                            final audioUrl = audioBook.mediaUrl != null &&
-                                audioBook.mediaUrl!.isNotEmpty
-                                ? audioBook.mediaUrl!.first
-                                : "";
+                        // Find original index in libraryStoryData
+                        final originalIndex = controller.libraryStoryData.indexOf(audioBook);
 
-                            if (audioUrl.isNotEmpty) {
-                              controller.toggleAudio(originalIndex, audioUrl);
-                            }
-                          },
-                          onTap: () {
-                            context.pushNamed(
-                              AppRoutes.storyAudioScreen,
-                              extra: {
-                                "caption": audioBook.caption ?? "",
-                                "duration": audioBook.duration ?? "",
-                                "imagePath": audioBook.thumbnail ??
-                                    "https://templates.joomla-monster.com/joomla30/jm-news-portal/components/com_djclassifieds/assets/images/default_profile.png",
-                              },
-                            );
-                          },
+                        return Obx(() {
+                          final isCurrentPlaying = controller.currentPlayingIndex.value == originalIndex;
+
+                          return AudioBookCard(
+                            title: audioBook.caption ?? 'N/A',
+                            subtitle: audioBook.duration ?? 'N/A',
+                            currentTime: isCurrentPlaying
+                                ? controller.formatDuration(controller.currentPosition.value)
+                                : null,
+                            imagePath: audioBook.thumbnail ??
+                                "https://templates.joomla-monster.com/joomla30/jm-news-portal/components/com_djclassifieds/assets/images/default_profile.png",
+                            isPlaying: isCurrentPlaying && controller.isPlaying.value,
+                            onPlayPause: () {
+                              final audioUrl = audioBook.mediaUrl != null &&
+                                  audioBook.mediaUrl!.isNotEmpty
+                                  ? audioBook.mediaUrl!.first
+                                  : "";
+
+                              if (audioUrl.isNotEmpty) {
+                                controller.toggleAudio(originalIndex, audioUrl);
+                              }
+                            },
+                            onTap: () {
+                              context.pushNamed(
+                                AppRoutes.storyAudioScreen,
+                                extra: {
+                                  "caption": audioBook.caption ?? "",
+                                  "duration": audioBook.duration ?? "",
+                                  "imagePath": audioBook.thumbnail ??
+                                      "https://templates.joomla-monster.com/joomla30/jm-news-portal/components/com_djclassifieds/assets/images/default_profile.png",
+                                },
+                              );
+                            },
+                          );
+                        });
+                      },
+                    ),
+
+                    /// Loading More Indicator
+                    Obx(() {
+                      if (controller.loadingMoreAudio.value) {
+                        return Padding(
+                          padding: EdgeInsets.symmetric(vertical: 16.h),
+                          child: const Center(child: CustomLoader()),
                         );
-                      });
-                    },
-                  ),
+                      }
+
+                      // Show "Load More" button if there are more pages
+                      if (controller.canLoadMoreAudio) {
+                        return Padding(
+                          padding: EdgeInsets.symmetric(vertical: 16.h, horizontal: 20.w),
+                          child: Center(
+                            child: TextButton(
+                              onPressed: () {
+                                controller.loadMoreAudioStories();
+                              },
+                              style: TextButton.styleFrom(
+                                backgroundColor: AppColors.primaryColorC79235,
+                                padding: EdgeInsets.symmetric(horizontal: 24.w, vertical: 12.h),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8.r),
+                                ),
+                              ),
+                              child: CustomText(
+                                text: "Load More",
+                                color: Colors.white,
+                                fontsize: 14.sp,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        );
+                      }
+
+                      // Show "No more stories" if at the end
+                      if (controller.audioStories.isNotEmpty && !controller.canLoadMoreAudio) {
+                        return Padding(
+                          padding: EdgeInsets.symmetric(vertical: 16.h),
+                          child: Center(
+                            child: CustomText(
+                              text: "No more audio stories",
+                              color: AppColors.textColor919191,
+                              fontsize: 12.sp,
+                            ),
+                          ),
+                        );
+                      }
+
+                      return const SizedBox.shrink();
+                    }),
+                  ],
                 );
               }),
 
-              SizedBox(height: 10.h),
+              SizedBox(height: 20.h),
             ],
           ),
         ),
       ),
     );
   }
-
-
 }
-
-
-
