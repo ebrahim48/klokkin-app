@@ -60,13 +60,13 @@ class CreatePostStoryScreen extends StatelessWidget {
                 maxline: 4,
               ),
             ),
-            SizedBox(height: 60.h),
+            SizedBox(height: 50.h),
 
             /// ============================= Story Card =============================
             Center(
               child: Container(
-                width: 94.w,
-                height: 146.h,
+                width: 100.w,
+                height: 180.h,
                 decoration: BoxDecoration(
                   color: const Color(0xFF323539),
                   borderRadius: BorderRadius.circular(8.r),
