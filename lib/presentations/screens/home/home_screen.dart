@@ -1,3 +1,5 @@
+// File: lib/presentations/screens/home/home_screen.dart
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -8,13 +10,12 @@ import '../../../controllers/home_controller.dart';
 import '../../../controllers/work_controller.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../global/custom_assets/assets.gen.dart';
-import '../../widgets/custom_loader.dart';
 import '../../widgets/custom_network_image.dart';
 import '../../widgets/custom_profile_image.dart';
 import '../../widgets/every-story_begins_card.dart';
 import '../../widgets/latest_card_widget.dart';
 import '../../widgets/work_card_widget.dart';
-
+import 'createStory/home_screen_shimmer.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -24,13 +25,13 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   final TextEditingController _searchController = TextEditingController();
 
   HomeController homeController = Get.put(HomeController());
   WorkCardController workCardController = Get.put(WorkCardController());
 
+  @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -40,7 +41,6 @@ class _HomeScreenState extends State<HomeScreen> {
       homeController.getStorySteps();
       homeController.getProfile();
     });
-
   }
 
   @override
@@ -54,17 +54,17 @@ class _HomeScreenState extends State<HomeScreen> {
         elevation: 0,
         centerTitle: true,
         leadingWidth: 80.w,
-        leading:  Row(
+        leading: Row(
           children: [
             Padding(
               padding: EdgeInsets.only(left: 15.w),
-              child:  CustomProfileImage(
+              child: CustomProfileImage(
                 imagePath: homeController.profile.value.profile?.avatar != null &&
                     homeController.profile.value.profile!.avatar!.isNotEmpty
                     ? homeController.profile.value.profile!.avatar!
                     : "https://templates.joomla-monster.com/joomla30/jm-news-portal/components/com_djclassifieds/assets/images/default_profile.png",
               ),
-              ),
+            ),
           ],
         ),
         actions: [
@@ -77,10 +77,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   onTap: () {
                     context.pushNamed(AppRoutes.notificationsScreen);
                   },
-                  child:
-                  Assets.icons.notification.svg(
-                      width: 32.w,
-                      height: 32.h
+                  child: Assets.icons.notification.svg(
+                    width: 32.w,
+                    height: 32.h,
                   ),
                 ),
                 SizedBox(width: 6.w),
@@ -88,14 +87,13 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
         ],
-
       ),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              /// ==============================> Search ===================================>
+              /// Search
               SizedBox(height: 10.h),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 16.w),
@@ -114,7 +112,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                         child: TextFormField(
                           controller: _searchController,
-                          style:  const TextStyle(color: AppColors.textColorFFFFFF),
+                          style: const TextStyle(color: AppColors.textColorFFFFFF),
                           decoration: InputDecoration(
                             hintText: 'Search',
                             hintStyle: const TextStyle(color: AppColors.textColorFFFFFF),
@@ -130,13 +128,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                     ),
-          
                     SizedBox(width: 57.w),
-          
-                    // SizedBox(
-                    //   width: 35.w,
-                    //   child: Assets.icons.filter.svg(width: 32.w, height: 32.h),
-                    // ),
                   ],
                 ),
               ),
@@ -150,7 +142,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
 
-              /// =====================================> Card =====================================>
+              /// Create a story
               SizedBox(height: 20.h),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 20.w),
@@ -186,7 +178,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
               ),
-              /// =====================================> Create Story Section ======================================>
+
+              /// Create Story Section
               SizedBox(height: 16.h),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 20.w),
@@ -195,7 +188,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
                   return Row(
                     children: [
-                      /// =============================> Always Create Story Box
+                      /// Create Story Box
                       Container(
                         width: 100,
                         height: 160,
@@ -252,7 +245,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
 
-                      /// =============================> Show Story Card only if exists
+                      /// Story Card
                       if (hasStories)
                         Container(
                           width: 94.w,
@@ -272,7 +265,6 @@ class _HomeScreenState extends State<HomeScreen> {
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  /// Image
                                   ClipRRect(
                                     borderRadius: BorderRadius.vertical(top: Radius.circular(4.r)),
                                     child: CustomNetworkImage(
@@ -284,8 +276,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                     ),
                                   ),
                                   SizedBox(height: 6.h),
-
-                                  /// Title
                                   Padding(
                                     padding: EdgeInsets.symmetric(horizontal: 6.w),
                                     child: CustomText(
@@ -299,8 +289,6 @@ class _HomeScreenState extends State<HomeScreen> {
                                       maxline: 1,
                                     ),
                                   ),
-
-                                  /// Description
                                   Padding(
                                     padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
                                     child: CustomText(
@@ -322,7 +310,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 }),
               ),
 
-              /// =====================================> Latest Scroll =====================================>
+              /// Latest From Klokk-in
               SizedBox(height: 19.h),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 20.w),
@@ -336,10 +324,7 @@ class _HomeScreenState extends State<HomeScreen> {
               SizedBox(height: 11.h),
               Obx(() {
                 if (homeController.getLatestFormLoading.value) {
-                  return SizedBox(
-                    height: 180.h,
-                    child: const Center(child: CustomLoader()),
-                  );
+                  return const LatestStoryShimmer();
                 }
 
                 if (homeController.latestForm.isEmpty) {
@@ -365,11 +350,9 @@ class _HomeScreenState extends State<HomeScreen> {
                     itemBuilder: (context, index) {
                       final latest = homeController.latestForm[index];
 
-                      // Get proper image URL
                       String imageUrl;
                       if (latest.mediaUrl != null && latest.mediaUrl!.isNotEmpty) {
                         final url = latest.mediaUrl!.first;
-                        // Check if it's a video URL
                         if (url.contains('.m3u8') || url.contains('/video/')) {
                           imageUrl = "https://via.placeholder.com/140x180/20272E/C79235?text=Video";
                         } else {
@@ -383,17 +366,14 @@ class _HomeScreenState extends State<HomeScreen> {
                         title: latest.caption ?? 'N/A',
                         caption: latest.description ?? 'N/A',
                         imagePath: imageUrl,
-                        onTap: () {
-                          // Add navigation if needed
-                        },
+                        onTap: () {},
                       );
                     },
                   ),
                 );
               }),
 
-
-              /// =====================================> Working Scroll =====================================>
+              /// Working Stories
               SizedBox(height: 21.h),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 20.w),
@@ -407,10 +387,7 @@ class _HomeScreenState extends State<HomeScreen> {
               SizedBox(height: 11.h),
               Obx(() {
                 if (homeController.getWorkingLoading.value) {
-                  return SizedBox(
-                    height: 200.h,
-                    child: const Center(child: CustomLoader()),
-                  );
+                  return const WorkingStoryShimmer();
                 }
 
                 if (homeController.workingDays.isEmpty) {
@@ -436,21 +413,17 @@ class _HomeScreenState extends State<HomeScreen> {
                     itemBuilder: (context, index) {
                       final workingDaysStories = homeController.workingDays[index];
 
-                      // Get proper image/thumbnail URL
                       String imageUrl = workingDaysStories.thumbnail?.isNotEmpty == true
                           ? workingDaysStories.thumbnail!
                           : (workingDaysStories.mediaUrl?.isNotEmpty == true
                           ? workingDaysStories.mediaUrl!.first
                           : "https://via.placeholder.com/160x180/20272E/C79235?text=Video");
 
-                      // Get video URL
                       String videoUrl = workingDaysStories.mediaUrl?.isNotEmpty == true
                           ? workingDaysStories.mediaUrl!.first
                           : "";
 
-                      // Initialize video controller for this index if URL exists
                       if (videoUrl.isNotEmpty) {
-                        // Check if controller doesn't exist yet
                         if (workCardController.getController(index) == null) {
                           WidgetsBinding.instance.addPostFrameCallback((_) {
                             workCardController.setVideoPath(index, videoUrl);
@@ -470,7 +443,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 );
               }),
-              /// =====================================> Every story begins =====================================>
+
+              /// Every story begins
               SizedBox(height: 25.h),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 20.w),
@@ -482,13 +456,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
               SizedBox(height: 16.h),
-
               Obx(() {
                 if (homeController.getStoryStepsLoading.value) {
-                  return SizedBox(
-                    height: 200.h,
-                    child: const Center(child: CustomLoader()),
-                  );
+                  return const EveryStoryShimmer();
                 }
 
                 if (homeController.storySteps.isEmpty) {
@@ -514,17 +484,14 @@ class _HomeScreenState extends State<HomeScreen> {
                     itemBuilder: (context, index) {
                       final storyStartSteps = homeController.storySteps[index];
 
-                      // Get story ID
                       final storyId = storyStartSteps.id ?? "";
 
-                      // Get proper image/thumbnail URL
                       String imageUrl = storyStartSteps.thumbnail?.isNotEmpty == true
                           ? storyStartSteps.thumbnail!
                           : (storyStartSteps.mediaUrl?.isNotEmpty == true
                           ? storyStartSteps.mediaUrl!.first
                           : "https://via.placeholder.com/235x150/20272E/C79235?text=Story");
 
-                      // Get video URL
                       String videoUrl = storyStartSteps.mediaUrl?.isNotEmpty == true
                           ? storyStartSteps.mediaUrl!.first
                           : "";
@@ -533,17 +500,15 @@ class _HomeScreenState extends State<HomeScreen> {
                         caption: storyStartSteps.description ?? "N/A",
                         imagePath: imageUrl,
                         storyId: storyId,
-                        videoUrl: videoUrl, // Pass video URL
+                        videoUrl: videoUrl,
                         onTap: () {
-                          // Optional: Handle card tap differently than play button
-                          if (storyStartSteps.mediaUrl?.isNotEmpty == true &&
-                              storyId.isNotEmpty) {
+                          if (storyStartSteps.mediaUrl?.isNotEmpty == true && storyId.isNotEmpty) {
                             context.pushNamed(
-                                AppRoutes.everyStoryScreen,
-                                extra: {
-                                  "title": "Every story begins with a step",
-                                  "storyId": storyId,
-                                }
+                              AppRoutes.everyStoryScreen,
+                              extra: {
+                                "title": "Every story begins with a step",
+                                "storyId": storyId,
+                              },
                             );
                           }
                         },
@@ -553,7 +518,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 );
               }),
               SizedBox(height: 20.h),
-
             ],
           ),
         ),
@@ -561,6 +525,3 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 }
-
-
-
