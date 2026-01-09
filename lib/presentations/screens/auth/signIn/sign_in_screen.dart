@@ -172,41 +172,43 @@ class LoginScreen extends StatelessWidget {
                 SizedBox(height: 24.h),
                 Padding(
                   padding: EdgeInsets.only(left: 25.w, right: 16.w),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      RichText(
-                        text: TextSpan(
-                          style: TextStyle(
-                            color: AppColors.textColor8B8B8B,
-                            fontSize: 14.sp,
-                            fontWeight: FontWeight.w400,
-                          ),
-                          children: const [
-                            TextSpan(text: 'By signing up, you agree to our '),
-                          ],
-                        ),
-                      ),
-                      RichText(
-                        text: TextSpan(
-                          style: TextStyle(
-                            color: AppColors.buttonColorE8A533,
-                            fontSize: 14.sp,
-                            fontWeight: FontWeight.w400,
-                          ),
-                          children: [
-                            TextSpan(
-                              text: ' Terms of ',
-                              recognizer: TapGestureRecognizer()
-                                ..onTap = () {
-                                  context.pushNamed(AppRoutes.termsServicesScreen);
-                                },
+                  child: SingleChildScrollView(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        RichText(
+                          text: TextSpan(
+                            style: TextStyle(
+                              color: AppColors.textColor8B8B8B,
+                              fontSize: 13.sp,
+                              fontWeight: FontWeight.w400,
                             ),
-                          ],
+                            children: const [
+                              TextSpan(text: 'By signing up, you agree to our '),
+                            ],
+                          ),
                         ),
-                      ),
-
-                    ],
+                        RichText(
+                          text: TextSpan(
+                            style: TextStyle(
+                              color: AppColors.buttonColorE8A533,
+                              fontSize: 14.sp,
+                              fontWeight: FontWeight.w400,
+                            ),
+                            children: [
+                              TextSpan(
+                                text: ' Terms of ',
+                                recognizer: TapGestureRecognizer()
+                                  ..onTap = () {
+                                    context.pushNamed(AppRoutes.termsServicesScreen);
+                                  },
+                              ),
+                            ],
+                          ),
+                        ),
+                    
+                      ],
+                    ),
                   ),
                 ),
                 SizedBox(height: 5.h),
