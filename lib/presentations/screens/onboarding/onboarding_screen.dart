@@ -363,7 +363,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                 },
               ),
             ),
-            SizedBox(height: 100.h),
+            SizedBox(height: 10.h),
             Center(
             child: SmoothPageIndicator(
                 controller: _pageController,
