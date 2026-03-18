@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
@@ -11,8 +10,6 @@ import '../../core/helpers/prefs_helper.dart';
 import '../../core/helpers/toast_message_helper.dart';
 import '../../services/api_client.dart';
 import '../../services/api_constants.dart';
-
-
 
 
 class AuthController extends GetxController {
@@ -68,9 +65,9 @@ class AuthController extends GetxController {
           "User created successfully, please verify your email");
       signUpLoading(false);
     } else {
-      // ToastMessageHelper.showToastMessage(
-      //     "${response.body["message"]}", title: 'Fail');
       signUpLoading(false);
+      final message = response.body["message"] ?? "Sign up failed. Please try again.";
+      ToastMessageHelper.showToastMessage(message, title: 'attention');
     }
   }
 
@@ -95,14 +92,6 @@ class AuthController extends GetxController {
           .body["data"]["attributes"]["result"]["accessToken"];
       await PrefsHelper.setString(AppConstants.bearerToken, accessToken);
 
-      // if(screenType== 'forgot'){
-      //   debugPrint("==========bearer token save done : ${response.body["data"]["attributes"]["result"]['accessToken']}");
-      //   await PrefsHelper.setString(AppConstants.bearerToken, response.body["data"]["attributes"]["result"]['accessToken']);
-      //
-      // }else{
-      //   debugPrint("==========bearer token save done : ${response.body["data"]["attributes"]["result"]['accessToken']}");
-      //   await PrefsHelper.setString(AppConstants.bearerToken, response.body["data"]["attributes"]["result"]['accessToken']);
-      // }
 
 
       if (type == 'Sign Up' && screenType == 'signup') {
@@ -111,14 +100,6 @@ class AuthController extends GetxController {
         context.go(AppRoutes.resetPasswordScreen);
       }
 
-      // if (type == 'Sign Up') {
-      //   print('================================ screenType received yjuikhujikgyhujvghg: $screenType');
-      //   if(screenType== 'signup'){
-      //     context.go(AppRoutes.logInScreen);
-      //   }
-      // }else{
-      //   context.go(AppRoutes.resetPasswordScreen);
-      // }
 
 
       verfyLoading(false);
@@ -147,7 +128,7 @@ class AuthController extends GetxController {
     };
 
     var response = await ApiClient.postData(
-      ApiConstants.loginUpEndPoint,
+      ApiConstants.loginEndPoint,
       jsonEncode(body),
       headers: headers,
     );
@@ -179,8 +160,6 @@ class AuthController extends GetxController {
       if (role == "user" || role == "admin") {
         await PrefsHelper.setBool(AppConstants.isLogged, true);
         context.go(AppRoutes.bottomNavbarScreen);
-        ToastMessageHelper.showToastMessage(
-            "You are logged in", title: 'Success');
       } else {
         final message = response.body["message"];
 
@@ -195,7 +174,7 @@ class AuthController extends GetxController {
             "We've sent an OTP to your email. Please verify your email.",
           );
         } else if (message == "⛔ Wrong password! ⛔") {
-          ToastMessageHelper.showToastMessage(message);
+          ToastMessageHelper.showToastMessage(message,title: 'attention');
         } else {
           ToastMessageHelper.showToastMessage(
             message,
@@ -349,53 +328,6 @@ class AuthController extends GetxController {
       }
     });
   }
-
-
-
-///===============Change Password================<>
-
-// RxBool changePasswordLoading = false.obs;
-// changePassword(String currentPassword, password ,confirmPassword ) async {
-//   changePasswordLoading(true);
-//   var body = {
-//     "currentPassword": "$currentPassword",
-//     "password": "$password",
-//     "confirmPassword" : "$confirmPassword"
-//   };
-//
-//   var response =
-//   await ApiClient.postData(ApiConstants.changePassword, jsonEncode(body));
-//
-//   if (response.statusCode == 200 || response.statusCode == 201) {
-//     ToastMessageHelper.showToastMessage('Password Changed Successful');
-//     print("======>>> successful");
-//     changePasswordLoading(false);
-//   } else if(response.statusCode == 1){
-//     changePasswordLoading(false);
-//     ToastMessageHelper.showToastMessage("Server error! \n Please try later");
-//   } else {
-//     ToastMessageHelper.showToastMessage(response.body['message']);
-//     changePasswordLoading(false);
-//   }
-// }
-
-  ///=============== Delete Account ================<>
-
-
-// var deleteLoading = false.obs;
-// userDelete(BuildContext context) async {
-//
-//   deleteLoading(true);
-//   var response = await ApiClient.deleteData(
-//       ApiConstants.deleteEndPoint);
-//   if (response.statusCode == 200) {
-//     ToastMessageHelper.showToastMessage('Account Delete Successfully');
-//     context.pushNamed(AppRoutes.logInScreen);
-//   } else {
-//     deleteLoading(false);
-//   }
-//
-// }
 
 
 

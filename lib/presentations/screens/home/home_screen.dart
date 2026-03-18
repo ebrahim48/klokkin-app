@@ -146,36 +146,28 @@ class _HomeScreenState extends State<HomeScreen> {
               SizedBox(height: 20.h),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 20.w),
-                child: SizedBox(
-                  width: 391.w,
-                  height: 23.h,
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.baseline,
-                    textBaseline: TextBaseline.alphabetic,
-                    children: [
-                      CustomText(
-                        text: 'Create a story',
-                        color: AppColors.textColorFFFFFF,
-                        fontsize: 20.sp,
-                        fontWeight: FontWeight.w500,
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    CustomText(
+                      text: 'Create a story',
+                      color: AppColors.textColorFFFFFF,
+                      fontsize: 18.sp,
+                      fontWeight: FontWeight.w500,
+                    ),
+                    const Spacer(),
+                    GestureDetector(
+                      onTap: () {
+                        context.pushNamed(AppRoutes.storyScreen);
+                      },
+                      child: CustomText(
+                        text: 'View all',
+                        color: AppColors.buttonColorE8A533,
+                        fontsize: 14.sp,
+                        fontWeight: FontWeight.w400,
                       ),
-                      const Spacer(),
-                      GestureDetector(
-                        onTap: () {
-                          context.pushNamed(
-                            AppRoutes.startCreateStoryScreen,
-                            extra: {"title": "Lets get started!"},
-                          );
-                        },
-                        child: CustomText(
-                          text: 'View all',
-                          color: AppColors.buttonColorE8A533,
-                          fontsize: 16.sp,
-                          fontWeight: FontWeight.w400,
-                        ),
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
 
@@ -293,7 +285,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h),
                                     child: CustomText(
                                       textAlign: TextAlign.start,
-                                      text: homeController.myStory.first.description ?? "N/A",
+                                      text: homeController.myStory.first.caption ?? "N/A",
                                       fontsize: 10.sp,
                                       fontWeight: FontWeight.w300,
                                       color: AppColors.textColor919191,
@@ -366,7 +358,18 @@ class _HomeScreenState extends State<HomeScreen> {
                         title: latest.caption ?? 'N/A',
                         caption: latest.description ?? 'N/A',
                         imagePath: imageUrl,
-                        onTap: () {},
+                        onTap: () {
+                          final storyId = latest.id ?? "";
+                          if (storyId.isNotEmpty) {
+                            context.pushNamed(
+                              AppRoutes.everyStoryScreen,
+                              extra: {
+                                "title": latest.caption ?? "Story",
+                                "storyId": storyId,
+                              },
+                            );
+                          }
+                        },
                       );
                     },
                   ),
