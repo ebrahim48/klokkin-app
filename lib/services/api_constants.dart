@@ -3,7 +3,7 @@ class ApiConstants {
   static const String imageBaseUrl = "https://api.klokkin.com";
 
   static const String signUpEndPoint = "/auth/register";
-  static const String loginUpEndPoint = "/auth/login";
+  static const String loginEndPoint = "/auth/login";
   static const String changePassword = "/auth/change-password";
   static const String verifyEmailEndPoint = "/auth/verify-email";
   static const String forgotPasswordEndPoint = "/auth/forgot-password";

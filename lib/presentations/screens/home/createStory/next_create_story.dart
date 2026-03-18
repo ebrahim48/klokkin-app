@@ -54,9 +54,9 @@ class _NextCreateStoryScreenState extends State<NextCreateStoryScreen> {
               decoration: _inputDecoration("Enter a name"),
             ),
              SizedBox(height: 20.h),
-            /// Write a script
+            /// Description
             CustomText(
-              text: "Write a script",
+              text: "Description",
               fontsize: 20.sp,
               fontWeight: FontWeight.w500,
               color: AppColors.textColorFFFFFF,
@@ -65,7 +65,7 @@ class _NextCreateStoryScreenState extends State<NextCreateStoryScreen> {
             TextField(
               controller: scriptCtrl,
               maxLines: 5,
-              decoration: _inputDecoration("Enter text"),
+              decoration: _inputDecoration("Enter description"),
             ),
              SizedBox(height: 20.h),
 

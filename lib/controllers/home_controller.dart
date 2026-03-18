@@ -219,7 +219,7 @@ class HomeController extends GetxController {
       return;
     }
 
-    getStorySingleLoading(true);
+     (true);
     var response = await ApiClient.getData(ApiConstants.getStorySingleEndPoint(id));
     if(response.statusCode == 200){
       storySingle.value = StorySingleModel.fromJson(response.body['data']['attributes']);
@@ -306,8 +306,6 @@ class HomeController extends GetxController {
     };
 
 
-    updateProfileLoading(true);
-
     var response = await ApiClient.patchMultipartData(
       ApiConstants.userUpdateProfileEndPoint,
       body,
@@ -327,7 +325,8 @@ class HomeController extends GetxController {
 
     else {
       updateProfileLoading(false);
-      // ToastMessageHelper.showToastMessage("Failed Update data.");
+      final message = response.body["message"] ?? "Failed to update profile.";
+      ToastMessageHelper.showToastMessage(message, title: 'attention');
     }
   }
 

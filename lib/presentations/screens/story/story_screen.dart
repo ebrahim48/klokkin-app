@@ -80,11 +80,11 @@ class _StoryScreenState extends State<StoryScreen> {
                 padding: EdgeInsets.symmetric(horizontal: 20.w),
                 child: CustomText(
                   textAlign: TextAlign.center,
-                  text: 'Every story holds a world within it, waiting to be discovered.Through stories, we live a thousand\n lives in one lifetime.',
+                  text: 'Every story holds a world within it, waiting to be discovered. Through stories, we live a thousand lives in one lifetime.',
                   color: AppColors.textColor919191,
                   fontsize: 14.sp,
                   fontWeight: FontWeight.w500,
-                  maxline: 2,
+                  maxline: 3,
                 ),
               ),
 
