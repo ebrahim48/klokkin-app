@@ -36,6 +36,8 @@ class MyApp extends StatelessWidget {
     return ToastificationWrapper(
       child: ScreenUtilInit(
           designSize: const Size(393, 852),
+          minTextAdapt: true,
+          splitScreenMode: true,
           builder: (context, child) {
             return MaterialApp.router(
               debugShowCheckedModeBanner: false,
@@ -50,7 +52,16 @@ class MyApp extends StatelessWidget {
               AppRoutes.goRouter.routeInformationProvider,
               routerDelegate: AppRoutes.goRouter.routerDelegate,
               builder: (context, child) {
-                return Scaffold(body: NoInterNetScreen(child: child!));
+                // Clamp system text scale so large iPads don't inflate fonts further
+                final mediaQuery = MediaQuery.of(context);
+                final clampedTextScale = mediaQuery.textScaler.clamp(
+                  minScaleFactor: 0.8,
+                  maxScaleFactor: 1.2,
+                );
+                return MediaQuery(
+                  data: mediaQuery.copyWith(textScaler: clampedTextScale),
+                  child: Scaffold(body: NoInterNetScreen(child: child!)),
+                );
               },
             );
           }),

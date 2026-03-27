@@ -410,7 +410,7 @@ class _BookmarkScreenState extends State<BookmarkScreen> {
                         return BookmarkInnovationCard(
                           id: '${libraryData.id}',
                           title: libraryData.caption ?? 'N/A',
-                          caption: libraryData.description ?? 'N/A',
+                          caption: libraryData.duration ?? 'N/A',
                           imagePath: displayUrl,
                           onTap: () {},
                         );
@@ -458,7 +458,7 @@ class _BookmarkScreenState extends State<BookmarkScreen> {
                       return BookmarkFactoryCard(
                         id: '${libraryFactoryData.id}',
                         title: libraryFactoryData.caption ?? 'N/A',
-                        caption: libraryFactoryData.description ?? 'N/A',
+                        caption: libraryFactoryData.duration ?? 'N/A',
                         imagePath: displayUrl,
                       );
                     },

@@ -32,6 +32,19 @@ class _AudioRecordAddPostDetailsScreenState extends State<AudioRecordAddPostDeta
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       homeController.getAllTags();
+      final routeData = GoRouterState.of(context).extra as Map? ?? {};
+      final passedTitle = routeData["pendingTitle"] as String? ?? "";
+      final passedDesc = routeData["pendingDescription"] as String? ?? "";
+      if (passedTitle.isNotEmpty) {
+        titleCtrl.text = passedTitle;
+      } else if (homeController.pendingTitle.value.isNotEmpty) {
+        titleCtrl.text = homeController.pendingTitle.value;
+      }
+      if (passedDesc.isNotEmpty) {
+        scriptCtrl.text = passedDesc;
+      } else if (homeController.pendingDescription.value.isNotEmpty) {
+        scriptCtrl.text = homeController.pendingDescription.value;
+      }
     });
   }
 
@@ -63,9 +76,9 @@ class _AudioRecordAddPostDetailsScreenState extends State<AudioRecordAddPostDeta
               decoration: _inputDecoration("Enter a name"),
             ),
             SizedBox(height: 20.h),
-            /// Write a script
+            /// Description
             CustomText(
-              text: "Write a script",
+              text: "Description",
               fontsize: 20.sp,
               fontWeight: FontWeight.w500,
               color: AppColors.textColorFFFFFF,
@@ -119,7 +132,7 @@ class _AudioRecordAddPostDetailsScreenState extends State<AudioRecordAddPostDeta
                         return AnimatedContainer(
                           duration: const Duration(milliseconds: 300),
                           height: isExpanded ?
-                          (tagGroup.tag?.isNotEmpty ?? false ? 50.h : 0) : 0,
+                          (tagGroup.tag?.isNotEmpty ?? false ? 56.h : 0) : 0,
                           child: isExpanded && (tagGroup.tag?.isNotEmpty ?? false)
                               ? Container(
                             width: 340.w,

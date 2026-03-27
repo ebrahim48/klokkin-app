@@ -84,7 +84,7 @@ class _StoryScreenState extends State<StoryScreen> {
                   color: AppColors.textColor919191,
                   fontsize: 14.sp,
                   fontWeight: FontWeight.w500,
-                  maxline: 3,
+                  maxline: 5,
                 ),
               ),
 

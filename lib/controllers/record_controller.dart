@@ -8,6 +8,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:record/record.dart';
 
 import '../core/config/app_routes/app_routes.dart';
+import 'home_controller.dart';
 
 enum RecordType { audio, video }
 
@@ -15,6 +16,9 @@ class RecordStoryController extends GetxController {
   var selectedType = RecordType.audio.obs;
 
   void switchTo(RecordType type) => selectedType.value = type;
+
+  final TextEditingController titleCtrl = TextEditingController();
+  final TextEditingController descriptionCtrl = TextEditingController();
 
   final _recorder = AudioRecorder();
   RxBool isRecording = false.obs;
@@ -40,6 +44,16 @@ class RecordStoryController extends GetxController {
   @override
   void onInit() {
     _requestPermission();
+    // Pre-populate from pending values set by upload flow
+    if (Get.isRegistered<HomeController>()) {
+      final homeCtrl = Get.find<HomeController>();
+      if (homeCtrl.pendingTitle.value.isNotEmpty) {
+        titleCtrl.text = homeCtrl.pendingTitle.value;
+      }
+      if (homeCtrl.pendingDescription.value.isNotEmpty) {
+        descriptionCtrl.text = homeCtrl.pendingDescription.value;
+      }
+    }
     super.onInit();
   }
 
@@ -290,6 +304,8 @@ class RecordStoryController extends GetxController {
               "filePath": pathToSave,
               "size": fileSizeKB,
               "duration": formattedDuration,
+              "pendingTitle": titleCtrl.text.trim(),
+              "pendingDescription": descriptionCtrl.text.trim(),
             },
           );
         }
@@ -340,6 +356,8 @@ class RecordStoryController extends GetxController {
     _timer?.cancel();
     _amplitudeTimer?.cancel();
     _recorder.dispose();
+    titleCtrl.dispose();
+    descriptionCtrl.dispose();
     super.onClose();
   }
 }
