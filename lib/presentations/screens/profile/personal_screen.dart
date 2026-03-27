@@ -164,18 +164,13 @@ class _PersonalScreenState extends State<PersonalScreen> {
                     onpress: () {
                       context.pushNamed(AppRoutes.personalScreenUpdate,
                         extra: {
-                        "avatar": homeController.profile.value.profile?.avatar != null &&
-                            homeController.profile.value.profile!.avatar!.isNotEmpty
-                            ? homeController.profile.value.profile!.avatar!
-                            : "",
-                          "aboutself": homeController.profile.value.profile?.aboutself ?? 'N/A',
-                          "dateofBirth": homeController.profile.value.profile?.dateofBirth != null
-                              ? DateFormat("d MMMM yyyy").format(
-                            DateTime.parse('${homeController.profile.value.profile!.dateofBirth!}'),
-                          ): 'N/A',
-                          "gender": homeController.profile.value.profile?.gender?? 'N/A',
-                          "nickname": homeController.profile.value.profile?.nickname?? 'N/A',
-
+                          "avatar": homeController.profile.value.profile?.avatar?.isNotEmpty == true
+                              ? homeController.profile.value.profile!.avatar!
+                              : "",
+                          "aboutself": homeController.profile.value.profile?.aboutself ?? '',
+                          "dateofBirth": homeController.profile.value.profile?.dateofBirth?.toIso8601String() ?? '',
+                          "gender": homeController.profile.value.profile?.gender,
+                          "nickname": homeController.profile.value.profile?.nickname ?? '',
                         }
                       );
                     },

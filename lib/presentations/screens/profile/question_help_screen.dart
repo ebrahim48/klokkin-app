@@ -29,7 +29,7 @@ class _QuestionHelpScreenState extends State<QuestionHelpScreen> {
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
         title: CustomText(
-          text: 'Question & help',
+          text: 'Terms & Conditions',
           fontsize:24.sp,
           color: AppColors.primaryColorC79235,
           fontWeight: FontWeight.w400,

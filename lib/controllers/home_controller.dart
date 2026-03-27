@@ -19,7 +19,9 @@ import '../models/working_days_model.dart';
 
 class HomeController extends GetxController {
 
-
+  // ================================> Pending Story Fields (for record flow) ======>
+  RxString pendingTitle = ''.obs;
+  RxString pendingDescription = ''.obs;
 
   // ================================> All Tags  ==============================>
 
@@ -302,7 +304,7 @@ class HomeController extends GetxController {
       "aboutself": "$aboutself",
       "nickname": "$nickname",
       "gender": "$gender",
-      "dateofBirth": "$dateofBirth",
+      if (dateofBirth != null) "dateofBirth": "$dateofBirth",
     };
 
 

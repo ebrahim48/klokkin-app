@@ -111,34 +111,42 @@ class RecordStoryScreen extends StatelessWidget {
           width: 247.w,
           height: 38.h,
           decoration: BoxDecoration(
-            color:  AppColors.textColor323539,
+            color: AppColors.textColor323539,
             borderRadius: BorderRadius.circular(8.r),
           ),
-          alignment: Alignment.center,
-          child:  CustomText(
-              text: "Add Title",
-            color: AppColors.textColorFFFFFF,
-            fontsize: 16.sp,
-            fontWeight: FontWeight.w300,
-
-              ),
+          padding: EdgeInsets.symmetric(horizontal: 12.w),
+          alignment: Alignment.centerLeft,
+          child: TextField(
+            controller: controller.titleCtrl,
+            style: TextStyle(color: AppColors.textColorFFFFFF, fontSize: 14.sp),
+            decoration: InputDecoration(
+              hintText: "Add Title",
+              hintStyle: TextStyle(color: AppColors.textColorFFFFFF.withOpacity(0.5), fontSize: 14.sp),
+              border: InputBorder.none,
+              isCollapsed: true,
+            ),
+          ),
         ),
         SizedBox(height: 19.h),
         Container(
           width: 304.w,
           height: 130.h,
           decoration: BoxDecoration(
-            color:  AppColors.textColor323539,
+            color: AppColors.textColor323539,
             borderRadius: BorderRadius.circular(8.r),
           ),
-          alignment: Alignment.center,
-          child:
-          CustomText(
-              text: "Add Script",
-            color: AppColors.textColorFFFFFF,
-            fontsize: 16.sp,
-            fontWeight: FontWeight.w300,
-              ),
+          padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 8.h),
+          child: TextField(
+            controller: controller.descriptionCtrl,
+            maxLines: null,
+            style: TextStyle(color: AppColors.textColorFFFFFF, fontSize: 14.sp),
+            decoration: InputDecoration(
+              hintText: "Add Description",
+              hintStyle: TextStyle(color: AppColors.textColorFFFFFF.withOpacity(0.5), fontSize: 14.sp),
+              border: InputBorder.none,
+              isCollapsed: true,
+            ),
+          ),
         ),
         SizedBox(height: 30.h),
 

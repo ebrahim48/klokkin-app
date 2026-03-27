@@ -110,7 +110,7 @@ class _NextCreateStoryScreenState extends State<NextCreateStoryScreen> {
                         return AnimatedContainer(
                           duration: const Duration(milliseconds: 300),
                           height: isExpanded ?
-                          (tagGroup.tag?.isNotEmpty ?? false ? 50.h : 0) : 0,
+                          (tagGroup.tag?.isNotEmpty ?? false ? 56.h : 0) : 0,
                           child: isExpanded && (tagGroup.tag?.isNotEmpty ?? false)
                               ? Container(
                             width: 340.w,

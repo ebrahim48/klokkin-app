@@ -29,23 +29,48 @@ class _PersonalScreenUpdateState extends State<PersonalScreenUpdate> {
   String? selectedGender;
   File? selectedImage;
   String? profileImagePath;
+  DateTime? _selectedDate;
+  bool _initialized = false;
 
   HomeController homeController = Get.put(HomeController());
 
+  /// Formats DateTime for display: "14 Mar 1998"
+  String _formatForDisplay(DateTime date) {
+    const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+    return '${date.day} ${months[date.month - 1]} ${date.year}';
+  }
+
+  /// Formats DateTime for API: "1998-03-14"
+  String _formatForApi(DateTime date) {
+    return '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
+  }
+
   @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_initialized) return;
+    _initialized = true;
 
-      final routerData = (GoRouterState.of(context).extra as Map?) ?? {};
+    final routerData = (GoRouterState.of(context).extra as Map?) ?? {};
 
-      nicknameController.text = routerData["nickname"] ?? "";
-      aboutController.text = routerData["aboutself"] ?? "";
-      dobController.text = routerData["dateofBirth"] ?? "";
-      selectedGender = routerData["gender"];
-      profileImagePath = routerData["avatar"];
-      setState(() {});
-    });
+    nicknameController.text = routerData["nickname"] ?? "";
+    aboutController.text = routerData["aboutself"] ?? "";
+    profileImagePath = routerData["avatar"] as String?;
+
+    final genderValue = routerData["gender"] as String?;
+    selectedGender = (genderValue == 'Male' || genderValue == 'Female' || genderValue == 'Other')
+        ? genderValue
+        : null;
+
+    final isoDate = routerData["dateofBirth"] as String? ?? "";
+    if (isoDate.isNotEmpty) {
+      try {
+        _selectedDate = DateTime.parse(isoDate);
+        dobController.text = _formatForDisplay(_selectedDate!);
+      } catch (_) {
+        dobController.text = isoDate;
+      }
+    }
   }
 
 
@@ -209,8 +234,8 @@ class _PersonalScreenUpdateState extends State<PersonalScreenUpdate> {
                       );
                       if (pickedDate != null) {
                         setState(() {
-                          dobController.text =
-                          "${pickedDate.day}/${pickedDate.month}/${pickedDate.year}";
+                          _selectedDate = pickedDate;
+                          dobController.text = _formatForDisplay(pickedDate);
                         });
                       }
                     },
@@ -274,7 +299,9 @@ class _PersonalScreenUpdateState extends State<PersonalScreenUpdate> {
                       homeController.updateProfile(
                         file: selectedImage,
                         aboutself: aboutController.text,
-                        dateofBirth: dobController.text,
+                        dateofBirth: _selectedDate != null
+                            ? _formatForApi(_selectedDate!)
+                            : null,
                         gender: selectedGender,
                         nickname: nicknameController.text,
                         context: context,

@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:klokkin_app/core/config/app_routes/app_routes.dart';
 
 import '../../../../controllers/upload_create_controller.dart';
+import '../../../../controllers/home_controller.dart';
 import 'package:klokkin_app/core/constants/app_colors.dart';
 import 'package:klokkin_app/presentations/widgets/custom_app_bar.dart';
 import 'package:klokkin_app/presentations/widgets/custom_button.dart';
@@ -207,24 +208,27 @@ class UploadCreateStoryScreen extends StatelessWidget {
               ),
             )),
 
-            SizedBox(height: 32.h),
-            CustomText(
-              text: 'Record your story to bring it to life.',
-              color: AppColors.textColorFFFFFF,
-              fontsize: 16.sp,
-              fontWeight: FontWeight.w400,
-            ),
-            SizedBox(height: 16.h),
-
-            CustomButton(
-              title: 'Record Now',
-              onpress: () {
-                context.pushNamed(AppRoutes.recordStoryScreen);
-              },
-              color: AppColors.textColorFFFFFF,
-              titlecolor: AppColors.buttonColorE8A533,
-              borderRadius: 8.r,
-            ),
+            // TODO: Record Now — commented out until title/script re-entry issue is resolved
+            // SizedBox(height: 32.h),
+            // CustomText(
+            //   text: 'Record your story to bring it to life.',
+            //   color: AppColors.textColorFFFFFF,
+            //   fontsize: 16.sp,
+            //   fontWeight: FontWeight.w400,
+            // ),
+            // SizedBox(height: 16.h),
+            // CustomButton(
+            //   title: 'Record Now',
+            //   onpress: () {
+            //     final homeController = Get.find<HomeController>();
+            //     homeController.pendingTitle.value = title;
+            //     homeController.pendingDescription.value = script;
+            //     context.pushNamed(AppRoutes.recordStoryScreen);
+            //   },
+            //   color: AppColors.textColorFFFFFF,
+            //   titlecolor: AppColors.buttonColorE8A533,
+            //   borderRadius: 8.r,
+            // ),
 
             SizedBox(height: 145.h),
             Align(

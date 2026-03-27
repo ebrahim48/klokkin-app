@@ -149,11 +149,13 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    CustomText(
-                      text: 'Create a story',
-                      color: AppColors.textColorFFFFFF,
-                      fontsize: 18.sp,
-                      fontWeight: FontWeight.w500,
+                    Flexible(
+                      child: CustomText(
+                        text: 'Create a story',
+                        color: AppColors.textColorFFFFFF,
+                        fontsize: 18.sp,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
                     const Spacer(),
                     GestureDetector(
@@ -182,8 +184,8 @@ class _HomeScreenState extends State<HomeScreen> {
                     children: [
                       /// Create Story Box
                       Container(
-                        width: 100,
-                        height: 160,
+                        width: 100.w,
+                        height: 160.h,
                         margin: EdgeInsets.only(right: 12.w),
                         decoration: BoxDecoration(
                           color: AppColors.textColorFFFFFF,
@@ -239,9 +241,22 @@ class _HomeScreenState extends State<HomeScreen> {
 
                       /// Story Card
                       if (hasStories)
-                        Container(
-                          width: 94.w,
-                          height: 146.h,
+                        GestureDetector(
+                          onTap: () {
+                            final storyId = homeController.myStory.first.id ?? "";
+                            if (storyId.isNotEmpty) {
+                              context.pushNamed(
+                                AppRoutes.everyStoryScreen,
+                                extra: {
+                                  "title": homeController.myStory.first.caption ?? "Story",
+                                  "storyId": storyId,
+                                },
+                              );
+                            }
+                          },
+                          child: Container(
+                            width: 94.w,
+                            height: 146.h,
                           decoration: BoxDecoration(
                             color: const Color(0xFF323539),
                             borderRadius: BorderRadius.circular(8.r),
@@ -297,6 +312,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                           ),
                         ),
+                      ),
                     ],
                   );
                 }),
@@ -359,16 +375,13 @@ class _HomeScreenState extends State<HomeScreen> {
                         caption: latest.description ?? 'N/A',
                         imagePath: imageUrl,
                         onTap: () {
-                          final storyId = latest.id ?? "";
-                          if (storyId.isNotEmpty) {
-                            context.pushNamed(
-                              AppRoutes.everyStoryScreen,
-                              extra: {
-                                "title": latest.caption ?? "Story",
-                                "storyId": storyId,
-                              },
-                            );
-                          }
+                          context.pushNamed(
+                            AppRoutes.everyStoryScreen,
+                            extra: {
+                              "title": latest.caption ?? "Story",
+                              "storyId": latest.id ?? "",
+                            },
+                          );
                         },
                       );
                     },
@@ -520,7 +533,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 );
               }),
-              SizedBox(height: 20.h),
+              SizedBox(height: 80.h),
             ],
           ),
         ),
