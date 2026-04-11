@@ -1,30 +1,76 @@
-# Klokkin App
+# Limit It — Screen Time & App Blocker
 
-A Flutter-based storytelling platform for Android and iOS where users can create, share, and discover stories in audio, audiobook, image, and video formats.
+A Flutter application that helps users monitor and control their smartphone usage, set app limits, and build healthier digital habits.
 
 ## Features
 
-- **Auth Flow** — Sign up, email OTP verification, login, forgot/reset password
-- **Story Creation** — Upload images, record audio, record video
-- **Story Viewing** — Audio, audiobook, image, and video story formats
-- **Library** — Bookmark and download stories (S3 support)
-- **Profile** — Avatar, nickname, date of birth, gender management
-- **Notifications** — In-app notification center
-- **Browse** — Explore all stories with tag filtering
-- **Offline Awareness** — Network connectivity detection with fallback UI
-- **Shimmer Loading** — Skeleton screens for smooth loading experience
+### Dashboard (Home)
+- **Screen Time Overview** — Real-time total daily screen time displayed via an interactive slider/progress bar
+- **Daily Usage Card** — Shows per-app usage breakdown with time spent for today
+- **Your Apps** — Lists all installed apps with live usage data fetched via the Android Usage Stats API
+- **Announcements** — In-app announcement/banner cards fetched from the server
+- **Google Mobile Ads** — Banner ads integrated on the home screen
+
+### Limits
+- **Screen Time Limit** — Set a daily screen time cap for specific apps. Edit usage limits and timer settings (e.g., warning intervals, grace periods)
+- **Schedules** — Create recurring time-based schedules to block or restrict app usage automatically
+- **Detox Mode (Pro)** — Select multiple apps and block them completely to help you focus. Supports select-all, real-time app list from the device, and persists blocked state
+- **Pin Lock (Pro)** — Protect app settings with a custom PIN so others cannot change your limits
+
+### Reports
+- **Usage Reports** — View historical screen time data and per-app usage statistics
+- **PDF Export** — Generate and share usage reports as PDF files using the `pdf` and `printing` packages
+
+### Notifications
+- **Notification Center** — In-app notification screen listing all received alerts and reminders
+
+### Settings
+- **Subscription / In-App Purchase** — Upgrade to Premium to unlock Pro features (Detox Mode, Pin Lock) via `in_app_purchase`
+- **Motivation Phrases** — View and save motivational phrases to stay encouraged
+- **PIN Settings** — Set, change, or reset the app's PIN lock
+- **Change Password** — Update your account password
+- **Theme Support** — Light/Dark theme toggle
+- **Language / Localization** — Multi-language support via Flutter localization. Language can be selected from the onboarding flow or settings
+- **Terms & Conditions** — In-app terms of service page
+- **Privacy Policy** — In-app privacy policy page
+- **About Us** — App information and team details
+- **Delete Account** — Request account deletion from within the app
+
+### Authentication
+- **Sign Up / Sign In** — Email and password-based authentication
+- **OTP / PIN Verification** — Verify account via a PIN code sent to email or phone
+- **Forgot Password** — Request a password reset link
+- **Reset Password** — Set a new password via a secure reset flow
+- **Phone Number Picker** — Country-code-aware phone number input
+
+### Onboarding
+- **Onboarding Screens** — Multi-step introduction to the app's key features with smooth page indicators
+- **Language Selection** — Choose preferred language before starting
+- **Usage Limit Setup** — Guided setup to configure initial app usage limits during onboarding
+- **Permission Setup** — Step-by-step guide to grant required Android permissions (Usage Access, Overlay, etc.)
+
+### Profile
+- **View Profile** — See account name, avatar, and usage stats
+- **Edit Profile** — Update name, profile picture (image picker), and other details
 
 ## Tech Stack
 
-| Category | Library |
+| Layer | Technology |
 |---|---|
-| State Management | [GetX](https://pub.dev/packages/get) v4.6.6 |
-| Navigation | [go_router](https://pub.dev/packages/go_router) |
-| Responsive UI | [flutter_screenutil](https://pub.dev/packages/flutter_screenutil) (393×852) |
-| Media | video_player, camera, record, image_picker, file_picker |
-| Network | Custom HTTP client + internet_connection_checker_plus |
-| Local Storage | shared_preferences |
-| UI Extras | shimmer, lottie, flutter_svg, smooth_page_indicator |
+| Framework | Flutter (Dart) |
+| State Management | [GetX](https://pub.dev/packages/get) |
+| Navigation | [GoRouter](https://pub.dev/packages/go_router) |
+| Local Storage | [SharedPreferences](https://pub.dev/packages/shared_preferences) |
+| App Usage Tracking | [usage_stats](https://pub.dev/packages/usage_stats) (Android) |
+| App Blocking | Native Android Overlay Service |
+| In-App Purchase | [in_app_purchase](https://pub.dev/packages/in_app_purchase) |
+| Ads | [Google Mobile Ads](https://pub.dev/packages/google_mobile_ads) |
+| PDF Generation | [pdf](https://pub.dev/packages/pdf) + [printing](https://pub.dev/packages/printing) |
+| Image Loading | [cached_network_image](https://pub.dev/packages/cached_network_image) |
+| Localization | Flutter Gen + [intl](https://pub.dev/packages/intl) |
+| Permissions | [permission_handler](https://pub.dev/packages/permission_handler) |
+| Installed Apps | [installed_apps](https://pub.dev/packages/installed_apps) |
+| Network Check | [internet_connection_checker_plus](https://pub.dev/packages/internet_connection_checker_plus) |
 
 ## Architecture
 
@@ -32,30 +78,43 @@ Hybrid MVC/MVVM with GetX:
 
 ```
 lib/
-├── controllers/          # GetX business logic controllers
-├── presentations/
-│   ├── controller/       # Auth & theme controllers
-│   ├── screens/          # All UI screens (37+ screens)
-│   └── widgets/          # Reusable widget components
-├── models/               # JSON-serializable data models
-├── services/             # API client, endpoints, download service
-├── core/                 # Routes, themes, constants, helpers
-└── global/custom_assets/ # flutter_gen generated asset references
+├── controllers/          # GetX controllers (ads, notifications, profile, etc.)
+├── core/
+│   ├── config/           # App themes, routes
+│   ├── constants/        # Colors, strings, data helpers
+│   ├── helpers/          # Utility helpers (localization, toast, network)
+│   ├── models/           # Data models
+│   ├── presentations/
+│   │   ├── screens/      # All app screens (home, limits, settings, auth, etc.)
+│   │   └── widgets/      # Reusable UI components
+│   └── services/         # Business logic services (app blocking, storage, usage)
+└── global/
+    └── custom_assets/    # Generated asset references (flutter_gen)
 ```
+
+## Platform Support
+
+| Platform | Support |
+|---|---|
+| Android | Full support |
+| iOS | Partial (App usage tracking not available on iOS) |
+
+> **Note:** Detox Mode, Screen Time tracking, and App Blocking require Android's Usage Access permission.
 
 ## Getting Started
 
 ### Prerequisites
 
-- Flutter SDK (Dart `^3.7.0`)
-- Android Studio / Xcode
+- Flutter SDK `^3.7.0`
+- Android Studio or VS Code
+- Android device or emulator (API 21+)
 
 ### Setup
 
 ```bash
 # Clone the repository
-git clone https://github.com/your-org/klokkin-app.git
-cd klokkin-app
+git clone <repo-url>
+cd limit_it_app
 
 # Install dependencies
 flutter pub get
@@ -67,8 +126,28 @@ dart run build_runner build --delete-conflicting-outputs
 flutter run
 ```
 
-## API
+### Required Android Permissions
 
-- **Base URL:** `https://api.klokkin.com/api/v1`
-- **Auth:** Bearer token in `Authorization` header
-- All endpoints are defined in `lib/services/api_constants.dart`
+Grant the following permissions on your Android device for full functionality:
+
+- **Usage Access** — Settings > Digital Wellbeing / Usage Access
+- **Display Over Other Apps** — Required for app blocking overlay
+- **Notification Permission** — For usage limit alerts
+
+## Project Structure
+
+```
+lib/
+├── controllers/          # GetX controllers (ads, notifications, profile, etc.)
+├── core/
+│   ├── config/           # App themes, routes
+│   ├── constants/        # Colors, strings, data helpers
+│   ├── helpers/          # Utility helpers (localization, toast, network)
+│   ├── models/           # Data models
+│   ├── presentations/
+│   │   ├── screens/      # All app screens (home, limits, settings, auth, etc.)
+│   │   └── widgets/      # Reusable UI components
+│   └── services/         # Business logic services (app blocking, storage, usage)
+└── global/
+    └── custom_assets/    # Generated asset references (flutter_gen)
+```
