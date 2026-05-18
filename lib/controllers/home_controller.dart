@@ -23,6 +23,33 @@ class HomeController extends GetxController {
   RxString pendingTitle = ''.obs;
   RxString pendingDescription = ''.obs;
 
+  // ================================> Home data freshness guard ==============>
+  // The Home tab is a StatefulWidget reached via the bottom nav, so its
+  // initState re-runs on every tab switch. Without this guard each switch
+  // re-fired 5 network calls and flashed the shimmer every time. We only
+  // refetch if the data is stale (or the user explicitly pulls to refresh).
+  DateTime? _lastHomeLoad;
+  static const Duration _homeFreshFor = Duration(seconds: 60);
+
+  bool get _homeDataFresh =>
+      _lastHomeLoad != null &&
+      DateTime.now().difference(_lastHomeLoad!) < _homeFreshFor;
+
+  /// Loads everything the Home screen needs. No-op if data is still fresh,
+  /// unless [force] is set (pull-to-refresh).
+  Future<void> loadHomeData({bool force = false}) async {
+    if (!force && _homeDataFresh && latestForm.isNotEmpty) return;
+    _lastHomeLoad = DateTime.now();
+    final List<Future<dynamic>> tasks = <Future<dynamic>>[
+      getLatestForm(),
+      getMyStory(),
+      getWorkingDays(),
+      getStorySteps(),
+      getProfile(),
+    ];
+    await Future.wait(tasks);
+  }
+
   // ================================> All Tags  ==============================>
 
 
@@ -215,19 +242,39 @@ class HomeController extends GetxController {
 
   RxBool getStorySingleLoading = false.obs;
   Rx<StorySingleModel> storySingle = StorySingleModel().obs;
-  getStorySingle({String? id})async{
+
+  // Client-side cache so reopening a story is INSTANT instead of hitting
+  // the network every time (that's why "the same content took the same
+  // time to load" — there was no client cache and it was even refetched
+  // on every widget rebuild).
+  final Map<String, StorySingleModel> _storyCache = {};
+
+  getStorySingle({String? id}) async {
     if (id == null || id.isEmpty) {
       getStorySingleLoading(false);
       return;
     }
 
-     (true);
-    var response = await ApiClient.getData(ApiConstants.getStorySingleEndPoint(id));
-    if(response.statusCode == 200){
-      storySingle.value = StorySingleModel.fromJson(response.body['data']['attributes']);
+    // Cache hit → show immediately, no spinner, no network round-trip.
+    final cached = _storyCache[id];
+    if (cached != null) {
+      storySingle.value = cached;
+      getStorySingleLoading(false);
+      update();
+      return;
+    }
+
+    getStorySingleLoading(true);
+    var response =
+        await ApiClient.getData(ApiConstants.getStorySingleEndPoint(id));
+    if (response.statusCode == 200) {
+      final model =
+          StorySingleModel.fromJson(response.body['data']['attributes']);
+      _storyCache[id] = model;
+      storySingle.value = model;
       update();
       getStorySingleLoading(false);
-    }else{
+    } else {
       getStorySingleLoading(false);
     }
   }

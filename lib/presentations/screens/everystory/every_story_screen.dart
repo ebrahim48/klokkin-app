@@ -6,6 +6,7 @@ import 'package:klokkin_app/core/constants/app_colors.dart';
 import 'package:klokkin_app/presentations/widgets/custom_app_bar.dart';
 import 'package:klokkin_app/presentations/widgets/custom_text.dart';
 
+import '../../../controllers/audio_controller.dart';
 import '../../../controllers/home_controller.dart';
 import '../../widgets/custom_audio_progressbar_widget.dart';
 import '../../widgets/custom_profile_image.dart';
@@ -26,14 +27,21 @@ class _EveryStoryScreenState extends State<EveryStoryScreen> {
 
   @override
   void dispose() {
-    homeController.storySingle();
+    // Stop and release the player when leaving so audio/video doesn't keep
+    // running in the background and the next story starts clean.
+    if (Get.isRegistered<AudioController>()) {
+      Get.find<AudioController>().onClose();
+    }
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    // NOTE: do NOT fetch here. build() runs on every rebuild, so calling
+    // getStorySingle here re-hit the API constantly (that's why the same
+    // story took the same load time every single time). The fetch happens
+    // exactly once in AudioProgressBar.initState.
     Map routeData = GoRouterState.of(context).extra as Map;
-    homeController.getStorySingle(id: routeData['storyId']);
     return Scaffold(
       appBar: CustomAppBar(title: "${routeData["title"]}"),
       body: SingleChildScrollView(

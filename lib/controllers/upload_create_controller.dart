@@ -11,21 +11,29 @@ class UploadCreateStoryController extends GetxController {
   Rx<File?> thumbnail = Rx<File?>(null);
 
   Future<void> pickFile() async {
+    // FileType.media = images AND videos (was FileType.image, which is
+    // why video files could never be selected here).
     FilePickerResult? result = await FilePicker.platform.pickFiles(
       allowMultiple: true,
       withData: true,
-      type: FileType.image,
+      type: FileType.media,
     );
 
-    if (result != null && images.length < maxImages) {
-      images.add(File(result.files.single.path!));
+    if (result == null) return;
+    for (final f in result.files) {
+      if (images.length >= maxImages) break;
+      if (f.path != null) images.add(File(f.path!));
     }
+    images.refresh();
   }
 
   Future<void> pickImageFromGallery() async {
-    final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
-    if (image != null && images.length < maxImages) {
-      images.add(File(image.path));
+    // pickMedia() lets the user choose an image OR a video from the
+    // gallery (pickImage() was image-only).
+    final XFile? media = await _picker.pickMedia();
+    if (media != null && images.length < maxImages) {
+      images.add(File(media.path));
+      images.refresh();
     }
   }
 

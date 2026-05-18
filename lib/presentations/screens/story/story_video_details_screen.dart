@@ -12,6 +12,7 @@ import '../../../core/config/app_routes/app_routes.dart';
 import '../../../global/custom_assets/assets.gen.dart';
 import '../../widgets/custom_image_details_widget.dart';
 import '../../widgets/custom_video_details_widget.dart';
+import '../../widgets/youtube_media_player.dart';
 
 class StoryVideoDetailsScreen extends StatefulWidget {
   const StoryVideoDetailsScreen({super.key});
@@ -30,6 +31,10 @@ class _StoryVideoDetailsScreenState extends State<StoryVideoDetailsScreen> {
   Map? routeData;
   bool _isVideoInitialized = false;
 
+  // Set when the video story is a YouTube trailer — rendered with the
+  // embedded YouTube player instead of VideoPlayerController.
+  String? _ytUrl;
+
   @override
   void initState() {
     super.initState();
@@ -46,7 +51,11 @@ class _StoryVideoDetailsScreenState extends State<StoryVideoDetailsScreen> {
         // Initialize video player
         final videoUrl = routeData!['videoUrl'] ?? '';
         if (videoUrl.isNotEmpty) {
-          _initializeVideo(videoUrl);
+          if (isYoutubeUrl(videoUrl)) {
+            setState(() => _ytUrl = videoUrl);
+          } else {
+            _initializeVideo(videoUrl);
+          }
         }
       }
     });
@@ -236,7 +245,9 @@ class _StoryVideoDetailsScreenState extends State<StoryVideoDetailsScreen> {
               SizedBox(height: 40.h),
 
               /// Video Player
-              if (_isVideoInitialized && _videoController != null)
+              if (_ytUrl != null)
+                YoutubeMediaPlayer(url: _ytUrl!)
+              else if (_isVideoInitialized && _videoController != null)
                 AspectRatio(
                   aspectRatio: _videoController!.value.aspectRatio,
                   child: Stack(
@@ -284,15 +295,43 @@ class _StoryVideoDetailsScreenState extends State<StoryVideoDetailsScreen> {
 
               SizedBox(height: 16.h),
 
-              /// Video Controls & Details
-              CustomVideoDetailsProgressBar(
-                videoController: _videoController,
-                title: title,
-                duration: duration,
-                storyId: storyId,
-                description: routeData!['description'] ?? 'N/A',
-                tags: routeData!['tags'] ?? [],
-              ),
+              /// Video Controls & Details.
+              /// For YouTube trailers the embedded player already provides
+              /// play/seek, so the file-based control bar (which would be
+              /// inert without a VideoPlayerController) is replaced with a
+              /// plain title/description/tags block.
+              if (_ytUrl == null)
+                CustomVideoDetailsProgressBar(
+                  videoController: _videoController,
+                  title: title,
+                  duration: duration,
+                  storyId: storyId,
+                  description: routeData!['description'] ?? 'N/A',
+                  tags: routeData!['tags'] ?? [],
+                )
+              else
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    CustomText(
+                      textAlign: TextAlign.start,
+                      text: title,
+                      color: AppColors.textColorFFFFFF,
+                      fontsize: 18.sp,
+                      fontWeight: FontWeight.w600,
+                      maxline: 2,
+                    ),
+                    SizedBox(height: 8.h),
+                    CustomText(
+                      textAlign: TextAlign.start,
+                      text: routeData!['description'] ?? 'N/A',
+                      color: AppColors.textColorC2C2C2,
+                      fontsize: 14.sp,
+                      fontWeight: FontWeight.w400,
+                      maxline: 10,
+                    ),
+                  ],
+                ),
 
               SizedBox(height: 50.h),
             ],

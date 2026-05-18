@@ -1,184 +1,139 @@
-import 'dart:async';
 import 'package:get/get.dart';
 import 'package:video_player/video_player.dart';
 
+/// Single media controller for BOTH audio and video.
+///
+/// Previously audio was faked with a Timer that just incremented a counter
+/// (no real sound, hardcoded 600s duration), and video state was tracked
+/// in two competing places (a manual `isPlaying = !isPlaying` flip *and* a
+/// listener), which made the play button and timestamp inconsistent.
+///
+/// `video_player` can play a plain audio URL (e.g. an .mp3) just fine — it
+/// simply has no video track — so we route everything through one
+/// [VideoPlayerController]. That gives real playback, the real duration and
+/// the real position for audio and video alike, with ONE source of truth.
 class AudioController extends GetxController {
+  VideoPlayerController? _vc;
 
+  /// Whether the current media has a visible video surface (vs. audio-only).
+  /// Only affects the UI; playback path is identical for both.
+  final isVideo = false.obs;
 
+  final isPlaying = false.obs;
+  final isInitialized = false.obs;
+  final isBuffering = false.obs;
 
-  late VideoPlayerController videoController;
+  final currentTime = 0.0.obs; // seconds (fractional, smooth)
+  final totalTime = 0.0.obs; // seconds
+  final playbackSpeed = 1.0.obs;
 
-  var isVideo = false.obs;
-  var isPlaying = false.obs;
-  var isInitialized = false.obs;
+  String? _currentUrl;
 
-  // Audio variables
-  var currentTime = 0.0.obs;
-  var totalTime = 600.0.obs; // default audio duration
-  var playbackSpeed = 1.0.obs;
+  VideoPlayerController get videoController => _vc!;
 
-  Timer? _timer;
-  Timer? _videoProgressTimer;
-  String? _currentMediaUrl;
-
-  @override
-  void onInit() {
-    super.onInit();
+  /// Load [url] (if not already loaded) and start playing. Used by the play
+  /// button so a single tap always works — the old code called an async
+  /// `setMediaPath` and a synchronous `togglePlayPause` together, so the
+  /// first tap bailed out with "not initialized" and you had to tap twice.
+  Future<void> loadAndPlay(String url, {required bool video}) async {
+    await setMediaPath(url, video: video);
+    await play();
   }
 
-  // Set media URL (video/audio)
-  void setMediaPath(String url, {bool video = false}) async {
-    // Don't reload if same URL
-    if (_currentMediaUrl == url && isInitialized.value) return;
+  /// Prepare media without auto-playing (call from the screen as soon as the
+  /// story is known, so the player is ready before the first tap).
+  Future<void> setMediaPath(String url, {bool video = false}) async {
+    if (_currentUrl == url && isInitialized.value) return;
 
-    _currentMediaUrl = url;
+    _currentUrl = url;
     isVideo.value = video;
     isPlaying.value = false;
     isInitialized.value = false;
-
-    // Stop and dispose previous media
-    await _stopAndDispose();
-
-    if (video) {
-      await _initializeVideo(url);
-    } else {
-      await _initializeAudio(url);
-    }
-  }
-
-  Future<void> _stopAndDispose() async {
-    _timer?.cancel();
-    _videoProgressTimer?.cancel();
-
-    // if (isVideo.value && this::videoController.isInitialized) {
-    //   try {
-    //     await videoController.pause();
-    //     await videoController.dispose();
-    //   } catch (e) {
-    //     print('Error disposing video controller: $e');
-    //   }
-    // }
-
+    isBuffering.value = true;
     currentTime.value = 0;
-  }
+    totalTime.value = 0;
 
-  Future<void> _initializeVideo(String url) async {
+    await _disposeController();
+
+    final vc = VideoPlayerController.networkUrl(Uri.parse(url));
+    _vc = vc;
+    vc.addListener(_onTick);
+
     try {
-      videoController = VideoPlayerController.networkUrl(Uri.parse(url));
-
-      // Add listener for video state changes
-      videoController.addListener(_videoListener);
-
-      await videoController.initialize();
-      totalTime.value = videoController.value.duration.inSeconds.toDouble();
+      await vc.initialize();
+      totalTime.value = vc.value.duration.inMilliseconds / 1000.0;
+      await vc.setPlaybackSpeed(playbackSpeed.value);
       isInitialized.value = true;
-
-      // Start progress tracking timer for video
-      _startVideoProgressTracking();
-
     } catch (e) {
-      print('Error initializing video: $e');
       isInitialized.value = false;
+      isBuffering.value = false;
+      // ignore: avoid_print
+      print('Error initializing media ($url): $e');
     }
   }
 
-  Future<void> _initializeAudio(String url) async {
-    // For audio, you might want to use a proper audio player library
-    // like just_audio or audioplayers for better audio handling
-    // For now, using placeholder values
-    totalTime.value = 600; // You should get actual duration from audio file
-    currentTime.value = 0;
-    isInitialized.value = true;
-  }
+  /// The ONLY place play state / progress is derived from — keeps the
+  /// button icon and both timestamps perfectly in sync with the player.
+  void _onTick() {
+    final vc = _vc;
+    if (vc == null || !vc.value.isInitialized) return;
 
-  void _videoListener() {
-    if (videoController.value.isPlaying != isPlaying.value) {
-      isPlaying.value = videoController.value.isPlaying;
-    }
-  }
+    final v = vc.value;
+    isBuffering.value = v.isBuffering;
+    if (isPlaying.value != v.isPlaying) isPlaying.value = v.isPlaying;
 
-  void _startVideoProgressTracking() {
-    _videoProgressTimer?.cancel();
-    _videoProgressTimer = Timer.periodic(const Duration(milliseconds: 100), (timer) {
-      if (videoController.value.isInitialized) {
-        currentTime.value = videoController.value.position.inSeconds.toDouble();
-
-        // Check if video ended
-        if (videoController.value.position >= videoController.value.duration) {
-          isPlaying.value = false;
-          _videoProgressTimer?.cancel();
-        }
-      }
-    });
-  }
-
-  // Play/pause logic
-  void togglePlayPause() async {
-    if (!isInitialized.value) {
-      print('Media not initialized');
-      return;
+    currentTime.value = v.position.inMilliseconds / 1000.0;
+    final dur = v.duration.inMilliseconds / 1000.0;
+    if (dur > 0 && (totalTime.value - dur).abs() > 0.5) {
+      totalTime.value = dur;
     }
 
-    if (isVideo.value) {
-      await _toggleVideoPlayPause();
-    } else {
-      _toggleAudioPlayPause();
-    }
-  }
-
-  Future<void> _toggleVideoPlayPause() async {
-    try {
-      if (isPlaying.value) {
-        await videoController.pause();
-        _videoProgressTimer?.cancel();
-      } else {
-        await videoController.play();
-        _startVideoProgressTracking();
-      }
-      isPlaying.value = !isPlaying.value;
-    } catch (e) {
-      print('Error toggling video play/pause: $e');
-    }
-  }
-
-  void _toggleAudioPlayPause() {
-    if (isPlaying.value) {
-      _timer?.cancel();
+    // Reached the end: stop cleanly and reset to the start so the play
+    // button shows ▶ again and replays from 0 instead of being stuck.
+    if (v.position >= v.duration && v.duration > Duration.zero) {
+      vc.pause();
+      vc.seekTo(Duration.zero);
       isPlaying.value = false;
-    } else {
-      isPlaying.value = true;
-      _timer = Timer.periodic(const Duration(milliseconds: 100), (timer) {
-        currentTime.value += 0.1 * playbackSpeed.value;
-
-        if (currentTime.value >= totalTime.value) {
-          currentTime.value = totalTime.value;
-          isPlaying.value = false;
-          _timer?.cancel();
-        }
-      });
+      currentTime.value = 0;
     }
   }
 
-  void seek(double value) async {
-    if (isVideo.value && isInitialized.value) {
-      try {
-        await videoController.seekTo(Duration(seconds: value.toInt()));
-        currentTime.value = value;
-      } catch (e) {
-        print('Error seeking video: $e');
-      }
+  Future<void> togglePlayPause() async {
+    if (!isInitialized.value) return;
+    if (_vc!.value.isPlaying) {
+      await pause();
     } else {
-      currentTime.value = value.clamp(0, totalTime.value);
+      await play();
     }
   }
 
-  void setPlaybackSpeed(double speed) {
+  Future<void> play() async {
+    final vc = _vc;
+    if (vc == null || !isInitialized.value) return;
+    if (vc.value.position >= vc.value.duration &&
+        vc.value.duration > Duration.zero) {
+      await vc.seekTo(Duration.zero);
+    }
+    await vc.play();
+  }
+
+  Future<void> pause() async {
+    final vc = _vc;
+    if (vc == null || !isInitialized.value) return;
+    await vc.pause();
+  }
+
+  Future<void> seek(double seconds) async {
+    final vc = _vc;
+    if (vc == null || !isInitialized.value) return;
+    final clamped = seconds.clamp(0.0, totalTime.value);
+    await vc.seekTo(Duration(milliseconds: (clamped * 1000).round()));
+    currentTime.value = clamped;
+  }
+
+  Future<void> setPlaybackSpeed(double speed) async {
     playbackSpeed.value = speed;
-
-    if (isVideo.value && isInitialized.value) {
-      videoController.setPlaybackSpeed(speed);
-    }
-    // For audio, the timer interval adjustment handles speed change
+    if (isInitialized.value) await _vc?.setPlaybackSpeed(speed);
   }
 
   String formatSpeed(double speed) {
@@ -186,28 +141,28 @@ class AudioController extends GetxController {
     return "${speed.toStringAsFixed(1)}X";
   }
 
-  // Method to restart media from beginning
-  void restart() {
-    seek(0.0);
-  }
+  void restart() => seek(0.0);
 
-  // Method to check if media is at the end
-  bool get isAtEnd => currentTime.value >= totalTime.value;
+  bool get isAtEnd =>
+      totalTime.value > 0 && currentTime.value >= totalTime.value;
+
+  Future<void> _disposeController() async {
+    final vc = _vc;
+    _vc = null;
+    if (vc != null) {
+      vc.removeListener(_onTick);
+      try {
+        await vc.pause();
+      } catch (_) {}
+      try {
+        await vc.dispose();
+      } catch (_) {}
+    }
+  }
 
   @override
   void onClose() {
-    _stopAndDispose();
+    _disposeController();
     super.onClose();
   }
-
-  final List<String> hashtags = [
-    "#innovation",
-    "#tech",
-    "#engineer",
-    "#2010s",
-  ];
-
-
-
-
 }

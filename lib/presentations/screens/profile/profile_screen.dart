@@ -169,6 +169,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     context.pushNamed(AppRoutes.personalScreen);
                   }),
               CustomProfileListTile(
+                  title: 'Subscription',
+                  icon: const Icon(
+                    Icons.workspace_premium,
+                    color: AppColors.primaryColorC79235,
+                  ),
+                  onTap: () {
+                    context.pushNamed(AppRoutes.subscriptionScreen);
+                  }),
+              CustomProfileListTile(
                   title: 'System settings',
                   icon: Assets.icons.systemsettings.svg(),
                   onTap: () {

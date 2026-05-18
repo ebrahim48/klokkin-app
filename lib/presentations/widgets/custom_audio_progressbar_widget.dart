@@ -13,6 +13,7 @@ import '../../core/constants/app_colors.dart';
 import 'custom_loader.dart';
 import 'custom_network_image.dart';
 import 'custom_text.dart';
+import 'youtube_media_player.dart';
 
 class AudioProgressBar extends StatefulWidget {
   const AudioProgressBar({super.key});
@@ -26,19 +27,48 @@ class _AudioProgressBarState extends State<AudioProgressBar> {
   final HomeController homeController = Get.put(HomeController());
   String? storyId;
 
+  // Guard so media is prepared exactly once per distinct URL — without
+  // this, calling setMediaPath from build() would re-create the player on
+  // every rebuild while it was still initializing.
+  String? _mediaPreparedFor;
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final routeData = GoRouterState.of(context).extra as Map;
       storyId = routeData['storyId'];
+      // Fetched once here (not in build) — see every_story_screen.dart.
       homeController.getStorySingle(id: routeData['storyId']);
     });
   }
 
+  bool _looksLikeVideo(String url) {
+    final u = url.toLowerCase();
+    return u.endsWith('.mp4') ||
+        u.endsWith('.m3u8') ||
+        u.endsWith('.mov') ||
+        u.endsWith('.webm') ||
+        u.contains('/video/');
+  }
+
+  /// Prepare the player as soon as the story (and its media URL) is known,
+  /// so the very first tap on play actually plays. Safe to call from build:
+  /// it no-ops once the URL has been prepared.
+  void _ensureMediaPrepared(String url) {
+    if (_mediaPreparedFor == url) return;
+    _mediaPreparedFor = url;
+    final isVid = _looksLikeVideo(url);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      controller.setMediaPath(url, video: isVid);
+    });
+  }
+
   String _formatTime(double seconds) {
-    final m = (seconds ~/ 60).toString();
-    final s = (seconds % 60).toInt().toString().padLeft(2, '0');
+    if (seconds.isNaN || seconds < 0) seconds = 0;
+    final total = seconds.floor();
+    final m = (total ~/ 60).toString();
+    final s = (total % 60).toString().padLeft(2, '0');
     return "$m:$s";
   }
 
@@ -60,11 +90,29 @@ class _AudioProgressBarState extends State<AudioProgressBar> {
         );
       }
 
+      final mediaUrl =
+          (story.mediaUrl != null && story.mediaUrl!.isNotEmpty)
+              ? story.mediaUrl!.first
+              : null;
+      // YouTube-backed stories (official trailers / songs) play through
+      // the embedded YouTube player, which brings its own reliable
+      // play/pause + progress UI — so the custom controls below are
+      // hidden for them.
+      final bool isYt = isYoutubeUrl(mediaUrl);
+      if (mediaUrl != null && !isYt) _ensureMediaPrepared(mediaUrl);
+
       return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Media (Video or Image)
-          Stack(
+          // Media: YouTube (trailers/songs) OR file/image
+          isYt
+              ? YoutubeMediaPlayer(
+                  url: mediaUrl!,
+                  audioOnly:
+                      (story.type ?? '').toLowerCase() == 'audio',
+                  artworkUrl: story.thumbnail,
+                )
+              : Stack(
             children: [
               Obx(() {
                 if (controller.isVideo.value) {
@@ -81,13 +129,24 @@ class _AudioProgressBarState extends State<AudioProgressBar> {
                     return const Center(child: CustomLoader());
                   }
                 } else {
+                  // Audio (or not-yet-initialized): show the story's
+                  // thumbnail as cover art — NOT mediaUrl, which for audio
+                  // is an .mp3 and would render as a broken image.
+                  final poster = (story.thumbnail != null &&
+                          story.thumbnail!.isNotEmpty)
+                      ? story.thumbnail!
+                      : ((story.mediaUrl != null &&
+                              story.mediaUrl!.isNotEmpty &&
+                              !_looksLikeVideo(story.mediaUrl!.first) &&
+                              !story.mediaUrl!.first
+                                  .toLowerCase()
+                                  .endsWith('.mp3'))
+                          ? story.mediaUrl!.first
+                          : "https://templates.joomla-monster.com/joomla30/jm-news-portal/components/com_djclassifieds/assets/images/default_profile.png");
                   return ClipRRect(
                     borderRadius: BorderRadius.circular(8.r),
                     child: CustomNetworkImage(
-                      imageUrl:
-                          (story.mediaUrl != null && story.mediaUrl!.isNotEmpty)
-                              ? story.mediaUrl!.first
-                              : "https://templates.joomla-monster.com/joomla30/jm-news-portal/components/com_djclassifieds/assets/images/default_profile.png",
+                      imageUrl: poster,
                       borderRadius: BorderRadius.circular(8.r),
                       height: 200.h,
                       width: double.infinity,
@@ -111,6 +170,7 @@ class _AudioProgressBarState extends State<AudioProgressBar> {
             ],
           ),
 
+          if (!isYt) ...[
           SizedBox(height: 16.h),
 
           // Controls Row
@@ -120,25 +180,37 @@ class _AudioProgressBarState extends State<AudioProgressBar> {
               IconButton(
                 padding: EdgeInsets.zero,
                 constraints: const BoxConstraints(),
-                onPressed: () {
-                  if (story.mediaUrl != null && story.mediaUrl!.isNotEmpty) {
-                    bool isVideo =
-                        story.mediaUrl!.first.endsWith(".mp4") ||
-                        story.mediaUrl!.first.endsWith(".m3u8");
-                    controller.setMediaPath(
-                      story.mediaUrl!.first,
-                      video: isVideo,
+                onPressed: () async {
+                  if (mediaUrl == null) return;
+                  if (!controller.isInitialized.value) {
+                    await controller.loadAndPlay(
+                      mediaUrl,
+                      video: _looksLikeVideo(mediaUrl),
+                    );
+                  } else {
+                    await controller.togglePlayPause();
+                  }
+                },
+                icon: Obx(() {
+                  if (controller.isBuffering.value &&
+                      !controller.isPlaying.value) {
+                    return SizedBox(
+                      width: 22,
+                      height: 22,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: AppColors.textColorC2C2C2,
+                      ),
                     );
                   }
-                  controller.togglePlayPause();
-                },
-                icon: Obx(
-                  () => Icon(
-                    controller.isPlaying.value ? Icons.pause : Icons.play_arrow,
+                  return Icon(
+                    controller.isPlaying.value
+                        ? Icons.pause
+                        : Icons.play_arrow,
                     size: 25,
                     color: AppColors.textColorC2C2C2,
-                  ),
-                ),
+                  );
+                }),
               ),
               SizedBox(width: 5.w),
 
@@ -156,17 +228,15 @@ class _AudioProgressBarState extends State<AudioProgressBar> {
               // Slider
               Expanded(
                 child: Obx(() {
-                  double value =
-                      controller.isVideo.value && controller.isInitialized.value
-                          ? controller.videoController.value.position.inSeconds
-                              .toDouble()
-                          : controller.currentTime.value;
-
-                  double max =
-                      controller.isVideo.value && controller.isInitialized.value
-                          ? controller.videoController.value.duration.inSeconds
-                              .toDouble()
-                          : controller.totalTime.value;
+                  // Single source of truth (driven by the player listener)
+                  // so the slider, the ▶/⏸ icon and both timestamps always
+                  // agree.
+                  final double max =
+                      controller.totalTime.value > 0
+                          ? controller.totalTime.value
+                          : 1.0;
+                  final double value =
+                      controller.currentTime.value.clamp(0.0, max);
 
                   return SliderTheme(
                     data: SliderTheme.of(context).copyWith(
@@ -233,6 +303,7 @@ class _AudioProgressBarState extends State<AudioProgressBar> {
               ),
             ],
           ),
+          ],
           SizedBox(height: 32.h),
 
           // Caption & Description

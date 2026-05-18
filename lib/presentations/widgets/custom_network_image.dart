@@ -38,8 +38,21 @@ class CustomNetworkImage extends StatelessWidget {
       return _buildErrorWidget();
     }
 
+    // Decode the bitmap at (roughly) the size it's actually displayed at
+    // instead of full resolution. The home feed shows dozens of thumbnails;
+    // decoding each at native size is the main source of jank and memory
+    // pressure. Cap the decode to the display box * devicePixelRatio so the
+    // image still looks crisp but costs a fraction of the memory/CPU.
+    final dpr = MediaQuery.maybeOf(context)?.devicePixelRatio ?? 2.0;
+    final int? memW =
+        width != null && width!.isFinite ? (width! * dpr).round() : null;
+    final int? memH =
+        height != null && height!.isFinite ? (height! * dpr).round() : null;
+
     return CachedNetworkImage(
       imageUrl: imageUrl,
+      memCacheWidth: memW,
+      memCacheHeight: memH,
       imageBuilder: (context, imageProvider) => Container(
         height: height,
         width: width,

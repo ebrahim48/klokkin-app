@@ -36,6 +36,7 @@ import '../../../presentations/screens/profile/personal_screen_update.dart';
 import '../../../presentations/screens/profile/profile_screen.dart';
 import '../../../presentations/screens/profile/question_help_screen.dart';
 import '../../../presentations/screens/splash/splash_screen.dart';
+import '../../../presentations/screens/subscription/subscription_screen.dart';
 import '../../../presentations/screens/story/story_audio_book_screen.dart';
 import '../../../presentations/screens/story/story_audio_screen.dart';
 import '../../../presentations/screens/story/story_edit_screen.dart';
@@ -97,6 +98,7 @@ class AppRoutes {
   static const String videoRecordAddPostDetailsScreen = "/videoRecordAddPostDetailsScreen";
   static const String notificationsScreen = "/notificationsScreen";
   static const String videoPlayerScreen = '/videoPlayerScreen';
+  static const String subscriptionScreen = "/subscriptionScreen";
 
   static final GoRouter goRouter = GoRouter(
     initialLocation: splashScreen,
@@ -500,6 +502,15 @@ class AppRoutes {
         pageBuilder:
             (context, state) =>
                 _customTransitionPage(NotificationsScreen(), state),
+      ),
+
+      //<<<=============>>>  Subscription Screen  <<<===============>>>
+      GoRoute(
+        path: subscriptionScreen,
+        name: subscriptionScreen,
+        pageBuilder:
+            (context, state) =>
+                _customTransitionPage(const SubscriptionScreen(), state),
       ),
 
 

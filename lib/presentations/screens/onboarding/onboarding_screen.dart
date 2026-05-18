@@ -218,8 +218,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                                 textAlign: TextAlign.center,
                               ),
                               SizedBox(height: 65.h),
-                              Padding(
-                                padding:  EdgeInsets.only(left: 100.w),
+                              Center(
                                 child: CustomButton(
                                   title: page["button"]!,
                                   onpress: () {
@@ -342,15 +341,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                                 textAlign: TextAlign.center,
                               ),
                               SizedBox(height: 75.h),
-                              Padding(
-                                padding: EdgeInsets.only(left: 90.w,),
+                              Center(
                                 child: CustomButton(
                                   title: page["button"]!,
                                   onpress: () {
                                     context.pushNamed(AppRoutes.signUpScreen);
-
                                   },
-
                                   width: 270.w,
                                 ),
                               ),

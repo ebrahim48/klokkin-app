@@ -27,16 +27,26 @@ android {
         applicationId = "com.atomictractorltd.klookin"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
-        minSdk = 23
+        minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
     }
 
     signingConfigs {
-        // Create a debug signing config that can be used as fallback
+        // Create a debug signing config that can be used as fallback.
+        // Prefer a project-local debug.keystore, but fall back to the
+        // standard Android debug keystore (~/.android/debug.keystore) so
+        // builds work on machines without a checked-in keystore.
         getByName("debug") {
-            storeFile = file("${project.rootDir}/debug.keystore")
+            val localDebugKeystore = file("${project.rootDir}/debug.keystore")
+            val defaultDebugKeystore =
+                File(System.getProperty("user.home"), ".android/debug.keystore")
+            storeFile = if (localDebugKeystore.exists()) {
+                localDebugKeystore
+            } else {
+                defaultDebugKeystore
+            }
             storePassword = "android"
             keyAlias = "androiddebugkey"
             keyPassword = "android"

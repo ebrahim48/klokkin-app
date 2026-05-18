@@ -88,7 +88,7 @@ class _EveryStoryCardState extends State<EveryStoryCard> {
                     Positioned.fill(
                       child: CustomNetworkImage(
                         imageUrl: _isVideoUrl(widget.imagePath)
-                            ? "https://via.placeholder.com/235x130/20272E/C79235?text=Video"
+                            ? ""
                             : widget.imagePath,
                         borderRadius: BorderRadius.zero,
                         fit: BoxFit.cover,

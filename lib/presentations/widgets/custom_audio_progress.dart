@@ -18,6 +18,7 @@ import '../../global/custom_assets/assets.gen.dart';
 import 'package:intl/intl.dart';
 import '../../../services/download_service.dart';
 import '../../services/api_constants.dart';
+import 'youtube_media_player.dart';
 
 class CustomAudioProgressBar extends StatefulWidget {
   const CustomAudioProgressBar({super.key});
@@ -35,6 +36,17 @@ class _CustomAudioProgressBarState extends State<CustomAudioProgressBar> {
   String? storyId;
   bool _isDownloaded = false;
 
+  // Prepare the player exactly once per URL. Without this guard the
+  // setMediaPath call that used to live in build()/an Rx listener
+  // re-created the player on every rebuild while it was still
+  // initializing — so it never became ready (dead play button) and the
+  // screen appeared to "load forever".
+  String? _mediaPreparedFor;
+
+  // Set when the current story is YouTube-backed (trailer/song); the
+  // embedded YouTube player is shown instead of the file player + slider.
+  String? _ytUrl;
+
   @override
   void initState() {
     super.initState();
@@ -43,17 +55,14 @@ class _CustomAudioProgressBarState extends State<CustomAudioProgressBar> {
       storyId = routeData['storyId'];
       homeController.getStorySingle(id: routeData['storyId']);
       controllers.getLibraryStoryData();
+    });
+  }
 
-      controllers.libraryStoryData.listen((data) {
-        if (data.isNotEmpty) {
-          final firstStory = data.first;
-          if (firstStory.mediaUrl != null && firstStory.mediaUrl!.isNotEmpty) {
-            final mediaUrl = firstStory.mediaUrl!.first;
-            final isAudio = firstStory.type?.toLowerCase() == 'audio';
-            audioController.setMediaPath(mediaUrl, video: !isAudio);
-          }
-        }
-      });
+  void _ensureMediaPrepared(String url, bool isAudio) {
+    if (_mediaPreparedFor == url) return;
+    _mediaPreparedFor = url;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      audioController.setMediaPath(url, video: !isAudio);
     });
   }
 
@@ -116,11 +125,16 @@ class _CustomAudioProgressBarState extends State<CustomAudioProgressBar> {
         if (firstStory.mediaUrl != null && firstStory.mediaUrl!.isNotEmpty) {
           final mediaUrl = firstStory.mediaUrl!.first;
           final isAudio = firstStory.type?.toLowerCase() == 'audio';
-          if (audioController.currentTime.value == 0) {
-            audioController.setMediaPath(mediaUrl, video: !isAudio);
+          if (isYoutubeUrl(mediaUrl)) {
+            _ytUrl = mediaUrl;
+          } else {
+            // Prepared once, off the build path (see _ensureMediaPrepared).
+            _ensureMediaPrepared(mediaUrl, isAudio);
           }
         }
       }
+
+      final bool isYt = _ytUrl != null;
 
       return Column(
         mainAxisSize: MainAxisSize.min,
@@ -167,21 +181,64 @@ class _CustomAudioProgressBarState extends State<CustomAudioProgressBar> {
           ),
           SizedBox(height: 16.h),
 
-          /// ---- Top Row (Play/Pause + Slider) ----
+          /// YouTube trailer/song — embedded player.
+          /// Songs render in audio mode (cover art + play button, no video).
+          if (isYt)
+            YoutubeMediaPlayer(
+              url: _ytUrl!,
+              audioOnly: controllers.libraryStoryData.isNotEmpty &&
+                  (controllers.libraryStoryData.first.type ?? '')
+                          .toLowerCase() ==
+                      'audio',
+              artworkUrl: controllers.libraryStoryData.isNotEmpty
+                  ? controllers.libraryStoryData.first.thumbnail
+                  : null,
+            ),
+
+          /// ---- Top Row (Play/Pause + Slider) ---- (file media only)
+          if (!isYt) ...[
           Row(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               IconButton(
                 padding: EdgeInsets.zero,
                 constraints: const BoxConstraints(),
-                onPressed: audioController.togglePlayPause,
-                icon: Icon(
-                  audioController.isPlaying.value
-                      ? Icons.pause
-                      : Icons.play_arrow,
-                  size: 25,
-                  color: AppColors.textColorC2C2C2,
-                ),
+                onPressed: () async {
+                  final story = controllers.libraryStoryData.isNotEmpty
+                      ? controllers.libraryStoryData.first
+                      : null;
+                  final url = (story?.mediaUrl != null &&
+                          story!.mediaUrl!.isNotEmpty)
+                      ? story.mediaUrl!.first
+                      : null;
+                  if (url == null) return;
+                  if (!audioController.isInitialized.value) {
+                    final isAudio = story?.type?.toLowerCase() == 'audio';
+                    await audioController.loadAndPlay(url, video: !isAudio);
+                  } else {
+                    await audioController.togglePlayPause();
+                  }
+                },
+                icon: Obx(() {
+                  if (audioController.isBuffering.value &&
+                      !audioController.isPlaying.value) {
+                    return SizedBox(
+                      width: 22,
+                      height: 22,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2,
+                        color: AppColors.textColorC2C2C2,
+                      ),
+                    );
+                  }
+                  return Icon(
+                    audioController.isPlaying.value
+                        ? Icons.pause
+                        : Icons.play_arrow,
+                    size: 25,
+                    color: AppColors.textColorC2C2C2,
+                  );
+                }),
               ),
               Expanded(
                 child: SliderTheme(
@@ -193,14 +250,21 @@ class _CustomAudioProgressBarState extends State<CustomAudioProgressBar> {
                     thumbColor: AppColors.buttonColorE8A533,
                     thumbShape: RoundSliderThumbShape(enabledThumbRadius: 6.r),
                   ),
-                  child: Slider(
-                    value: audioController.currentTime.value.clamp(
-                      0,
-                      audioController.totalTime.value,
-                    ),
-                    min: 0,
-                    max: audioController.totalTime.value,
-                    onChanged: audioController.seek,
+                  child: Builder(
+                    builder: (_) {
+                      final double max =
+                          audioController.totalTime.value > 0
+                              ? audioController.totalTime.value
+                              : 1.0;
+                      final double value =
+                          audioController.currentTime.value.clamp(0.0, max);
+                      return Slider(
+                        value: value,
+                        min: 0,
+                        max: max,
+                        onChanged: (v) => audioController.seek(v),
+                      );
+                    },
                   ),
                 ),
               ),
@@ -221,6 +285,7 @@ class _CustomAudioProgressBarState extends State<CustomAudioProgressBar> {
               ),
             ],
           ),
+          ],
 
           SizedBox(height: 32.h),
 

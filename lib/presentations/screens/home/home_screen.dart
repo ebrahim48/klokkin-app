@@ -35,11 +35,9 @@ class _HomeScreenState extends State<HomeScreen> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      homeController.getLatestForm();
-      homeController.getMyStory();
-      homeController.getWorkingDays();
-      homeController.getStorySteps();
-      homeController.getProfile();
+      // Single guarded load: skips refetch (and the shimmer) when the
+      // data is still fresh from a previous tab visit.
+      homeController.loadHomeData();
     });
   }
 
@@ -89,10 +87,15 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
+        child: RefreshIndicator(
+          // Force a reload, bypassing the freshness guard, so users can
+          // pull to see a story they just uploaded without waiting.
+          onRefresh: () => homeController.loadHomeData(force: true),
+          child: SingleChildScrollView(
+            physics: const AlwaysScrollableScrollPhysics(),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
               /// Search
               SizedBox(height: 10.h),
               Padding(
@@ -362,12 +365,12 @@ class _HomeScreenState extends State<HomeScreen> {
                       if (latest.mediaUrl != null && latest.mediaUrl!.isNotEmpty) {
                         final url = latest.mediaUrl!.first;
                         if (url.contains('.m3u8') || url.contains('/video/')) {
-                          imageUrl = "https://via.placeholder.com/140x180/20272E/C79235?text=Video";
+                          imageUrl = "";
                         } else {
                           imageUrl = url;
                         }
                       } else {
-                        imageUrl = "https://via.placeholder.com/140x180/20272E/C79235?text=Image";
+                        imageUrl = "";
                       }
 
                       return LatestCard(
@@ -433,20 +436,17 @@ class _HomeScreenState extends State<HomeScreen> {
                           ? workingDaysStories.thumbnail!
                           : (workingDaysStories.mediaUrl?.isNotEmpty == true
                           ? workingDaysStories.mediaUrl!.first
-                          : "https://via.placeholder.com/160x180/20272E/C79235?text=Video");
+                          : "");
 
                       String videoUrl = workingDaysStories.mediaUrl?.isNotEmpty == true
                           ? workingDaysStories.mediaUrl!.first
                           : "";
 
-                      if (videoUrl.isNotEmpty) {
-                        if (workCardController.getController(index) == null) {
-                          WidgetsBinding.instance.addPostFrameCallback((_) {
-                            workCardController.setVideoPath(index, videoUrl);
-                          });
-                        }
-                      }
-
+                      // NOTE: do NOT initialize a VideoPlayerController here.
+                      // itemBuilder runs per item and on every rebuild, so
+                      // this previously spun up one network video decoder per
+                      // card and froze the UI. The card is just a thumbnail;
+                      // the player is created on the full-screen play route.
                       return WorkCard(
                         index: index,
                         title: workingDaysStories.caption ?? 'N/A',
@@ -506,7 +506,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           ? storyStartSteps.thumbnail!
                           : (storyStartSteps.mediaUrl?.isNotEmpty == true
                           ? storyStartSteps.mediaUrl!.first
-                          : "https://via.placeholder.com/235x150/20272E/C79235?text=Story");
+                          : "");
 
                       String videoUrl = storyStartSteps.mediaUrl?.isNotEmpty == true
                           ? storyStartSteps.mediaUrl!.first
@@ -535,6 +535,7 @@ class _HomeScreenState extends State<HomeScreen> {
               }),
               SizedBox(height: 80.h),
             ],
+            ),
           ),
         ),
       ),

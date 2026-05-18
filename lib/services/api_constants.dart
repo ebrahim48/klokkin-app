@@ -32,4 +32,11 @@ class ApiConstants {
   static String aboutEndPoint = "/setting/about-us";
   static String termsEndPoint = "/setting/terms-conditions";
   static String notificationsEndPoint = "/notification/";
+
+  // ---- Subscription ----
+  static const String subscriptionPlansEndPoint = "/subscription/plans";
+  static const String mySubscriptionEndPoint = "/subscription/me";
+  static const String subscriptionPurchaseEndPoint = "/subscription/purchase";
+  static String subscriptionTransactionsEndPoint({int page = 1}) =>
+      "/subscription/transactions?page=$page";
 }

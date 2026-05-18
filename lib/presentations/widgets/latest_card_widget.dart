@@ -86,9 +86,8 @@ class _LatestCardState extends State<LatestCard> {
   @override
   Widget build(BuildContext context) {
     // Use placeholder for video URLs
-    final displayImage = _isVideoUrl(widget.imagePath)
-        ? "https://via.placeholder.com/140x180/20272E/FFFFFF?text=Video"
-        : widget.imagePath;
+    final displayImage =
+        _isVideoUrl(widget.imagePath) ? "" : widget.imagePath;
 
     return GestureDetector(
       onTap: widget.onTap,

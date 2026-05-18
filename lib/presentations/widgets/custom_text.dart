@@ -12,7 +12,14 @@ class CustomText extends StatelessWidget {
         this.maxline,
         this.textOverflow,
         this.fontName,
-        this.textAlign = TextAlign.center,
+        // Default to start (natural reading) alignment. Almost all text in
+        // the app lives in left-aligned (crossAxisAlignment.start) columns —
+        // list items, captions, titles, form labels — so a center default
+        // made that text float to the middle of its box and look
+        // misaligned. Genuinely-centered text (empty states, dialogs)
+        // passes textAlign: TextAlign.center explicitly, and CustomButton
+        // wraps its label in a Center widget, so buttons are unaffected.
+        this.textAlign = TextAlign.start,
         this.left = 0,
         this.right = 0,
         this.top = 0,
