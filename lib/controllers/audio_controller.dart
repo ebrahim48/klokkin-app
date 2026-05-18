@@ -80,11 +80,14 @@ class AudioController extends GetxController {
 
     final v = vc.value;
     isBuffering.value = v.isBuffering;
-    if (isPlaying.value != v.isPlaying) isPlaying.value = v.isPlaying;
+    isPlaying.value = v.isPlaying;
 
     currentTime.value = v.position.inMilliseconds / 1000.0;
     final dur = v.duration.inMilliseconds / 1000.0;
-    if (dur > 0 && (totalTime.value - dur).abs() > 0.5) {
+    // Audio streams often report a 0-duration immediately after initialize
+    // and only fill it in on the first tick — accept any positive value
+    // here instead of only when it diverges from the previous reading.
+    if (dur > 0 && (totalTime.value <= 0 || (totalTime.value - dur).abs() > 0.5)) {
       totalTime.value = dur;
     }
 
@@ -99,8 +102,9 @@ class AudioController extends GetxController {
   }
 
   Future<void> togglePlayPause() async {
-    if (!isInitialized.value) return;
-    if (_vc!.value.isPlaying) {
+    final vc = _vc;
+    if (vc == null || !isInitialized.value) return;
+    if (vc.value.isPlaying) {
       await pause();
     } else {
       await play();
@@ -149,6 +153,16 @@ class AudioController extends GetxController {
   Future<void> _disposeController() async {
     final vc = _vc;
     _vc = null;
+    // Reset every flag the play button + slider read from. Without this,
+    // re-entering a story screen kept isInitialized=true while _vc was null,
+    // so the next tap hit togglePlayPause and crashed on `_vc!`, and the
+    // duration / progress was stuck on the previous story's last values.
+    isInitialized.value = false;
+    isPlaying.value = false;
+    isBuffering.value = false;
+    currentTime.value = 0;
+    totalTime.value = 0;
+    _currentUrl = null;
     if (vc != null) {
       vc.removeListener(_onTick);
       try {

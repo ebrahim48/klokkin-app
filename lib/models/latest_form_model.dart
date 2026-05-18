@@ -4,6 +4,7 @@ class LatestFormModel {
   final String? caption;
   final List<String>? tags;
   final String? status;
+  final String? thumbnail;
   final int? shared;
   final String? description;
   final List<String>? mediaUrl;
@@ -18,6 +19,7 @@ class LatestFormModel {
     this.caption,
     this.tags,
     this.status,
+    this.thumbnail,
     this.shared,
     this.description,
     this.mediaUrl,
@@ -33,6 +35,7 @@ class LatestFormModel {
     caption: json["caption"],
     tags: json["tags"] == null ? [] : List<String>.from(json["tags"]!.map((x) => x)),
     status: json["status"],
+    thumbnail: json["thumbnail"],
     shared: json["shared"],
     description: json["description"],
     mediaUrl: json["mediaUrl"] == null ? [] : List<String>.from(json["mediaUrl"]!.map((x) => x)),
@@ -48,6 +51,7 @@ class LatestFormModel {
     "caption": caption,
     "tags": tags == null ? [] : List<dynamic>.from(tags!.map((x) => x)),
     "status": status,
+    "thumbnail": thumbnail,
     "shared": shared,
     "description": description,
     "mediaUrl": mediaUrl == null ? [] : List<dynamic>.from(mediaUrl!.map((x) => x)),

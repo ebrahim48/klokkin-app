@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:flutter_svg/svg.dart';
-import 'package:klokkin_app/services/download_service.dart';
-import 'package:toastification/toastification.dart';
 import '../../core/constants/app_colors.dart';
 import 'custom_text.dart';
 import 'custom_network_image.dart';
@@ -26,61 +23,11 @@ class LatestCard extends StatefulWidget {
 }
 
 class _LatestCardState extends State<LatestCard> {
-  bool _isDownloading = false;
-
   // Check if URL is a video
   bool _isVideoUrl(String url) {
     return url.contains('.m3u8') ||
         url.contains('.mp4') ||
         url.contains('/video/');
-  }
-
-  Future<void> _downloadImage() async {
-    if (_isDownloading) return;
-
-    setState(() {
-      _isDownloading = true;
-    });
-
-    try {
-      final downloadService = DownloadService();
-      bool success = await downloadService.downloadMedia(
-        widget.imagePath,
-        title: widget.title,
-        subtitle: widget.caption,
-        meta: 'Latest Image',
-        hashtags: 'Latest',
-      );
-
-      if (success) {
-        toastification.show(
-          context: context,
-          type: ToastificationType.success,
-          title: const Text('Download Complete'),
-          description: const Text('Image has been saved to your device'),
-        );
-      } else {
-        toastification.show(
-          context: context,
-          type: ToastificationType.error,
-          title: const Text('Download Failed'),
-          description: const Text('Could not save image to device'),
-        );
-      }
-    } catch (e) {
-      toastification.show(
-        context: context,
-        type: ToastificationType.error,
-        title: const Text('Download Error'),
-        description: Text('Error: $e'),
-      );
-    } finally {
-      if (mounted) {
-        setState(() {
-          _isDownloading = false;
-        });
-      }
-    }
   }
 
   @override
@@ -130,39 +77,13 @@ class _LatestCardState extends State<LatestCard> {
                           color: Colors.black.withOpacity(0.6),
                           borderRadius: BorderRadius.circular(4.r),
                         ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Expanded(
-                              child: CustomText(
-                                textAlign: TextAlign.start,
-                                text: widget.title,
-                                color: AppColors.textColorFFFFFF,
-                                fontsize: 11.sp,
-                                fontWeight: FontWeight.w500,
-                                maxline: 1,
-                              ),
-                            ),
-                            SizedBox(width: 4.w),
-                            GestureDetector(
-                              onTap: _downloadImage,
-                              child: _isDownloading
-                                  ? SizedBox(
-                                width: 14.w,
-                                height: 14.h,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  color: AppColors.textColorFFFFFF,
-                                ),
-                              )
-                                  : SvgPicture.asset(
-                                "assets/icons/downloadSimple.svg",
-                                width: 14.w,
-                                height: 14.h,
-                                color: AppColors.textColorFFFFFF,
-                              ),
-                            ),
-                          ],
+                        child: CustomText(
+                          textAlign: TextAlign.start,
+                          text: widget.title,
+                          color: AppColors.textColorFFFFFF,
+                          fontsize: 11.sp,
+                          fontWeight: FontWeight.w500,
+                          maxline: 1,
                         ),
                       ),
                     ),

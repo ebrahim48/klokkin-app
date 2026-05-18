@@ -362,7 +362,14 @@ class _HomeScreenState extends State<HomeScreen> {
                       final latest = homeController.latestForm[index];
 
                       String imageUrl;
-                      if (latest.mediaUrl != null && latest.mediaUrl!.isNotEmpty) {
+                      // Prefer the dedicated thumbnail (set by backend or
+                      // auto-generated on upload for videos). Fall back to
+                      // mediaUrl only for image stories.
+                      if (latest.thumbnail != null &&
+                          latest.thumbnail!.isNotEmpty) {
+                        imageUrl = latest.thumbnail!;
+                      } else if (latest.mediaUrl != null &&
+                          latest.mediaUrl!.isNotEmpty) {
                         final url = latest.mediaUrl!.first;
                         if (url.contains('.m3u8') || url.contains('/video/')) {
                           imageUrl = "";
