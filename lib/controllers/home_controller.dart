@@ -6,7 +6,9 @@ import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
 import 'package:klokkin_app/core/config/app_routes/app_routes.dart';
 import 'package:klokkin_app/models/my_story_model.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:video_player/video_player.dart';
+import 'package:video_thumbnail/video_thumbnail.dart';
 import '../../../services/api_client.dart';
 import '../../../services/api_constants.dart';
 import '../core/helpers/toast_message_helper.dart';
@@ -104,6 +106,36 @@ class HomeController extends GetxController {
 
   RxBool uploadStoryLoading = false.obs;
 
+  bool _isVideoFile(String path) {
+    final p = path.toLowerCase();
+    return p.endsWith('.mp4') ||
+        p.endsWith('.mov') ||
+        p.endsWith('.mkv') ||
+        p.endsWith('.avi') ||
+        p.endsWith('.webm') ||
+        p.endsWith('.m4v') ||
+        p.endsWith('.3gp');
+  }
+
+  Future<File?> _generateVideoThumbnail(String videoPath) async {
+    try {
+      final dir = await getTemporaryDirectory();
+      final outPath = await VideoThumbnail.thumbnailFile(
+        video: videoPath,
+        thumbnailPath: dir.path,
+        imageFormat: ImageFormat.JPEG,
+        maxWidth: 512,
+        quality: 75,
+      );
+      if (outPath == null) return null;
+      final file = File(outPath);
+      return await file.exists() ? file : null;
+    } catch (e) {
+      print('Thumbnail generation failed: $e');
+      return null;
+    }
+  }
+
   uploadStory({
      required List<File> images,
         String? caption,
@@ -119,8 +151,22 @@ class HomeController extends GetxController {
       photoList.add(MultipartBody("files", photos));
     }
     List<MultipartBody> multipartBody = photoList ?? [];
-    if (thumbnail != null) {
-      multipartBody.add(MultipartBody("thumbnail", thumbnail));
+
+    // Auto-generate a thumbnail from the first video file if the caller
+    // didn't provide one. Backend / list UI expect a thumbnail image to
+    // render the card preview — videos uploaded without one show a blank tile.
+    File? effectiveThumbnail = thumbnail;
+    if (effectiveThumbnail == null && images.isNotEmpty) {
+      final firstVideo = images.firstWhere(
+        (f) => _isVideoFile(f.path),
+        orElse: () => File(''),
+      );
+      if (firstVideo.path.isNotEmpty) {
+        effectiveThumbnail = await _generateVideoThumbnail(firstVideo.path);
+      }
+    }
+    if (effectiveThumbnail != null) {
+      multipartBody.add(MultipartBody("thumbnail", effectiveThumbnail));
     }
 
     var body = {

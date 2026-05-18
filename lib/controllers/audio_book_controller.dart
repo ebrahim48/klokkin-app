@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:get/get.dart';
-import 'package:just_audio/just_audio.dart';
+import 'package:video_player/video_player.dart';
 import '../core/helpers/toast_message_helper.dart';
 import '../models/story_libray_data_model.dart';
 import '../services/api_client.dart';
@@ -10,8 +10,12 @@ import '../services/api_constants.dart';
 class AudioBookController extends GetxController {
 
   /// ================================> Audio Player ==============================>
-
-  final AudioPlayer audioPlayer = AudioPlayer();
+  // Uses video_player because just_audio is not declared in pubspec and the
+  // detail screen already plays the same media URLs reliably through
+  // video_player. One controller per active track; recreated when the user
+  // taps a different row.
+  VideoPlayerController? _vc;
+  Timer? _positionTimer;
 
   // Track which audio is currently playing
   final RxInt currentPlayingIndex = (-1).obs;
@@ -22,76 +26,76 @@ class AudioBookController extends GetxController {
   final Rx<Duration> currentPosition = Duration.zero.obs;
   final Rx<Duration> totalDuration = Duration.zero.obs;
 
-  // Streams subscription to avoid multiple listeners
-  StreamSubscription<Duration>? _positionSubscription;
-  StreamSubscription<Duration?>? _durationSubscription;
-  StreamSubscription<PlayerState>? _stateSubscription;
+  void _onTick() {
+    final vc = _vc;
+    if (vc == null || !vc.value.isInitialized) return;
+    currentPosition.value = vc.value.position;
+    if (vc.value.duration > Duration.zero) {
+      totalDuration.value = vc.value.duration;
+    }
+    if (isPlaying.value != vc.value.isPlaying) {
+      isPlaying.value = vc.value.isPlaying;
+    }
+    if (vc.value.position >= vc.value.duration &&
+        vc.value.duration > Duration.zero) {
+      vc.pause();
+      vc.seekTo(Duration.zero);
+      isPlaying.value = false;
+      currentPlayingIndex.value = -1;
+      currentPosition.value = Duration.zero;
+    }
+  }
 
-  @override
-  void onInit() {
-    super.onInit();
-
-    // Listen to position changes (real-time progress)
-    _positionSubscription = audioPlayer.positionStream.listen((position) {
-      currentPosition.value = position;
-      update();
-    });
-
-    // Listen to duration
-    _durationSubscription = audioPlayer.durationStream.listen((duration) {
-      if (duration != null) {
-        totalDuration.value = duration;
-        update();
-      }
-    });
-
-    // Listen to player state changes
-    _stateSubscription = audioPlayer.playerStateStream.listen((state) {
-      if (state.processingState == ProcessingState.completed) {
-        isPlaying.value = false;
-        currentPlayingIndex.value = -1;
-        currentPosition.value = Duration.zero;
-        update();
-      }
-    });
+  Future<void> _disposeVc() async {
+    final vc = _vc;
+    _vc = null;
+    if (vc != null) {
+      vc.removeListener(_onTick);
+      try { await vc.pause(); } catch (_) {}
+      try { await vc.dispose(); } catch (_) {}
+    }
   }
 
   /// Play or pause audio at specific index
   Future<void> toggleAudio(int index, String audioUrl) async {
     try {
-      // If clicking the same audio that's playing
-      if (currentPlayingIndex.value == index && isPlaying.value) {
-        isPlaying.value = false;
+      // Same row, currently playing → pause
+      if (currentPlayingIndex.value == index && _vc != null) {
+        if (_vc!.value.isPlaying) {
+          await _vc!.pause();
+          isPlaying.value = false;
+        } else {
+          await _vc!.play();
+          isPlaying.value = true;
+        }
         update();
-        await audioPlayer.pause();
         return;
       }
 
-      // If clicking the same audio that's paused
-      if (currentPlayingIndex.value == index && !isPlaying.value) {
-        isPlaying.value = true;
-        update();
-        await audioPlayer.play();
-        return;
-      }
-
-      // If clicking a different audio
+      // Different row — tear down previous and start fresh
       isLoading.value = true;
+      currentPlayingIndex.value = index;
+      currentPosition.value = Duration.zero;
+      totalDuration.value = Duration.zero;
       update();
 
-      currentPlayingIndex.value = index;
+      await _disposeVc();
 
-      await audioPlayer.setUrl(audioUrl);
-      await audioPlayer.play();
+      final vc = VideoPlayerController.networkUrl(Uri.parse(audioUrl));
+      _vc = vc;
+      vc.addListener(_onTick);
+      await vc.initialize();
+      totalDuration.value = vc.value.duration;
+      await vc.play();
 
       isPlaying.value = true;
       isLoading.value = false;
       update();
-
     } catch (e) {
       print('Error playing audio: $e');
       isLoading.value = false;
       isPlaying.value = false;
+      currentPlayingIndex.value = -1;
       update();
       ToastMessageHelper.showToastMessage("No Audio");
     }
@@ -107,7 +111,7 @@ class AudioBookController extends GetxController {
 
   /// Stop audio
   Future<void> stopAudio() async {
-    await audioPlayer.stop();
+    await _disposeVc();
     isPlaying.value = false;
     currentPlayingIndex.value = -1;
     currentPosition.value = Duration.zero;
@@ -458,10 +462,8 @@ class AudioBookController extends GetxController {
 
   @override
   void onClose() {
-    _positionSubscription?.cancel();
-    _durationSubscription?.cancel();
-    _stateSubscription?.cancel();
-    audioPlayer.dispose();
+    _positionTimer?.cancel();
+    _disposeVc();
     super.onClose();
   }
 }
