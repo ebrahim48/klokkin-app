@@ -12,6 +12,7 @@ import '../../../core/helpers/prefs_helper.dart';
 import '../../../global/custom_assets/assets.gen.dart';
 import '../../widgets/customMainProfile.dart';
 import '../../widgets/custom_profile_listtile.dart';
+import '../subscription/in_app_purchase_screen.dart';
 import '../../widgets/custom_text.dart';
 
 class ProfileScreen extends StatefulWidget {
@@ -175,7 +176,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     color: AppColors.primaryColorC79235,
                   ),
                   onTap: () {
-                    context.pushNamed(AppRoutes.subscriptionScreen);
+                    showModalBottomSheet(
+                      context: context,
+                      isScrollControlled: true,
+                      backgroundColor: Colors.transparent,
+                      builder: (_) => DraggableScrollableSheet(
+                        initialChildSize: 0.92,
+                        minChildSize: 0.5,
+                        maxChildSize: 0.95,
+                        builder: (_, scrollController) =>
+                            const InAppPurchaseSubscriptionScreen(),
+                      ),
+                    );
                   }),
               CustomProfileListTile(
                   title: 'System settings',

@@ -13,7 +13,8 @@ class ProfileController extends GetxController{
     getPrivacyPolicyLoading(true);
     var response = await ApiClient.getData(ApiConstants.privacyEndPoint);
     if (response.statusCode == 200) {
-      value.value = response.body['data']['attributes']['privacyPolicy'];
+      final attributes = response.body['data']?['attributes'];
+      value.value = attributes?['privacyPolicy'] ?? '';
       getPrivacyPolicyLoading(false);
     } else if (response.statusCode == 404) {
       getPrivacyPolicyLoading(false);
@@ -29,7 +30,8 @@ class ProfileController extends GetxController{
     getAboutUsLoading(true);
     var response = await ApiClient.getData(ApiConstants.aboutEndPoint);
     if (response.statusCode == 200) {
-      about.value = response.body['data']['attributes']['aboutUs'];
+      final attributes = response.body['data']?['attributes'];
+      about.value = attributes?['aboutUs'] ?? '';
       getAboutUsLoading(false);
     } else if (response.statusCode == 404) {
       getAboutUsLoading(false);
@@ -44,7 +46,8 @@ class ProfileController extends GetxController{
     getTermsConditionLoading(true);
     var response = await ApiClient.getData(ApiConstants.termsEndPoint);
     if (response.statusCode == 200) {
-      terms.value = response.body['data']['attributes']['termsConditions'];
+      final attributes = response.body['data']?['attributes'];
+      terms.value = attributes?['termsConditions'] ?? '';
       getTermsConditionLoading(false);
     } else if (response.statusCode == 404) {
       getTermsConditionLoading(false);
