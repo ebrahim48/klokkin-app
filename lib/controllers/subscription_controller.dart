@@ -1,13 +1,11 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'dart:math';
 
 import 'package:flutter/foundation.dart';
 import 'package:get/get.dart';
 import 'package:in_app_purchase/in_app_purchase.dart';
 
-import '../core/helpers/toast_message_helper.dart';
 import '../models/subscription_model.dart';
 import '../services/api_client.dart';
 import '../services/api_constants.dart';
@@ -30,6 +28,8 @@ class SubscriptionController extends GetxController {
   final RxBool statusLoading = false.obs;
   final RxBool transactionsLoading = false.obs;
   final RxBool purchasing = false.obs;
+  final RxString purchaseError = ''.obs;
+  final RxString purchaseSuccess = ''.obs;
 
   final RxList<SubscriptionPlanModel> plans = <SubscriptionPlanModel>[].obs;
   final Rxn<MySubscriptionModel> mySubscription = Rxn<MySubscriptionModel>();
@@ -47,8 +47,8 @@ class SubscriptionController extends GetxController {
       _onPurchaseUpdated,
       onError: (e) {
         purchasing.value = false;
-        ToastMessageHelper.showToastMessage('Purchase error: $e',
-            title: 'fail');
+        purchaseError.value = 'Purchase error: $e';
+        debugPrint('====> [IAP] Stream error: $e');
       },
     );
   }
@@ -66,6 +66,8 @@ class SubscriptionController extends GetxController {
       getTransactions(),
     ]);
   }
+
+  Future<void> restorePurchases() => _iap.restorePurchases();
 
   // -------------------------------------------------------------- reads
 
@@ -117,29 +119,29 @@ class SubscriptionController extends GetxController {
 
   String? _storeProductId(SubscriptionPlanModel plan) {
     final ids = _isIOS ? plan.appleProductIds : plan.googleProductIds;
-    return ids.isNotEmpty ? ids.first : null;
+    if (ids.isNotEmpty) return ids.first;
+    // Fallback to hardcoded Play Store product IDs by plan key
+    switch (plan.key?.toLowerCase()) {
+      case 'weekly': return 'klokkin_weekly';
+      case 'monthly': return 'klokkin_monthly';
+      case 'yearly': return 'klokkin_yearly';
+      default: return null;
+    }
   }
 
-  /// Entry point from the UI. Routes to the real store in release builds,
-  /// or the simulated path in debug.
   Future<void> buyPlan(SubscriptionPlanModel plan) async {
     if (purchasing.value) return;
     purchasing(true);
     _pendingPlan = plan;
 
     try {
-      if (kReleaseMode) {
-        await _buyViaStore(plan);
-        // _onPurchaseUpdated finishes the flow asynchronously.
-      } else {
-        await _simulatePurchase(plan);
-        purchasing(false);
-      }
+      await _buyViaStore(plan);
+      // result comes back via _onPurchaseUpdated
     } catch (e) {
       purchasing(false);
       _pendingPlan = null;
-      ToastMessageHelper.showToastMessage('Could not start purchase: $e',
-          title: 'fail');
+      purchaseError.value = 'Could not start purchase: $e';
+      debugPrint('====> [IAP] Buy error: $e');
     }
   }
 
@@ -156,8 +158,9 @@ class SubscriptionController extends GetxController {
 
     final ProductDetailsResponse resp =
         await _iap.queryProductDetails({productId});
+    debugPrint('====> [IAP] Query "$productId" — found: ${resp.productDetails.length}, errors: ${resp.error?.message}');
     if (resp.productDetails.isEmpty) {
-      throw 'Store product "$productId" not found';
+      throw 'Product "$productId" not found in Play Store. Check Play Console setup.';
     }
 
     final param = PurchaseParam(productDetails: resp.productDetails.first);
@@ -178,9 +181,8 @@ class SubscriptionController extends GetxController {
         case PurchaseStatus.error:
           purchasing(false);
           _pendingPlan = null;
-          ToastMessageHelper.showToastMessage(
-              p.error?.message ?? 'Purchase failed',
-              title: 'fail');
+          purchaseError.value = p.error?.message ?? 'Purchase failed';
+          debugPrint('====> [IAP] Purchase error: ${p.error?.message}');
           break;
         case PurchaseStatus.purchased:
         case PurchaseStatus.restored:
@@ -204,21 +206,7 @@ class SubscriptionController extends GetxController {
     }
   }
 
-  /// Debug-only: skips the store and records a synthetic receipt so the
-  /// end-to-end flow (and the backend grant) can be exercised locally.
-  Future<void> _simulatePurchase(SubscriptionPlanModel plan) async {
-    final txnId =
-        'sim_${DateTime.now().millisecondsSinceEpoch}_${Random().nextInt(99999)}';
-    await _recordPurchase(
-      plan: plan,
-      productId: _storeProductId(plan) ?? 'sim.${plan.key}',
-      transactionId: txnId,
-      purchaseToken: null,
-    );
-  }
-
-  /// Reports the (real or simulated) receipt to the backend, which
-  /// activates/extends the subscription. Idempotent server-side.
+  /// Reports the store receipt to the backend to activate the subscription.
   Future<void> _recordPurchase({
     required SubscriptionPlanModel plan,
     required String productId,
@@ -246,21 +234,16 @@ class SubscriptionController extends GetxController {
       final result = MySubscriptionModel.fromJson(
           Map<String, dynamic>.from(response.body["data"]["attributes"]));
       mySubscription.value = result;
-      ToastMessageHelper.showToastMessage(
-        result.alreadyProcessed
-            ? 'This purchase was already applied'
-            : '${plan.name ?? plan.key} activated successfully',
-        title: 'Success',
-      );
-      // Refresh history so the new transaction shows up.
+      purchaseSuccess.value = result.alreadyProcessed
+          ? 'This purchase was already applied'
+          : '${plan.name ?? plan.key} activated successfully';
+      debugPrint('====> [IAP] Backend confirmed: ${purchaseSuccess.value}');
       await getTransactions();
     } else {
-      ToastMessageHelper.showToastMessage(
-        response.body is Map
-            ? (response.body["message"]?.toString() ?? 'Purchase failed')
-            : 'Purchase failed',
-        title: 'fail',
-      );
+      purchaseError.value = response.body is Map
+          ? (response.body["message"]?.toString() ?? 'Purchase failed')
+          : 'Purchase failed';
+      debugPrint('====> [IAP] Backend error: ${purchaseError.value}');
     }
   }
 }
