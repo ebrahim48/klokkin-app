@@ -1,8 +1,0 @@
-{
-  "permissions": {
-    "allow": [
-      "Bash(/tmp/structure_report.txt:*)",
-      "Read(//tmp/**)"
-    ]
-  }
-}
