@@ -7,7 +7,8 @@ publish_to: 'none'
 version: 1.0.0+8
 
 environment:
-  sdk: ^3.7.0
+  # Billing Library 8 (in_app_purchase_android 0.5.x) needs Flutter >= 3.38.
+  sdk: ^3.10.0
 
 
 dependencies:
@@ -47,7 +48,11 @@ dependencies:
   image_gallery_saver_plus: ^4.0.1
   internet_connection_checker_plus: ^2.5.2
   flutter_widget_from_html: ^0.15.2
-  in_app_purchase: ^3.2.0
+  in_app_purchase: ^3.3.0
+  # Pinned explicitly so resolution cannot fall back to a 0.4.x build: Play
+  # requires Billing Library 8.0.0+ from 31 Aug 2026, and 0.5.0 is the first
+  # release that ships it.
+  in_app_purchase_android: ^0.5.0
   youtube_player_flutter: ^9.1.1
   video_thumbnail: ^0.5.3
 
