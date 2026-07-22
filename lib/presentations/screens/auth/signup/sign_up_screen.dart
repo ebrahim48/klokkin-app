@@ -68,19 +68,19 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   keyboardType: TextInputType.phone,
                     hintextColor: AppColors.textColor8A8A8A,
                     controller: phoneCtrl,
-                    hintText: "Phone Number",
+                    hintText: "Phone Number (optional)",
                     prefixIcon: Assets.icons.phone.svg(),
                   inputFormatters: [
                     FilteringTextInputFormatter.digitsOnly,
                     LengthLimitingTextInputFormatter(11),
                   ],
+                  // Optional by design: App Store guideline 5.1.1(v) forbids
+                  // requiring personal data the core feature does not need.
+                  // Only validate the format once something is typed.
                   validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter phone number';
-                    } else if (value.length < 11) {
+                    if (value == null || value.trim().isEmpty) return null;
+                    if (value.length < 11) {
                       return 'Phone number must be 11 digits';
-                    } else if (value.length > 11) {
-                      return 'Phone number cannot exceed 11 digits';
                     }
                     return null;
                   },

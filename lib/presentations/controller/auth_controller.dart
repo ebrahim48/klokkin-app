@@ -36,10 +36,13 @@ class AuthController extends GetxController {
   handleSignUp(
       {String? fname, email, phone, password, confirmpassword, required BuildContext context, required String screenType}) async {
     signUpLoading(true);
+    // Phone is optional (App Store guideline 5.1.1(v)) — leave the field out
+    // entirely rather than posting an empty string.
+    final trimmedPhone = phone?.toString().trim() ?? '';
     var body = {
       "email": "$email",
       "fname": "$fname",
-      "phone": "$phone",
+      if (trimmedPhone.isNotEmpty) "phone": trimmedPhone,
       "password": "$password",
       "confirmpassword": "$confirmpassword",
     };
