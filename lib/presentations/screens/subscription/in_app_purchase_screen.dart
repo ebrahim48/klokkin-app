@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:get/get.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../controllers/subscription_controller.dart';
+import '../../../core/config/app_routes/app_routes.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../models/subscription_model.dart';
 import '../../widgets/custom_button.dart';
@@ -458,7 +460,9 @@ class _InAppPurchaseSubscriptionScreenState
                   children: [
                     CustomText(
                       textAlign: TextAlign.start,
-                      text: plan.priceLabel,
+                      // Prefer the store's localized price so the amount the
+                      // user is charged matches what the paywall advertises.
+                      text: _sub.storePriceFor(plan) ?? plan.priceLabel,
                       fontsize: 26.sp,
                       fontWeight: FontWeight.w700,
                       color: AppColors.primaryColorC79235,
@@ -552,15 +556,49 @@ class _InAppPurchaseSubscriptionScreenState
         ),
         SizedBox(height: 10.h),
         CustomText(
-          text:
-              'Subscriptions auto-renew unless cancelled at least 24 hours\nbefore the end of the current period.',
+          text: 'Payment is charged to your store account at confirmation of '
+              'purchase. The subscription renews automatically for the same '
+              'period and price unless it is cancelled at least 24 hours '
+              'before the end of the current period. Manage or cancel it any '
+              'time in your device account settings.',
           fontsize: 11.sp,
           fontWeight: FontWeight.w400,
           color: AppColors.textColor8C8C8C,
-          maxline: 3,
+          maxline: 8,
+          textOverflow: TextOverflow.visible,
           textAlign: TextAlign.center,
         ),
+        SizedBox(height: 12.h),
+        // Apple guideline 3.1.2(c): the purchase flow itself must link to the
+        // Terms of Use (EULA) and the privacy policy.
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            _legalLink('Terms of Use (EULA)', AppRoutes.termsServicesScreen),
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 8.w),
+              child: CustomText(
+                text: '•',
+                fontsize: 12.sp,
+                color: AppColors.textColor8C8C8C,
+              ),
+            ),
+            _legalLink('Privacy Policy', AppRoutes.privacyPolicyScreen),
+          ],
+        ),
       ],
+    );
+  }
+
+  Widget _legalLink(String label, String routeName) {
+    return GestureDetector(
+      onTap: () => context.pushNamed(routeName),
+      child: CustomText(
+        text: label,
+        fontsize: 12.sp,
+        fontWeight: FontWeight.w500,
+        color: AppColors.primaryColorC79235,
+      ),
     );
   }
 

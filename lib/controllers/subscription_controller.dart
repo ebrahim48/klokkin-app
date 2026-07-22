@@ -32,6 +32,9 @@ class SubscriptionController extends GetxController {
   final RxString purchaseSuccess = ''.obs;
 
   final RxList<SubscriptionPlanModel> plans = <SubscriptionPlanModel>[].obs;
+  // Store listings keyed by product id, filled from the platform store.
+  final RxMap<String, ProductDetails> storeProducts =
+      <String, ProductDetails>{}.obs;
   final Rxn<MySubscriptionModel> mySubscription = Rxn<MySubscriptionModel>();
   final RxList<SubscriptionTransactionModel> transactions =
       <SubscriptionTransactionModel>[].obs;
@@ -65,6 +68,7 @@ class SubscriptionController extends GetxController {
       getMySubscription(),
       getTransactions(),
     ]);
+    await loadStoreProducts();
   }
 
   Future<void> restorePurchases() => _iap.restorePurchases();
@@ -117,10 +121,14 @@ class SubscriptionController extends GetxController {
   String get _platform => _isIOS ? 'ios' : 'android';
   String get _store => _isIOS ? 'app_store' : 'play_store';
 
+  String get _storeName => _isIOS ? 'App Store Connect' : 'Play Console';
+
   String? _storeProductId(SubscriptionPlanModel plan) {
     final ids = _isIOS ? plan.appleProductIds : plan.googleProductIds;
     if (ids.isNotEmpty) return ids.first;
-    // Fallback to hardcoded Play Store product IDs by plan key
+    // Fallback when the backend has no product id configured. The same
+    // identifiers are registered in both App Store Connect and the Play
+    // Console, so one table serves both platforms.
     switch (plan.key?.toLowerCase()) {
       case 'weekly': return 'klokkin_weekly';
       case 'monthly': return 'klokkin_monthly';
@@ -148,7 +156,10 @@ class SubscriptionController extends GetxController {
   Future<void> _buyViaStore(SubscriptionPlanModel plan) async {
     final available = await _iap.isAvailable();
     if (!available) {
-      throw 'Store is not available on this device';
+      throw _isIOS
+          ? 'In-app purchases are turned off on this device. Enable them in '
+              'Settings > Screen Time > Content & Privacy Restrictions.'
+          : 'Google Play is not available on this device.';
     }
 
     final productId = _storeProductId(plan);
@@ -156,16 +167,60 @@ class SubscriptionController extends GetxController {
       throw 'No store product configured for "${plan.key}" on $_platform';
     }
 
-    final ProductDetailsResponse resp =
-        await _iap.queryProductDetails({productId});
-    debugPrint('====> [IAP] Query "$productId" — found: ${resp.productDetails.length}, errors: ${resp.error?.message}');
-    if (resp.productDetails.isEmpty) {
-      throw 'Product "$productId" not found in Play Store. Check Play Console setup.';
+    final details = storeProducts[productId] ?? await _queryProduct(productId);
+    if (details == null) {
+      throw 'This plan is not available for purchase yet. '
+          'Please try again later.';
     }
 
-    final param = PurchaseParam(productDetails: resp.productDetails.first);
+    final param = PurchaseParam(productDetails: details);
     // Subscriptions are non-consumable from the plugin's perspective.
     await _iap.buyNonConsumable(purchaseParam: param);
+  }
+
+  /// Looks up a single product and caches it. Returns null when the store
+  /// does not know the identifier (product missing / not yet approved).
+  Future<ProductDetails?> _queryProduct(String productId) async {
+    final ProductDetailsResponse resp =
+        await _iap.queryProductDetails({productId});
+    debugPrint('====> [IAP] Query "$productId" on $_storeName — '
+        'found: ${resp.productDetails.length}, '
+        'notFound: ${resp.notFoundIDs}, error: ${resp.error?.message}');
+    if (resp.productDetails.isEmpty) return null;
+    final details = resp.productDetails.first;
+    storeProducts[productId] = details;
+    return details;
+  }
+
+  /// Pre-loads the store listings for every plan so the paywall can show the
+  /// real localized price and duration — required by App Store guideline
+  /// 3.1.2(c) — instead of only the backend's raw number.
+  Future<void> loadStoreProducts() async {
+    if (plans.isEmpty) return;
+    if (!await _iap.isAvailable()) {
+      debugPrint('====> [IAP] Store unavailable, skipping product load');
+      return;
+    }
+    final ids = plans
+        .map(_storeProductId)
+        .whereType<String>()
+        .toSet();
+    if (ids.isEmpty) return;
+
+    final ProductDetailsResponse resp = await _iap.queryProductDetails(ids);
+    debugPrint('====> [IAP] Preload on $_storeName — '
+        'found: ${resp.productDetails.map((p) => p.id).toList()}, '
+        'notFound: ${resp.notFoundIDs}, error: ${resp.error?.message}');
+    for (final p in resp.productDetails) {
+      storeProducts[p.id] = p;
+    }
+  }
+
+  /// Localized store price for a plan, or null when the store has no listing.
+  String? storePriceFor(SubscriptionPlanModel plan) {
+    final id = _storeProductId(plan);
+    if (id == null) return null;
+    return storeProducts[id]?.price;
   }
 
   Future<void> _onPurchaseUpdated(List<PurchaseDetails> purchases) async {
