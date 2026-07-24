@@ -11,6 +11,7 @@ import '../../../models/story_libray_data_model.dart';
 import '../../widgets/audio_book_card.dart';
 import '../../widgets/category_widget.dart';
 import '../../widgets/custom_loader.dart';
+import '../home/createStory/home_screen_shimmer.dart';
 
 class StoryScreen extends StatefulWidget {
   const StoryScreen({super.key});
@@ -63,7 +64,19 @@ class _StoryScreenState extends State<StoryScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(height: 50.h),
+              SizedBox(height: 10.h),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: IconButton(
+                  onPressed: () => context.pop(),
+                  icon: Icon(
+                    Icons.arrow_back_ios_new,
+                    color: AppColors.textColorFFFFFF,
+                    size: 20.sp,
+                  ),
+                ),
+              ),
+              SizedBox(height: 10.h),
               Center(child: Assets.icons.storyIcon.svg()),
               SizedBox(height: 7.h),
               Align(
@@ -105,7 +118,7 @@ class _StoryScreenState extends State<StoryScreen> {
               SizedBox(height: 11.h),
               Obx(() {
                 if (controller.getLibraryStoryLoading.value) {
-                  return const Center(child: CustomLoader());
+                  return const CategoryShimmer();
                 }
                 if (controller.libraryStoryData.isEmpty) {
                   return Center(
