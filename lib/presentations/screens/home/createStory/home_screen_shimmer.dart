@@ -97,6 +97,37 @@ class EveryStoryShimmer extends StatelessWidget {
   }
 }
 
+/// Shimmer for Categories of stories (Horizontal)
+class CategoryShimmer extends StatelessWidget {
+  const CategoryShimmer({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: 120.h,
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        padding: EdgeInsets.symmetric(horizontal: 20.w),
+        itemCount: 3,
+        separatorBuilder: (context, index) => SizedBox(width: 12.w),
+        itemBuilder: (context, index) {
+          return Shimmer.fromColors(
+            baseColor: Colors.grey[800]!,
+            highlightColor: Colors.grey[600]!,
+            child: Container(
+              width: 250.w,
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(8.r),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+}
+
 /// Shimmer for Audio Book Card (Vertical List)
 class AudioBookCardShimmer extends StatelessWidget {
   const AudioBookCardShimmer({super.key});
