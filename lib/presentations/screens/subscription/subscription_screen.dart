@@ -61,6 +61,7 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
               ),
               SizedBox(height: 12.h),
               _plansList(),
+              _storeDiagnostics(),
               SizedBox(height: 24.h),
               CustomText(
                 text: 'Purchase history',
@@ -76,6 +77,48 @@ class _SubscriptionScreenState extends State<SubscriptionScreen> {
         ),
       ),
     );
+  }
+
+  // ------------------------------------------------- store diagnostics
+
+  /// Shows *why* the store returned no products, but only when none loaded —
+  /// so real users with a working paywall never see it. Helps pinpoint
+  /// App Store Connect setup issues (agreement / product id / sandbox).
+  Widget _storeDiagnostics() {
+    return Obx(() {
+      if (controller.storeProducts.isNotEmpty) return const SizedBox.shrink();
+      final text = controller.storeDiagnostics.value;
+      if (text.isEmpty) return const SizedBox.shrink();
+      return Container(
+        margin: EdgeInsets.only(top: 12.h),
+        padding: EdgeInsets.all(12.w),
+        decoration: BoxDecoration(
+          color: AppColors.textColor323539,
+          borderRadius: BorderRadius.circular(10.r),
+          border: Border.all(color: AppColors.borderColor4D3814),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            CustomText(
+              text: 'Store not ready — diagnostics',
+              color: AppColors.primaryColorC79235,
+              fontsize: 13.sp,
+              fontWeight: FontWeight.w700,
+            ),
+            SizedBox(height: 6.h),
+            SelectableText(
+              text,
+              style: TextStyle(
+                color: AppColors.textColorC2C2C2,
+                fontSize: 11.sp,
+                height: 1.4,
+              ),
+            ),
+          ],
+        ),
+      );
+    });
   }
 
   // ----------------------------------------------------- current status

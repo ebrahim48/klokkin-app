@@ -31,6 +31,11 @@ class SubscriptionController extends GetxController {
   final RxString purchaseError = ''.obs;
   final RxString purchaseSuccess = ''.obs;
 
+  // Human-readable diagnostics for why the store returned no products.
+  // Surfaced on the paywall so setup problems (agreement/product id/sandbox)
+  // can be pinpointed on-device without a console.
+  final RxString storeDiagnostics = ''.obs;
+
   final RxList<SubscriptionPlanModel> plans = <SubscriptionPlanModel>[].obs;
   // Store listings keyed by product id, filled from the platform store.
   final RxMap<String, ProductDetails> storeProducts =
@@ -196,8 +201,16 @@ class SubscriptionController extends GetxController {
   /// real localized price and duration — required by App Store guideline
   /// 3.1.2(c) — instead of only the backend's raw number.
   Future<void> loadStoreProducts() async {
-    if (plans.isEmpty) return;
-    if (!await _iap.isAvailable()) {
+    if (plans.isEmpty) {
+      storeDiagnostics.value = 'No plans loaded from backend yet.';
+      return;
+    }
+    final available = await _iap.isAvailable();
+    if (!available) {
+      storeDiagnostics.value =
+          'Store not available on this device.\n'
+          'Are you on a Simulator? IAP only works on a real device.\n'
+          'Is a Sandbox account signed in (Settings > App Store)?';
       debugPrint('====> [IAP] Store unavailable, skipping product load');
       return;
     }
@@ -205,7 +218,10 @@ class SubscriptionController extends GetxController {
         .map(_storeProductId)
         .whereType<String>()
         .toSet();
-    if (ids.isEmpty) return;
+    if (ids.isEmpty) {
+      storeDiagnostics.value = 'No product ids resolved from the plans.';
+      return;
+    }
 
     final ProductDetailsResponse resp = await _iap.queryProductDetails(ids);
     debugPrint('====> [IAP] Preload on $_storeName — '
@@ -214,6 +230,22 @@ class SubscriptionController extends GetxController {
     for (final p in resp.productDetails) {
       storeProducts[p.id] = p;
     }
+
+    // Build an on-device diagnostic so setup issues are visible without a
+    // debugger. When every id is "notFound" it is almost always the Paid
+    // Apps Agreement, a bundle-id/product-id mismatch, or sandbox sign-in.
+    final found = resp.productDetails.map((p) => p.id).toList();
+    storeDiagnostics.value = [
+      'Store: $_storeName',
+      'Bundle target: com.atomictractorltd.klookin',
+      'Queried ids: ${ids.join(", ")}',
+      'Found: ${found.isEmpty ? "(none)" : found.join(", ")}',
+      'Not found: ${resp.notFoundIDs.isEmpty ? "(none)" : resp.notFoundIDs.join(", ")}',
+      if (resp.error != null) 'StoreKit error: ${resp.error!.message}',
+      if (found.isEmpty)
+        '\nAll products missing → check: (1) Paid Apps Agreement Active, '
+            '(2) product ids match ASC exactly, (3) real device + sandbox account.',
+    ].join('\n');
   }
 
   /// Localized store price for a plan, or null when the store has no listing.

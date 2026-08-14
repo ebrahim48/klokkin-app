@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import 'package:klokkin_app/core/config/app_routes/app_routes.dart';
 import 'package:klokkin_app/presentations/widgets/custom_text.dart';
 import '../../../controllers/home_controller.dart';
+import '../../../controllers/moderation_controller.dart';
 import '../../../controllers/work_controller.dart';
 import '../../../core/constants/app_colors.dart';
 import '../../../global/custom_assets/assets.gen.dart';
@@ -30,6 +31,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   HomeController homeController = Get.put(HomeController());
   WorkCardController workCardController = Get.put(WorkCardController());
+  final ModerationController moderation = Get.put(ModerationController());
 
   @override
   void initState() {
@@ -338,7 +340,19 @@ class _HomeScreenState extends State<HomeScreen> {
                   return const LatestStoryShimmer();
                 }
 
-                if (homeController.latestForm.isEmpty) {
+                // Hide content from blocked users, reported stories, and
+                // anything caught by the objectionable-content filter
+                // (App Store Guideline 1.2).
+                final visibleStories = homeController.latestForm
+                    .where((s) => moderation.isVisible(
+                          storyId: s.id,
+                          userId: s.user?.id,
+                          caption: s.caption,
+                          description: s.description,
+                        ))
+                    .toList();
+
+                if (visibleStories.isEmpty) {
                   return SizedBox(
                     height: 180.h,
                     child: Center(
@@ -356,10 +370,10 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: ListView.separated(
                     scrollDirection: Axis.horizontal,
                     padding: EdgeInsets.symmetric(horizontal: 20.w),
-                    itemCount: homeController.latestForm.length,
+                    itemCount: visibleStories.length,
                     separatorBuilder: (context, index) => SizedBox(width: 12.w),
                     itemBuilder: (context, index) {
-                      final latest = homeController.latestForm[index];
+                      final latest = visibleStories[index];
 
                       String imageUrl;
                       // Prefer the dedicated thumbnail (set by backend or

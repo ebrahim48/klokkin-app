@@ -143,47 +143,79 @@ class HomeController extends GetxController {
         String? description,
         String? tags,
         required BuildContext context}) async {
+    // Validate required input up front. Without this the button would fire an
+    // empty request and — on the backend's silent rejection — look completely
+    // unresponsive to the user (App Store 2.1(a) "post button unresponsive").
+    if (images.isEmpty) {
+      ToastMessageHelper.showToastMessage(
+          "Please add a photo, video or audio before posting",
+          title: "Nothing to post");
+      return;
+    }
+    if ((caption ?? '').trim().isEmpty) {
+      ToastMessageHelper.showToastMessage(
+          "Please add a title/caption for your story",
+          title: "Title required");
+      return;
+    }
+
     uploadStoryLoading(true);
-
-    List<MultipartBody> photoList = [];
-
-    for (var photos in images) {
-      photoList.add(MultipartBody("files", photos));
-    }
-    List<MultipartBody> multipartBody = photoList ?? [];
-
-    // Auto-generate a thumbnail from the first video file if the caller
-    // didn't provide one. Backend / list UI expect a thumbnail image to
-    // render the card preview — videos uploaded without one show a blank tile.
-    File? effectiveThumbnail = thumbnail;
-    if (effectiveThumbnail == null && images.isNotEmpty) {
-      final firstVideo = images.firstWhere(
-        (f) => _isVideoFile(f.path),
-        orElse: () => File(''),
-      );
-      if (firstVideo.path.isNotEmpty) {
-        effectiveThumbnail = await _generateVideoThumbnail(firstVideo.path);
+    try {
+      List<MultipartBody> multipartBody = [];
+      for (var photos in images) {
+        multipartBody.add(MultipartBody("files", photos));
       }
-    }
-    if (effectiveThumbnail != null) {
-      multipartBody.add(MultipartBody("thumbnail", effectiveThumbnail));
-    }
 
-    var body = {
-      "caption": "$caption",
-      "description": "$description",
-      "tags": "$tags",
-    };
-    var response = await ApiClient.postMultipartData(
-        ApiConstants.uploadEndPoint, body,
-        multipartBody: multipartBody);
-    if (response.statusCode == 200 || response.statusCode == 201) {
-      ToastMessageHelper.showToastMessage("${response.body["message"]}",title: "Success");
-      context.pushNamed(AppRoutes.bottomNavbarScreen);
-      update();
+      // Auto-generate a thumbnail from the first video file if the caller
+      // didn't provide one. Backend / list UI expect a thumbnail image to
+      // render the card preview — videos uploaded without one show a blank tile.
+      File? effectiveThumbnail = thumbnail;
+      if (effectiveThumbnail == null && images.isNotEmpty) {
+        final firstVideo = images.firstWhere(
+          (f) => _isVideoFile(f.path),
+          orElse: () => File(''),
+        );
+        if (firstVideo.path.isNotEmpty) {
+          effectiveThumbnail = await _generateVideoThumbnail(firstVideo.path);
+        }
+      }
+      if (effectiveThumbnail != null) {
+        multipartBody.add(MultipartBody("thumbnail", effectiveThumbnail));
+      }
+
+      var body = {
+        "caption": "$caption",
+        "description": "$description",
+        "tags": "$tags",
+      };
+      var response = await ApiClient.postMultipartData(
+          ApiConstants.uploadEndPoint, body,
+          multipartBody: multipartBody);
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        ToastMessageHelper.showToastMessage("${response.body["message"]}",
+            title: "Success");
+        context.pushNamed(AppRoutes.bottomNavbarScreen);
+        update();
+      } else {
+        // Surface the real failure instead of silently doing nothing, so the
+        // button never appears "dead" after a tap.
+        final msg = response.body is Map
+            ? (response.body["message"]?.toString() ??
+                response.statusText ??
+                'Could not post your story. Please try again.')
+            : (response.statusText ??
+                'Could not post your story. Please try again.');
+        ToastMessageHelper.showToastMessage(msg, title: "Post failed");
+      }
+    } catch (e) {
+      ToastMessageHelper.showToastMessage(
+          "Something went wrong while posting: $e",
+          title: "Post failed");
+    } finally {
+      // Always release the button, even on error — otherwise the spinner
+      // stays and the button is permanently disabled.
       uploadStoryLoading(false);
     }
-    uploadStoryLoading(false);
   }
 
 

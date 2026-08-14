@@ -82,6 +82,23 @@ class _CustomVideoDetailsProgressBarState
   }
 
   Future<void> _downloadCurrentMedia() async {
+    // Get media URL from the video controller's data source.
+    final mediaUrl = widget.videoController?.dataSource;
+
+    // Guard the empty case BEFORE showing "Downloading...". Previously a null
+    // url silently skipped the whole block, so the button looked dead — the
+    // exact "download button not functional" the reviewer reported (2.1(a)).
+    if (mediaUrl == null || mediaUrl.isEmpty) {
+      Get.snackbar(
+        "Nothing to download",
+        "This media is still loading or has no downloadable file.",
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+        snackPosition: SnackPosition.BOTTOM,
+      );
+      return;
+    }
+
     try {
       Get.snackbar(
         "Downloading...",
@@ -89,39 +106,37 @@ class _CustomVideoDetailsProgressBarState
         snackPosition: SnackPosition.BOTTOM,
       );
 
-      // Get media URL from route data or controller
-      final mediaUrl = widget.videoController?.dataSource;
+      bool success = await DownloadService().downloadMedia(
+        mediaUrl,
+        title: widget.title,
+        subtitle: widget.description,
+        meta: widget.duration,
+        hashtags: widget.tags.join(', '),
+      );
 
-      if (mediaUrl != null && mediaUrl.isNotEmpty) {
-        bool success = await DownloadService().downloadMedia(
-          mediaUrl,
-          title: widget.title,
-          subtitle: widget.description,
-          meta: widget.duration,
-          hashtags: widget.tags.join(', '),
+      if (success) {
+        Get.snackbar(
+          "Success!",
+          "Media downloaded successfully",
+          backgroundColor: Colors.green,
+          colorText: Colors.white,
+          snackPosition: SnackPosition.BOTTOM,
         );
-
-        if (success) {
-          Get.snackbar(
-            "Success!",
-            "Media downloaded successfully",
-            backgroundColor: Colors.green,
-            snackPosition: SnackPosition.BOTTOM,
-          );
-        } else {
-          Get.snackbar(
-            "Download Failed",
-            "Could not save media to device",
-            backgroundColor: Colors.red,
-            snackPosition: SnackPosition.BOTTOM,
-          );
-        }
+      } else {
+        Get.snackbar(
+          "Download Failed",
+          "Could not save media to device. Please allow Photos access and try again.",
+          backgroundColor: Colors.red,
+          colorText: Colors.white,
+          snackPosition: SnackPosition.BOTTOM,
+        );
       }
     } catch (e) {
       Get.snackbar(
         "Download Error",
         e.toString(),
         backgroundColor: Colors.red,
+        colorText: Colors.white,
         snackPosition: SnackPosition.BOTTOM,
       );
     }
