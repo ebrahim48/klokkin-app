@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import '../../../../../global/custom_assets/assets.gen.dart';
 import '../../../../core/config/app_routes/app_routes.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../../../../core/helpers/toast_message_helper.dart';
 import '../../../controller/auth_controller.dart';
 import '../../../widgets/custom_app_bar.dart';
 import '../../../widgets/custom_button.dart';
@@ -204,6 +205,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
                      loading: authController.signUpLoading.value,
                       title: "Sign up",
                       onpress: () {
+                        // App Store Guideline 1.2: the user must agree to the
+                        // Terms of Service / EULA before an account is created.
+                        if (!isChecked.value) {
+                          ToastMessageHelper.showToastMessage(
+                            "Please agree to the Terms of Service to continue",
+                            title: "Terms required",
+                          );
+                          return;
+                        }
                         if(fromKey.currentState?.validate()?? true){
                           authController.handleSignUp(
                               fname: fNameCtrl.text,
