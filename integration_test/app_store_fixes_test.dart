@@ -14,6 +14,7 @@ import 'package:video_player/video_player.dart';
 import 'package:klokkin_app/services/download_service.dart';
 
 const _email = String.fromEnvironment('KLOKKIN_EMAIL');
+
 const _password = String.fromEnvironment('KLOKKIN_PASSWORD');
 
 /// pumpAndSettle is useless here: the app always has a running animation
