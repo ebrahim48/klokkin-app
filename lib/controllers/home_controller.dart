@@ -8,6 +8,7 @@ import 'package:klokkin_app/core/config/app_routes/app_routes.dart';
 import 'package:klokkin_app/models/my_story_model.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:video_player/video_player.dart';
+import '../core/helpers/media_url_helper.dart';
 import 'package:video_thumbnail/video_thumbnail.dart';
 import '../../../services/api_client.dart';
 import '../../../services/api_constants.dart';
@@ -562,11 +563,29 @@ class HomeController extends GetxController {
       videoControllers[storyId]?.dispose();
     }
 
-    videoControllers[storyId] = VideoPlayerController.networkUrl(Uri.parse(videoUrl))
-      ..initialize().then((_) {
-        isInitializedStates[storyId] = true;
-        update();
-      });
+    final uri = MediaUrlHelper.toUri(videoUrl);
+    if (uri == null) {
+      isInitializedStates[storyId] = false;
+      update();
+      return;
+    }
+
+    final controller = VideoPlayerController.networkUrl(uri);
+    videoControllers[storyId] = controller;
+    controller
+        .initialize()
+        .timeout(const Duration(seconds: 25))
+        .then((_) {
+      isInitializedStates[storyId] = true;
+      update();
+    }).catchError((Object e) {
+      // Without this the future threw an unhandled async error and the tile
+      // was stuck "loading" for good (App Review 2.1(a)).
+      isInitializedStates[storyId] = false;
+      update();
+      // ignore: avoid_print
+      print('Error initializing story video: $e');
+    });
   }
 
   void togglePlayPause(String storyId) {

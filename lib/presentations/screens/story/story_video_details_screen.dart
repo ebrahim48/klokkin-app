@@ -13,6 +13,7 @@ import '../../../global/custom_assets/assets.gen.dart';
 import '../../widgets/custom_image_details_widget.dart';
 import '../../widgets/custom_video_details_widget.dart';
 import '../../widgets/youtube_media_player.dart';
+import '../../../core/helpers/media_url_helper.dart';
 
 class StoryVideoDetailsScreen extends StatefulWidget {
   const StoryVideoDetailsScreen({super.key});
@@ -30,6 +31,8 @@ class _StoryVideoDetailsScreenState extends State<StoryVideoDetailsScreen> {
   VideoPlayerController? _videoController;
   Map? routeData;
   bool _isVideoInitialized = false;
+  String? _videoError;
+  String _videoUrl = '';
 
   // Set when the video story is a YouTube trailer — rendered with the
   // embedded YouTube player instead of VideoPlayerController.
@@ -54,6 +57,7 @@ class _StoryVideoDetailsScreenState extends State<StoryVideoDetailsScreen> {
           if (isYoutubeUrl(videoUrl)) {
             setState(() => _ytUrl = videoUrl);
           } else {
+            _videoUrl = videoUrl;
             _initializeVideo(videoUrl);
           }
         }
@@ -61,15 +65,55 @@ class _StoryVideoDetailsScreenState extends State<StoryVideoDetailsScreen> {
     });
   }
 
-  void _initializeVideo(String url) {
-    _videoController = VideoPlayerController.network(url)
-      ..initialize().then((_) {
+  /// Loads the remote video.
+  ///
+  /// Guideline 2.1(a): the reviewer reported the player "loaded indefinitely".
+  /// The old version swallowed initialisation errors with a bare `print`, so a
+  /// bad URL / unsupported file left the spinner on screen forever. Now the
+  /// URL is normalised first, initialisation is bounded by a timeout, and any
+  /// failure switches to an error state with a Retry button.
+  Future<void> _initializeVideo(String rawUrl) async {
+    final uri = MediaUrlHelper.toUri(rawUrl);
+    if (uri == null) {
+      if (mounted) {
         setState(() {
-          _isVideoInitialized = true;
+          _videoError = 'This video is unavailable.';
+          _isVideoInitialized = false;
         });
-      }).catchError((error) {
-        print("Video initialization error: $error");
+      }
+      return;
+    }
+
+    setState(() {
+      _videoError = null;
+      _isVideoInitialized = false;
+    });
+
+    final oldController = _videoController;
+    _videoController = null;
+    await oldController?.dispose();
+
+    final controller = VideoPlayerController.networkUrl(uri);
+    _videoController = controller;
+
+    try {
+      await controller.initialize().timeout(const Duration(seconds: 25));
+      if (!mounted) {
+        await controller.dispose();
+        return;
+      }
+      setState(() {
+        _isVideoInitialized = true;
+        _videoError = null;
       });
+    } catch (error) {
+      debugPrint('Video initialization error: $error');
+      if (!mounted) return;
+      setState(() {
+        _isVideoInitialized = false;
+        _videoError = 'This video could not be played. Please try again.';
+      });
+    }
   }
 
   @override
@@ -288,8 +332,41 @@ class _StoryVideoDetailsScreenState extends State<StoryVideoDetailsScreen> {
                     color: Colors.black,
                     borderRadius: BorderRadius.circular(12.r),
                   ),
-                  child: const Center(
-                    child: CircularProgressIndicator(),
+                  child: Center(
+                    child: _videoError == null
+                        ? const CircularProgressIndicator(
+                            color: AppColors.primaryColorC79235,
+                          )
+                        : Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                Icons.error_outline_rounded,
+                                color: AppColors.textColorC2C2C2,
+                                size: 34.sp,
+                              ),
+                              SizedBox(height: 8.h),
+                              CustomText(
+                                text: _videoError!,
+                                color: AppColors.textColorC2C2C2,
+                                fontsize: 13.sp,
+                                maxline: 2,
+                                textAlign: TextAlign.center,
+                              ),
+                              SizedBox(height: 8.h),
+                              TextButton(
+                                onPressed: _videoUrl.isEmpty
+                                    ? null
+                                    : () => _initializeVideo(_videoUrl),
+                                child: CustomText(
+                                  text: 'Retry',
+                                  color: AppColors.primaryColorC79235,
+                                  fontsize: 14.sp,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ],
+                          ),
                   ),
                 ),
 

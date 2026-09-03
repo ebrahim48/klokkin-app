@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
 import 'package:klokkin_app/core/config/app_routes/app_routes.dart';
 import 'package:klokkin_app/services/download_service.dart';
+import '../../core/helpers/media_url_helper.dart';
 import 'package:toastification/toastification.dart';
 import '../../core/constants/app_colors.dart';
 import 'custom_network_image.dart';
@@ -63,7 +64,9 @@ class _WorkCardState extends State<WorkCard> {
           context: context,
           type: ToastificationType.error,
           title: const Text('Download Failed'),
-          description: const Text('Could not save video to device'),
+          description: Text(DownloadService().lastError.isNotEmpty
+              ? DownloadService().lastError
+              : 'Could not save the video. Please try again.'),
         );
       }
     } catch (e) {
@@ -154,6 +157,12 @@ class _WorkCardState extends State<WorkCard> {
                       ),
                     ),
                     SizedBox(width: 8.w),
+          // Every "video"/"audio" story in the catalogue is a YouTube link,
+          // which is a web page rather than a downloadable file. Showing a
+          // download button that can only ever fail is exactly the kind of
+          // broken feature App Review flags under 2.1(a), so the button is
+          // hidden for streamed stories and shown for real files.
+          if (!MediaUrlHelper.isYoutubeLink(widget.videoPath))
                     GestureDetector(
                       onTap: _downloadMedia,
                       child: Container(

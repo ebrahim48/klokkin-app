@@ -4,7 +4,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
 import 'package:klokkin_app/presentations/widgets/custom_text.dart';
-import 'package:share_plus/share_plus.dart';
+import '../../core/helpers/share_helper.dart';
 import '../../controllers/audio_book_controller.dart';
 import '../../controllers/audio_controller.dart';
 import '../../controllers/home_controller.dart';
@@ -13,6 +13,7 @@ import '../../controllers/story_audio_controller.dart';
 import '../../core/config/app_routes/app_routes.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/helpers/download_helper.dart';
+import '../../core/helpers/media_url_helper.dart';
 import '../../core/helpers/toast_message_helper.dart';
 import '../../global/custom_assets/assets.gen.dart';
 import 'package:intl/intl.dart';
@@ -100,7 +101,9 @@ class _CustomAudioProgressBarState extends State<CustomAudioProgressBar> {
           } else {
             Get.snackbar(
               "Download Failed",
-              "Could not save media to device",
+              DownloadService().lastError.isNotEmpty
+              ? DownloadService().lastError
+              : "Could not save the media. Please try again.",
               backgroundColor: Colors.red,
               snackPosition: SnackPosition.BOTTOM,
             );
@@ -343,7 +346,8 @@ class _CustomAudioProgressBarState extends State<CustomAudioProgressBar> {
                                 : '';
                         if (currentStoryId.isNotEmpty) {
                           homeController.share(currentStoryId);
-                          Share.share(
+                          ShareHelper.shareText(
+                            context,
                             'Check this out: ${ApiConstants.baseUrl}/story/story/$currentStoryId',
                             subject:
                                 controller.isVideo.value
@@ -361,7 +365,12 @@ class _CustomAudioProgressBarState extends State<CustomAudioProgressBar> {
                     ),
                     SizedBox(width: 8.w),
 
-                    /// Download Button
+                    /// Download Button — hidden for YouTube-streamed stories,
+                    /// which have no file behind them (2.1(a)).
+                    if (!MediaUrlHelper.isYoutubeLink(
+                        controllers.libraryStoryData.isNotEmpty
+                            ? controllers.libraryStoryData.first.mediaUrl?.first
+                            : null))
                     GestureDetector(
                       onTap: () async {
                         if (controllers.libraryStoryData.isNotEmpty) {
@@ -484,6 +493,12 @@ class _CustomAudioProgressBarState extends State<CustomAudioProgressBar> {
                   fontWeight: FontWeight.w400,
                 ),
               ),
+              // Hidden for YouTube-streamed stories: there is no file to save,
+              // so the button could only ever report a failure (2.1(a)).
+              if (!MediaUrlHelper.isYoutubeLink(
+                  controllers.libraryStoryData.isNotEmpty
+                      ? controllers.libraryStoryData.first.mediaUrl?.first
+                      : null))
               GestureDetector(
                 onTap: _downloadCurrentMediaForGallery,
                 child: Assets.icons.downloadSimple.svg(

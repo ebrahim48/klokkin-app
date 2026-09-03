@@ -26,6 +26,10 @@
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>LSSupportsOpeningDocumentsInPlace</key>
+	<true/>
+	<key>UIFileSharingEnabled</key>
+	<true/>
 	<key>NSCameraUsageDescription</key>
 	<string>Klokkin needs camera access to record videos and take photos for creating stories.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>

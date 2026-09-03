@@ -454,29 +454,34 @@ class _InAppPurchaseSubscriptionScreenState
 
                 SizedBox(height: 16.h),
 
-                // Price
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.end,
+                // ── Billed amount ──────────────────────────────────────────
+                // Apple guideline 3.1.2(c): the amount actually billed must be
+                // the single most clear and conspicuous pricing element in the
+                // purchase flow. It is therefore the largest, highest-contrast
+                // text on the card; the billing period and the auto-renewal
+                // sentence sit directly beneath it in a smaller, muted style,
+                // and no calculated ("only $x/month") price is shown anywhere.
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     CustomText(
                       textAlign: TextAlign.start,
                       // Prefer the store's localized price so the amount the
                       // user is charged matches what the paywall advertises.
-                      text: _sub.storePriceFor(plan) ?? plan.priceLabel,
-                      fontsize: 26.sp,
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.primaryColorC79235,
+                      text: _priceFor(plan),
+                      fontsize: 40.sp,
+                      fontWeight: FontWeight.w800,
+                      color: AppColors.textColorFFFFFF,
                     ),
-                    SizedBox(width: 4.w),
-                    Padding(
-                      padding: EdgeInsets.only(bottom: 3.h),
-                      child: CustomText(
-                        textAlign: TextAlign.start,
-                        text: '/ ${_periodLabel(plan).toLowerCase()}',
-                        fontsize: 12.sp,
-                        fontWeight: FontWeight.w400,
-                        color: AppColors.textColor8C8C8C,
-                      ),
+                    SizedBox(height: 4.h),
+                    CustomText(
+                      textAlign: TextAlign.start,
+                      text: _billedSentence(plan),
+                      fontsize: 13.sp,
+                      fontWeight: FontWeight.w500,
+                      color: AppColors.textColorBDC2C6,
+                      maxline: 3,
+                      textOverflow: TextOverflow.visible,
                     ),
                   ],
                 ),
@@ -522,6 +527,9 @@ class _InAppPurchaseSubscriptionScreenState
                       : isThisPurchasing
                           ? 'Processing...'
                           : 'Subscribe Now',
+                  // Kept smaller than the billed amount above it so the price
+                  // remains the most conspicuous element (guideline 3.1.2(c)).
+                  fontSize: 16.sp,
                   loading: isThisPurchasing,
                   color: isCurrent
                       ? AppColors.textColor323539
@@ -603,6 +611,28 @@ class _InAppPurchaseSubscriptionScreenState
   }
 
   // ── Helpers ────────────────────────────────────────────────────────────────
+
+  /// The exact amount the customer is billed — the store's localized price
+  /// whenever the product listing has loaded, so what the paywall shows is
+  /// literally what the App Store will charge.
+  String _priceFor(SubscriptionPlanModel plan) =>
+      _sub.storePriceFor(plan) ?? plan.priceLabel;
+
+  /// Plain-language restatement of the charge, shown under the amount.
+  String _billedSentence(SubscriptionPlanModel plan) {
+    final price = _priceFor(plan);
+    switch (_periodLabel(plan)) {
+      case 'Yearly':
+        return 'Billed $price per year. Renews automatically every year '
+            'until cancelled.';
+      case 'Weekly':
+        return 'Billed $price per week. Renews automatically every week '
+            'until cancelled.';
+      default:
+        return 'Billed $price per month. Renews automatically every month '
+            'until cancelled.';
+    }
+  }
 
   String _periodLabel(SubscriptionPlanModel plan) {
     final key = plan.key?.toLowerCase() ?? '';

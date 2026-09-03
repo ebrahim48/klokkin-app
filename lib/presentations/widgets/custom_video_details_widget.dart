@@ -5,7 +5,7 @@ import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
 import 'package:klokkin_app/presentations/widgets/custom_text.dart';
 import 'package:klokkin_app/services/api_constants.dart';
-import 'package:share_plus/share_plus.dart';
+import '../../core/helpers/share_helper.dart';
 import 'package:video_player/video_player.dart';
 import '../../controllers/audio_book_controller.dart';
 import '../../controllers/home_controller.dart';
@@ -125,7 +125,9 @@ class _CustomVideoDetailsProgressBarState
       } else {
         Get.snackbar(
           "Download Failed",
-          "Could not save media to device. Please allow Photos access and try again.",
+          DownloadService().lastError.isNotEmpty
+              ? DownloadService().lastError
+              : "Could not save the media. Please try again.",
           backgroundColor: Colors.red,
           colorText: Colors.white,
           snackPosition: SnackPosition.BOTTOM,
@@ -206,7 +208,8 @@ class _CustomVideoDetailsProgressBarState
               onTap: () {
                 if (widget.storyId.isNotEmpty) {
                   homeController.share(widget.storyId);
-                  Share.share(
+                  ShareHelper.shareText(
+                    context,
                     'Check this out: ${ApiConstants.baseUrl}/story/story/${widget.storyId}',
                     subject: 'Share Video',
                   );
