@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import 'package:video_player/video_player.dart';
+import '../core/helpers/media_url_helper.dart';
 
 /// Media controller for the story audio/video detail screens.
 ///
@@ -44,12 +45,19 @@ class StoryAudioController extends GetxController {
 
     await _disposeController();
 
-    final vc = VideoPlayerController.networkUrl(Uri.parse(url));
+    final uri = MediaUrlHelper.toUri(url);
+    if (uri == null) {
+      isInitialized.value = false;
+      isBuffering.value = false;
+      return;
+    }
+
+    final vc = VideoPlayerController.networkUrl(uri);
     _vc = vc;
     vc.addListener(_onTick);
 
     try {
-      await vc.initialize();
+      await vc.initialize().timeout(const Duration(seconds: 25));
       totalTime.value = vc.value.duration.inMilliseconds / 1000.0;
       await vc.setPlaybackSpeed(playbackSpeed.value);
       isInitialized.value = true;

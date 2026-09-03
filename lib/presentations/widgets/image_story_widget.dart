@@ -64,7 +64,9 @@ class _ImageStoryCardState extends State<ImageStoryCard> {
           context: context,
           type: ToastificationType.error,
           title: const Text('Download Failed'),
-          description: const Text('Could not save image to device'),
+          description: Text(DownloadService().lastError.isNotEmpty
+              ? DownloadService().lastError
+              : 'Could not save the image. Please try again.'),
         );
       }
     } catch (e) {

@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:get/get.dart';
 import 'package:video_player/video_player.dart';
+import '../core/helpers/media_url_helper.dart';
 import '../core/helpers/toast_message_helper.dart';
 import '../models/story_libray_data_model.dart';
 import '../services/api_client.dart';
@@ -81,10 +82,13 @@ class AudioBookController extends GetxController {
 
       await _disposeVc();
 
-      final vc = VideoPlayerController.networkUrl(Uri.parse(audioUrl));
+      final uri = MediaUrlHelper.toUri(audioUrl);
+      if (uri == null) throw Exception('Invalid media url');
+
+      final vc = VideoPlayerController.networkUrl(uri);
       _vc = vc;
       vc.addListener(_onTick);
-      await vc.initialize();
+      await vc.initialize().timeout(const Duration(seconds: 25));
       totalDuration.value = vc.value.duration;
       await vc.play();
 

@@ -176,16 +176,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     color: AppColors.primaryColorC79235,
                   ),
                   onTap: () {
+                    // The paywall owns its own scroll view. Wrapping it in a
+                    // DraggableScrollableSheet gave two competing scrollables,
+                    // which on a large screen (iPad) left the plan cards
+                    // clipped under the header. A plain fractional-height
+                    // sheet keeps the whole purchase flow readable.
                     showModalBottomSheet(
                       context: context,
                       isScrollControlled: true,
                       backgroundColor: Colors.transparent,
-                      builder: (_) => DraggableScrollableSheet(
-                        initialChildSize: 0.92,
-                        minChildSize: 0.5,
-                        maxChildSize: 0.95,
-                        builder: (_, scrollController) =>
-                            const InAppPurchaseSubscriptionScreen(),
+                      constraints: BoxConstraints(
+                        maxWidth: MediaQuery.of(context).size.width,
+                      ),
+                      builder: (_) => const FractionallySizedBox(
+                        heightFactor: 0.92,
+                        child: InAppPurchaseSubscriptionScreen(),
                       ),
                     );
                   }),

@@ -104,7 +104,9 @@ class _CustomImageDetailsProgressBarState extends State<CustomImageDetailsProgre
         } else {
           Get.snackbar(
             "Download Failed",
-            "Could not save media to device",
+            DownloadService().lastError.isNotEmpty
+              ? DownloadService().lastError
+              : "Could not save the media. Please try again.",
             backgroundColor: Colors.red,
             snackPosition: SnackPosition.BOTTOM,
           );

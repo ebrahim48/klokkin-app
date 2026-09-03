@@ -1,4 +1,6 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import '../../constants/app_colors.dart';
 import 'package:go_router/go_router.dart';
 import 'package:klokkin_app/presentations/screens/auth/privacy/privacy.dart';
 import 'package:klokkin_app/presentations/screens/auth/terms/terms.dart';
@@ -36,7 +38,7 @@ import '../../../presentations/screens/profile/personal_screen_update.dart';
 import '../../../presentations/screens/profile/profile_screen.dart';
 import '../../../presentations/screens/profile/question_help_screen.dart';
 import '../../../presentations/screens/splash/splash_screen.dart';
-import '../../../presentations/screens/subscription/subscription_screen.dart';
+import '../../../presentations/screens/subscription/in_app_purchase_screen.dart';
 import '../../../presentations/screens/story/story_audio_book_screen.dart';
 import '../../../presentations/screens/story/story_audio_screen.dart';
 import '../../../presentations/screens/story/story_edit_screen.dart';
@@ -508,9 +510,17 @@ class AppRoutes {
       GoRoute(
         path: subscriptionScreen,
         name: subscriptionScreen,
-        pageBuilder:
-            (context, state) =>
-                _customTransitionPage(const SubscriptionScreen(), state),
+        // Guideline 3.1.2(c): there is exactly ONE purchase flow in the app —
+        // the in-app-purchase paywall, where the billed amount is the most
+        // conspicuous pricing element. The old plan list is no longer routed
+        // to so a second, less clear paywall cannot be reached.
+        pageBuilder: (context, state) => _customTransitionPage(
+          const Scaffold(
+            backgroundColor: AppColors.bgColor,
+            body: SafeArea(child: InAppPurchaseSubscriptionScreen()),
+          ),
+          state,
+        ),
       ),
 
 

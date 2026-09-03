@@ -17,13 +17,13 @@ class DownloadHelper {
       if (_isS3Url(url)) {
         final token = await PrefsHelper.getString('bearerToken');
         if (token.isNotEmpty) {
-          headers['Authorization'] = 'Bearer $token';
+          headers['Authorization'] = token; // backend rejects a Bearer prefix
         }
       } else {
         // For non-S3 URLs, always try with auth
         final token = await PrefsHelper.getString('bearerToken');
         if (token.isNotEmpty) {
-          headers['Authorization'] = 'Bearer $token';
+          headers['Authorization'] = token; // backend rejects a Bearer prefix
         }
       }
 

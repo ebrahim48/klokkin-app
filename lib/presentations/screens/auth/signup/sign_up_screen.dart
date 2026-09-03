@@ -73,18 +73,32 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     prefixIcon: Assets.icons.phone.svg(),
                   inputFormatters: [
                     FilteringTextInputFormatter.digitsOnly,
-                    LengthLimitingTextInputFormatter(11),
+                    LengthLimitingTextInputFormatter(15),
                   ],
                   // Optional by design: App Store guideline 5.1.1(v) forbids
-                  // requiring personal data the core feature does not need.
-                  // Only validate the format once something is typed.
+                  // requiring personal data the core feature does not need, so
+                  // an empty field always passes. A typed value is only sanity
+                  // checked for length, and the range covers international
+                  // numbers (a fixed 11-digit rule rejected valid US numbers
+                  // and made the field feel mandatory again).
                   validator: (value) {
-                    if (value == null || value.trim().isEmpty) return null;
-                    if (value.length < 11) {
-                      return 'Phone number must be 11 digits';
+                    final phone = value?.toString().trim() ?? '';
+                    if (phone.isEmpty) return null;
+                    if (phone.length < 7 || phone.length > 15) {
+                      return 'Please enter a valid phone number, or leave it empty';
                     }
                     return null;
                   },
+                ),
+                Padding(
+                  padding: EdgeInsets.only(left: 8.w, bottom: 12.h),
+                  child: CustomText(
+                    textAlign: TextAlign.start,
+                    text: "Optional — you can sign up without a phone number.",
+                    color: AppColors.textColor8A8A8A,
+                    fontWeight: FontWeight.w400,
+                    fontsize: 11.sp,
+                  ),
                 ),
 
 

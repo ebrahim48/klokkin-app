@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import 'package:video_player/video_player.dart';
+import '../core/helpers/media_url_helper.dart';
 
 class WorkCardController extends GetxController {
   final _currentPlayingIndex = (-1).obs;
@@ -28,8 +29,14 @@ class WorkCardController extends GetxController {
 
       print("🎥 Initializing video for index $index: $videoUrl");
 
+      final uri = MediaUrlHelper.toUri(videoUrl);
+      if (uri == null) {
+        _isInitialized[index] = false;
+        return;
+      }
+
       // Create new controller
-      final controller = VideoPlayerController.networkUrl(Uri.parse(videoUrl));
+      final controller = VideoPlayerController.networkUrl(uri);
 
       // Add listener for state changes
       controller.addListener(() {
@@ -37,8 +44,9 @@ class WorkCardController extends GetxController {
         update();
       });
 
-      // Initialize the controller
-      await controller.initialize();
+      // Initialize the controller. The timeout keeps a stalled stream from
+      // leaving the card on a spinner forever (App Review 2.1(a)).
+      await controller.initialize().timeout(const Duration(seconds: 25));
 
       // Store controller and mark as initialized
       _videoControllers[index] = controller;

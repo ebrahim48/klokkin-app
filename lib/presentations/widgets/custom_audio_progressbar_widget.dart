@@ -4,7 +4,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:go_router/go_router.dart';
 import 'package:klokkin_app/services/api_constants.dart';
-import 'package:share_plus/share_plus.dart';
+import '../../core/helpers/share_helper.dart';
 import 'package:video_player/video_player.dart';
 
 import '../../controllers/audio_controller.dart';
@@ -14,6 +14,8 @@ import 'custom_loader.dart';
 import 'custom_network_image.dart';
 import 'custom_text.dart';
 import 'youtube_media_player.dart';
+import '../../core/helpers/media_url_helper.dart';
+import '../../services/download_service.dart';
 
 class AudioProgressBar extends StatefulWidget {
   const AudioProgressBar({super.key});
@@ -41,6 +43,47 @@ class _AudioProgressBarState extends State<AudioProgressBar> {
       // Fetched once here (not in build) — see every_story_screen.dart.
       homeController.getStorySingle(id: routeData['storyId']);
     });
+  }
+
+  bool _isDownloading = false;
+
+  Future<void> _downloadStoryMedia(dynamic story) async {
+    final mediaUrl = story.mediaUrl?.isNotEmpty == true
+        ? story.mediaUrl!.first as String
+        : null;
+    if (mediaUrl == null || mediaUrl.isEmpty) {
+      Get.snackbar(
+        "Nothing to download",
+        "This story has no downloadable file.",
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+        snackPosition: SnackPosition.BOTTOM,
+      );
+      return;
+    }
+
+    setState(() => _isDownloading = true);
+    final ok = await DownloadService().downloadMedia(
+      mediaUrl,
+      title: story.caption ?? 'Media',
+      subtitle: story.description ?? 'Downloaded from Klokkin',
+      meta: story.duration ?? '',
+      hashtags: (story.tags ?? const []).join(', '),
+    );
+    if (!mounted) return;
+    setState(() => _isDownloading = false);
+
+    Get.snackbar(
+      ok ? "Downloaded" : "Download Failed",
+      ok
+          ? "Saved to your device"
+          : (DownloadService().lastError.isNotEmpty
+              ? DownloadService().lastError
+              : "Could not save the media. Please try again."),
+      backgroundColor: ok ? Colors.green : Colors.red,
+      colorText: Colors.white,
+      snackPosition: SnackPosition.BOTTOM,
+    );
   }
 
   bool _looksLikeVideo(String url) {
@@ -266,7 +309,8 @@ class _AudioProgressBarState extends State<AudioProgressBar> {
                   final currentStoryId = story.id ?? story.id ?? '';
                   if (currentStoryId.isNotEmpty) {
                     homeController.share(currentStoryId);
-                    Share.share(
+                    ShareHelper.shareText(
+                      context,
                       'Check this out:\n ${ApiConstants.baseUrl}/story/story/$currentStoryId',
                       subject:
                           controller.isVideo.value
@@ -351,16 +395,32 @@ class _AudioProgressBarState extends State<AudioProgressBar> {
                 ),
               ),
 
-              // Download Icon (optional functionality)
-              GestureDetector(
-                onTap: () {},
-                child: SvgPicture.asset(
-                  "assets/icons/downloadSimple.svg",
-                  width: 24.w,
-                  height: 24.h,
-                  color: AppColors.primaryColorC79235,
+              // Download icon. This used to be `onTap: () {}` — a button that
+              // did nothing at all, which is precisely the "app exhibited a
+              // bug" App Review reported (2.1(a)). It now performs a real
+              // download, and is hidden entirely for YouTube-streamed stories,
+              // which have no downloadable file.
+              if (!MediaUrlHelper.isYoutubeLink(story.mediaUrl?.first))
+                GestureDetector(
+                  onTap: _isDownloading
+                      ? null
+                      : () => _downloadStoryMedia(story),
+                  child: _isDownloading
+                      ? SizedBox(
+                          width: 24.w,
+                          height: 24.h,
+                          child: const CircularProgressIndicator(
+                            strokeWidth: 2,
+                            color: AppColors.primaryColorC79235,
+                          ),
+                        )
+                      : SvgPicture.asset(
+                          "assets/icons/downloadSimple.svg",
+                          width: 24.w,
+                          height: 24.h,
+                          color: AppColors.primaryColorC79235,
+                        ),
                 ),
-              ),
             ],
           ),
         ],

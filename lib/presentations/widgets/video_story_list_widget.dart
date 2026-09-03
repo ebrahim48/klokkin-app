@@ -7,6 +7,7 @@ import '../../core/constants/app_colors.dart';
 import '../../core/helpers/time_helper.dart';
 import '../../global/custom_assets/assets.gen.dart';
 import 'custom_network_image.dart';
+import '../../core/helpers/media_url_helper.dart';
 import 'custom_text.dart';
 
 class VideoStoryCard extends StatefulWidget {
@@ -63,7 +64,9 @@ class _VideoStoryCardState extends State<VideoStoryCard> {
           context: context,
           type: ToastificationType.error,
           title: const Text('Download Failed'),
-          description: const Text('Could not save video to device'),
+          description: Text(DownloadService().lastError.isNotEmpty
+              ? DownloadService().lastError
+              : 'Could not save the video. Please try again.'),
         );
       }
     } catch (e) {
@@ -164,6 +167,12 @@ class _VideoStoryCardState extends State<VideoStoryCard> {
                             ],
                           ),
                         ),
+          // Every "video"/"audio" story in the catalogue is a YouTube link,
+          // which is a web page rather than a downloadable file. Showing a
+          // download button that can only ever fail is exactly the kind of
+          // broken feature App Review flags under 2.1(a), so the button is
+          // hidden for streamed stories and shown for real files.
+          if (!MediaUrlHelper.isYoutubeLink(widget.videoPath))
                         GestureDetector(
                           onTap: _downloadVideo,
                           child: Container(
