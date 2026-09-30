@@ -1,5 +1,6 @@
 class ApiConstants {
   static const String baseUrl = "https://api.klokkin.com/api/v1";
+  // static const String baseUrl = "https://mihad8080.ssh.bd/api/v1";
   static const String imageBaseUrl = "https://api.klokkin.com";
 
   static const String signUpEndPoint = "/auth/register";
