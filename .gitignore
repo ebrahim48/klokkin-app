@@ -53,3 +53,5 @@ key.properties.example
 branch_structure.json
 .gitignore
 
+config.bat
+node_modules
